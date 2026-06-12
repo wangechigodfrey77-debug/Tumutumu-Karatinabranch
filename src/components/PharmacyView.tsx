@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, TrendingUp, CalendarDays, Upload, FileSpreadsheet, FileText, Check, Loader2 } from 'lucide-react';
+import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, TrendingUp, CalendarDays, Upload, FileSpreadsheet, FileText, Check, Loader2, Search } from 'lucide-react';
 import { MedicationDispense, PharmacyItem, Patient } from '../types';
 
 interface PharmacyViewProps {
@@ -110,6 +110,8 @@ export function PharmacyView({
   // Filter views states
   const [showLowStockOnly, setShowLowStockOnly] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [dispenseSearchQuery, setDispenseSearchQuery] = useState<string>('');
+  const [nonPharmaSearchQuery, setNonPharmaSearchQuery] = useState<string>('');
 
   React.useEffect(() => {
     if (restockStockId) {
@@ -139,6 +141,21 @@ export function PharmacyView({
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || item.id.toLowerCase().includes(searchQuery.toLowerCase());
     const belowThreshold = item.stockQuantity <= (item.minThreshold ?? 15);
     return matchesSearch && (!showLowStockOnly || belowThreshold);
+  });
+
+  // Dedicated filters for the dispensation dropdown menus
+  const dropdownPharmaItems = stock.filter((item) => {
+    if (item.category === 'Non-Pharmaceutical') return false;
+    const matchesSearch = item.name.toLowerCase().includes(dispenseSearchQuery.toLowerCase()) || 
+                          item.id.toLowerCase().includes(dispenseSearchQuery.toLowerCase());
+    return matchesSearch;
+  });
+
+  const dropdownNonPharmaItems = stock.filter((item) => {
+    if (item.category !== 'Non-Pharmaceutical') return false;
+    const matchesSearch = item.name.toLowerCase().includes(nonPharmaSearchQuery.toLowerCase()) || 
+                          item.id.toLowerCase().includes(nonPharmaSearchQuery.toLowerCase());
+    return matchesSearch;
   });
 
   // Compute Revenue over different intervals (Daily, Weekly, Monthly)
@@ -645,6 +662,28 @@ export function PharmacyView({
 
                 <div>
                   <label id="lbl-dispense-med" className="block font-medium text-stone-500 mb-1">Medication Selection</label>
+                  
+                  {/* Search medications in list */}
+                  <div className="relative mb-2">
+                    <input
+                      type="text"
+                      placeholder="Type to filter medications instantly..."
+                      value={dispenseSearchQuery}
+                      onChange={(e) => setDispenseSearchQuery(e.target.value)}
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 pl-8 pr-8 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                    />
+                    <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-3" />
+                    {dispenseSearchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setDispenseSearchQuery('')}
+                        className="absolute right-2.5 top-2.5 text-stone-400 hover:text-stone-600 bg-stone-200/50 hover:bg-stone-200/90 rounded-full w-4.5 h-4.5 flex items-center justify-center text-[10px] font-bold"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
                   <select
                     id="select-dispense-med"
                     required
@@ -652,8 +691,12 @@ export function PharmacyView({
                     onChange={(e) => setSelectedStockId(e.target.value)}
                     className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden"
                   >
-                    <option value="">-- Choose Medicine --</option>
-                    {pharmaItems.map((item) => (
+                    <option value="">
+                      {dropdownPharmaItems.length === 0 
+                        ? '-- No medications matched search query --' 
+                        : `-- Choose Medicine (${dropdownPharmaItems.length} matched) --`}
+                    </option>
+                    {dropdownPharmaItems.map((item) => (
                       <option key={item.id} value={item.id} disabled={item.stockQuantity <= 0}>
                         {item.name} ({item.stockQuantity} Left) - Ksh {item.price}/unit
                       </option>
@@ -835,6 +878,28 @@ export function PharmacyView({
 
                 <div>
                   <label id="lbl-dispense-nonpharma-item" className="block font-medium text-stone-500 mb-1">Supply Product Selection</label>
+                  
+                  {/* Search supplies in list */}
+                  <div className="relative mb-2">
+                    <input
+                      type="text"
+                      placeholder="Type to filter supplies instantly..."
+                      value={nonPharmaSearchQuery}
+                      onChange={(e) => setNonPharmaSearchQuery(e.target.value)}
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 pl-8 pr-8 text-xs focus:ring-1 focus:ring-indigo-500 outline-hidden"
+                    />
+                    <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-3" />
+                    {nonPharmaSearchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setNonPharmaSearchQuery('')}
+                        className="absolute right-2.5 top-2.5 text-stone-400 hover:text-stone-600 bg-stone-200/50 hover:bg-stone-200/90 rounded-full w-4.5 h-4.5 flex items-center justify-center text-[10px] font-bold"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
                   <select
                     id="select-dispense-nonpharma-item"
                     required
@@ -842,8 +907,12 @@ export function PharmacyView({
                     onChange={(e) => setSelectedNonPharmaId(e.target.value)}
                     className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-indigo-500 outline-hidden"
                   >
-                    <option value="">-- Choose Supplies Product --</option>
-                    {nonPharmaItems.map((item) => (
+                    <option value="">
+                      {dropdownNonPharmaItems.length === 0 
+                        ? '-- No supplies matched search query --' 
+                        : `-- Choose Supplies Product (${dropdownNonPharmaItems.length} matched) --`}
+                    </option>
+                    {dropdownNonPharmaItems.map((item) => (
                       <option key={item.id} value={item.id} disabled={item.stockQuantity <= 0}>
                         {item.name} ({item.stockQuantity} Left) - Ksh {item.price}/unit
                       </option>

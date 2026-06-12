@@ -21,7 +21,8 @@ import {
   Layers,
   Heart,
   Briefcase,
-  Layers2
+  Layers2,
+  ExternalLink
 } from 'lucide-react';
 
 import { 
@@ -58,6 +59,7 @@ import { auth, googleProvider, setOAuthAccessToken, getOAuthAccessToken } from '
 import { signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
 import { WhitelistUser, Patient, LabTest, LabCatalogItem, MedicationDispense, PharmacyItem, DutyAllocation, LeaveRequest, Message, Appointment, MedicalRecord, Expense, AuditLog } from './types';
 
+
 // Importing child modular workspaces
 import { AdminDashboard } from './components/AdminDashboard';
 import { RecordsReceptionView } from './components/RecordsReceptionView';
@@ -88,6 +90,7 @@ export default function App() {
   const [loginError, setLoginError] = useState<string>('');
   const [sessionEmail, setSessionEmail] = useState<string>('');
   const [firebaseUser, setFirebaseUser] = useState<any>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
   // Primary Workspace tab
   const [activeTab, setActiveTab] = useState<string>('records');
@@ -238,6 +241,8 @@ export default function App() {
   };
 
   const handleGoogleSignIn = async () => {
+    if (isLoggingIn) return;
+    setIsLoggingIn(true);
     try {
       setLoginError('');
       const result = await signInWithPopup(auth, googleProvider);
@@ -251,7 +256,13 @@ export default function App() {
       }
     } catch (err: any) {
       console.error("Google SSO SSO Error:", err);
-      setLoginError(`Google Sign-In failed: ${err?.message || String(err)}`);
+      if (err?.code === 'auth/cancelled-popup-request' || err?.message?.includes('cancelled-popup-request')) {
+        setLoginError('Google Sign-In Popup was cancelled or blocked by iframe browser constraints. Please open the app in a new browser tab using the button below.');
+      } else {
+        setLoginError(`Google Sign-In failed: ${err?.message || String(err)}`);
+      }
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -495,7 +506,7 @@ export default function App() {
             <h1 className="text-sm font-bold tracking-tight text-stone-900 uppercase">
               PCEA Tumutumu Hospital Karatina Portal
             </h1>
-            <p className="text-[10px] text-emerald-700 tracking-wider uppercase font-semibold flex items-center gap-1">
+            <p className="text-[10px] text-emerald-700 tracking-wider uppercase font-semibold flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping inline-block"></span>
               Karatina Satellite Branch • Digitized Clinical EMR
             </p>
@@ -545,8 +556,9 @@ export default function App() {
             <button
               id="google-sso-popup-btn"
               onClick={handleGoogleSignIn}
+              disabled={isLoggingIn}
               type="button"
-              className="w-full bg-stone-900 text-white hover:bg-stone-800 border border-stone-700 py-3 rounded-xl flex items-center justify-center gap-2.5 text-xs font-semibold cursor-pointer shadow-xs transition-transform transform active:scale-98"
+              className="w-full bg-stone-900 text-white hover:bg-stone-800 border border-stone-700 py-3 rounded-xl flex items-center justify-center gap-2.5 text-xs font-semibold cursor-pointer shadow-xs transition-transform transform active:scale-98 disabled:opacity-50"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path
@@ -566,8 +578,23 @@ export default function App() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
                </svg>
-               Sign In with Google Account
+               {isLoggingIn ? 'Contacting Google Auth...' : 'Sign In with Google Account'}
             </button>
+
+            {/* Top Level Tab Helper */}
+            <div className="text-center pt-1">
+              <p className="text-[11px] text-stone-500 mb-2">
+                Running in a preview iframe? Popups might be blocked.
+              </p>
+              <button
+                onClick={() => window.open(window.location.href, '_blank')}
+                className="w-full bg-white hover:bg-stone-50 text-stone-700 border border-stone-300 py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer shadow-2xs transition-all"
+              >
+                <ExternalLink className="w-4 h-4 text-emerald-600" /> Open App in New Browser Tab
+              </button>
+            </div>
+
+
           </div>
         </div>
       ) : (

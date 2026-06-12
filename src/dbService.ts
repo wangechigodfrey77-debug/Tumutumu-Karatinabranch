@@ -401,6 +401,279 @@ const rawMayPatients: RawRow[] = [
     timeRegistered: "13:24:23",
     timeSeen: "14:26:59",
     seenBy: "jimmwangi"
+  },
+  {
+    no: 22,
+    opNumber: "OP002209/26",
+    name: "Victoria Nduta Muna",
+    age: 18,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Unspecified Acute Lower Respiratory Infection",
+    date: "2026-05-02",
+    timeRegistered: "14:18:20",
+    timeSeen: "14:37:27",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 23,
+    opNumber: "OP001558/26",
+    name: "Phyllis Njeri Kanyiri",
+    age: 39,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Other Arthritis",
+    date: "2026-05-02",
+    timeRegistered: "14:22:08",
+    timeSeen: "14:47:53",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 24,
+    opNumber: "OP00239750",
+    name: "Njogu Chomba Kennedy",
+    age: 33,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Pruritus Ani",
+    date: "2026-05-02",
+    timeRegistered: "14:40:55",
+    timeSeen: "15:01:05",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 25,
+    opNumber: "OP012490/25",
+    name: "Joan Wairimu Kinyua",
+    age: 26,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Other Hypothyroidism",
+    date: "2026-05-02",
+    timeRegistered: "14:42:25",
+    timeSeen: "15:18:25",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 26,
+    opNumber: "OP001934/26",
+    name: "Eunice Waithira Muthui",
+    age: 74,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Malignant Neoplasm Of Breast",
+    date: "2026-05-20",
+    timeRegistered: "11:19:07",
+    timeSeen: "12:44:04",
+    seenBy: "jkariithi"
+  },
+  {
+    no: 27,
+    opNumber: "OP00251946",
+    name: "Muriuki Munene Hezron",
+    age: 31,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Other Acute Gastritis",
+    date: "2026-05-03",
+    timeRegistered: "11:20:18",
+    timeSeen: "11:31:15",
+    seenBy: "eunah"
+  },
+  {
+    no: 28,
+    opNumber: "OP007339/24",
+    name: "Jim Mwangi Gakumba",
+    age: 33,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Sprain And Strain Of Other And Unspecified Parts Of Foot",
+    date: "2026-05-03",
+    timeRegistered: "11:24:27",
+    timeSeen: "11:43:20",
+    seenBy: "eunah"
+  },
+  {
+    no: 29,
+    opNumber: "OP001946/26",
+    name: "Ann Wanjiru Wanjohi",
+    age: 22,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "-",
+    date: "2026-05-03",
+    timeRegistered: "14:51:06",
+    timeSeen: "14:58:07",
+    seenBy: "eunah"
+  },
+  {
+    no: 30,
+    opNumber: "OP002217/26",
+    name: "Damian Jayson Kibugi",
+    age: 8,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Other Specified Noninfective Gastroenteritis And Colitis",
+    date: "2026-05-03",
+    timeRegistered: "16:50:48",
+    timeSeen: "17:29:02",
+    seenBy: "eunah"
+  },
+  {
+    no: 31,
+    opNumber: "OP002218/26",
+    name: "Zuri Arianna Nyambura",
+    age: 2,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Viral Pneumonia, Unspecified",
+    date: "2026-05-03",
+    timeRegistered: "18:08:11",
+    timeSeen: "18:25:35",
+    seenBy: "eunah"
+  },
+  {
+    no: 32,
+    opNumber: "OP016861/25",
+    name: "Wachira Anthony Maina",
+    age: 32,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Upper Respiratory Tract, Part Unspecified",
+    date: "2026-05-04",
+    timeRegistered: "08:03:03",
+    timeSeen: "08:14:50",
+    seenBy: "ekabura"
+  },
+  {
+    no: 33,
+    opNumber: "OP00148065",
+    name: "Jecinta Wangechi Ngirigacha",
+    age: 80,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Essential (Primary) Hypertension",
+    date: "2026-05-04",
+    timeRegistered: "09:18:00",
+    timeSeen: "09:33:38",
+    seenBy: "ekabura"
+  },
+  {
+    no: 34,
+    opNumber: "OP00241229",
+    name: "Musomba Precious Joy",
+    age: 13,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Candidiasis",
+    date: "2026-05-04",
+    timeRegistered: "09:18:47",
+    timeSeen: "10:04:02",
+    seenBy: "ekabura"
+  },
+  {
+    no: 35,
+    opNumber: "OP00241242",
+    name: "Musomba Muli Xavier",
+    age: 15,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Urinary Tract Infection, Site Not Specified",
+    date: "2026-05-04",
+    timeRegistered: "09:51:48",
+    timeSeen: "10:08:58",
+    seenBy: "ekabura"
+  },
+  {
+    no: 36,
+    opNumber: "OP002226/26",
+    name: "Monicah Muthoni Maina",
+    age: 56,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Other Helminthiases",
+    date: "2026-05-04",
+    timeRegistered: "09:58:03",
+    timeSeen: "10:14:08",
+    seenBy: "ekabura"
+  },
+  {
+    no: 37,
+    opNumber: "OP016978/25",
+    name: "Eunice Muthoni Macharia",
+    age: 86,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Essential (Primary) Hypertension",
+    date: "2026-05-04",
+    timeRegistered: "10:03:07",
+    timeSeen: "10:28:46",
+    seenBy: "ekabura"
+  },
+  {
+    no: 38,
+    opNumber: "OP000301/26",
+    name: "Fidel Mbugua Kairu",
+    age: 9,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Chronic Tonsillitis",
+    date: "2026-05-01",
+    timeRegistered: "09:35:32",
+    timeSeen: "09:47:07",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 39,
+    opNumber: "OP00199716",
+    name: "Ngure Wambura Esther",
+    age: 70,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Essential (Primary) Hypertension",
+    date: "2026-05-04",
+    timeRegistered: "10:32:47",
+    timeSeen: "10:46:12",
+    seenBy: "ekabura"
+  },
+  {
+    no: 40,
+    opNumber: "OP00202322",
+    name: "Dickson Kahoi Irungu",
+    age: 60,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Other Specified Noninfective Gastroenteritis And Colitis",
+    date: "2026-05-04",
+    timeRegistered: "10:35:48",
+    timeSeen: "11:05:51",
+    seenBy: "ekabura"
+  },
+  {
+    no: 41,
+    opNumber: "OP001791/26",
+    name: "Purity Njeri Ngunu",
+    age: 60,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Retrovirus Infections, Not Elsewhere Classified",
+    date: "2026-05-08",
+    timeRegistered: "12:15:03",
+    timeSeen: "13:54:36",
+    seenBy: "drjohn"
+  },
+  {
+    no: 42,
+    opNumber: "OP019325/25",
+    name: "Yvonne Wanjiru Maina",
+    age: 20,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Other Gastritis",
+    date: "2026-05-04",
+    timeRegistered: "11:26:34",
+    timeSeen: "11:58:48",
+    seenBy: "ekabura"
   }
 ];
 
@@ -411,7 +684,23 @@ export async function seedMay2026Patients() {
 
     rawMayPatients.forEach((p) => {
       const patientId = `PT-202605-${String(p.no).padStart(2, '0')}`;
-      const isMOPC = p.seenBy.toLowerCase().trim() === 'drjohn';
+      const seenByLower = p.seenBy.toLowerCase().trim();
+      const isMOPC = seenByLower === 'drjohn';
+      const isSurgical = seenByLower === 'jkariithi';
+
+      let category: Patient['category'] = 'General Consultation';
+      let consultantSubCategory: Patient['consultantSubCategory'] = undefined;
+      let billingAmount = 300;
+
+      if (isMOPC) {
+        category = 'Consultant Clinic';
+        consultantSubCategory = 'MOPC';
+        billingAmount = 1500;
+      } else if (isSurgical) {
+        category = 'Consultant Clinic';
+        consultantSubCategory = 'Surgical';
+        billingAmount = 1500;
+      }
 
       const patObj: Patient = {
         id: patientId,
@@ -421,8 +710,8 @@ export async function seedMay2026Patients() {
         ageUnit: p.ageUnit,
         gender: p.gender,
         phone: '',
-        category: isMOPC ? 'Consultant Clinic' : 'General Consultation',
-        consultantSubCategory: isMOPC ? 'MOPC' : undefined,
+        category,
+        consultantSubCategory,
         registeredAt: `${p.date}T${p.timeRegistered}Z`,
         registeredBy: 'gmaurice101@gmail.com',
         medicalHistory: p.diagnosis && p.diagnosis !== '-' ? [
@@ -446,12 +735,12 @@ export async function seedMay2026Patients() {
         patientPhone: '',
         date: p.date,
         time: p.timeRegistered.substring(0, 5),
-        category: isMOPC ? 'Consultant Clinic' : 'General Consultation',
-        consultantSubCategory: isMOPC ? 'MOPC' : undefined,
+        category,
+        consultantSubCategory,
         doctorEmail: p.seenBy ? `${p.seenBy.toLowerCase()}@tumutumu.org` : 'doctor@tumutumu.org',
         status: 'Completed',
         billingStatus: 'Paid',
-        billingAmount: isMOPC ? 1500 : 300
+        billingAmount
       };
 
       const patDocRef = doc(db, 'patients', patientId);

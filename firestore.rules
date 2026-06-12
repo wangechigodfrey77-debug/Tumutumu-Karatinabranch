@@ -16,12 +16,8 @@ service cloud.firestore {
 
     function isVerified() {
       return isSignedIn() && 
-             'email' in request.auth.token && 
-             request.auth.token.email != null && (
-               !('email_verified' in request.auth.token) ||
-               request.auth.token.email_verified == true ||
-               request.auth.token.email_verified == 'true'
-             );
+             request.auth.token != null && 
+             request.auth.token.email != null;
     }
 
     function isValidId(id) {
@@ -104,7 +100,7 @@ service cloud.firestore {
     function isValidPatient(data) {
       return data.id is string && data.id.size() <= 64 &&
              data.name is string && data.name.size() <= 128 &&
-             data.age is int && data.age >= 0 && data.age <= 150 &&
+             (data.age is int || data.age is float) && data.age >= 0 && data.age <= 150 &&
              data.gender is string && (data.gender == 'Male' || data.gender == 'Female' || data.gender == 'Other') &&
              data.phone is string && data.phone.size() <= 32 &&
              data.category is string && (data.category == 'General Consultation' || data.category == 'Consultant Clinic') &&

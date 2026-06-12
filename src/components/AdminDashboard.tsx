@@ -26,7 +26,6 @@ interface AdminDashboardProps {
   onAddExpense: (expense: Expense) => void;
   onRemoveExpense: (expenseId: string) => void;
   currentUserEmail: string;
-  onClearTestDataToGoLive?: () => void;
 }
 
 export function AdminDashboard({
@@ -47,7 +46,6 @@ export function AdminDashboard({
   onAddExpense,
   onRemoveExpense,
   currentUserEmail,
-  onClearTestDataToGoLive,
 }: AdminDashboardProps) {
   const [activeAdminSub, setActiveAdminSub] = useState<'rosters' | 'whitelist' | 'leaves' | 'finances' | 'sheets' | 'audit'>('finances');
 
@@ -1144,20 +1142,6 @@ export function AdminDashboard({
                 <span className="text-xs font-mono bg-stone-100 text-stone-600 py-1 px-3 rounded-full border border-stone-200">
                   Total Entries: <strong className="text-stone-900">{auditLogs.length}</strong>
                 </span>
-                {onClearTestDataToGoLive && (
-                  <button
-                    id="btn-wipe-system-data"
-                    onClick={() => {
-                      if (confirm('Are you absolutely sure you want to completely clean and wipe all records to prepare for deployment?')) {
-                        onClearTestDataToGoLive();
-                      }
-                    }}
-                    className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold text-rose-600 border border-rose-200 hover:bg-rose-50 hover:border-rose-300 transition-all cursor-pointer"
-                  >
-                    <Trash className="w-3.5 h-3.5" />
-                    Wipe Database Data
-                  </button>
-                )}
               </div>
             </div>
 

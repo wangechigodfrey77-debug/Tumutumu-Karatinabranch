@@ -26,8 +26,6 @@ import {
 
 import { 
   seedDatabaseIfEmpty, 
-  forceResetToPristineSeeds,
-  clearAllTestDataToGoLive,
   listenWhitelist, 
   listenPatients, 
   listenLabTests, 
@@ -112,16 +110,6 @@ export default function App() {
     }
   };
 
-  const handleClearAllTestDataToGoLive = async () => {
-    try {
-      await clearAllTestDataToGoLive();
-      alert('Firestore collections successfully cleared! The system is now in live production mode.');
-      window.location.reload();
-    } catch (err: any) {
-      alert(`Failed to transition to production mode: ${err?.message || err}`);
-    }
-  };
-
   // 1. Force a clean session sign-out and wipe all local storage test/sandbox data on first load
   useEffect(() => {
     const initSession = async () => {
@@ -170,17 +158,6 @@ export default function App() {
       console.log("Firebase Auth detected. Connecting real-time Firestore listeners...");
       
       const initDb = async () => {
-        try {
-          const sweepFlag = sessionStorage.getItem('hosp_production_initialized');
-          if (sweepFlag !== 'true') {
-            console.log("Automatically sweeping lingering local/mock transactional data to ensure 100% clean deployment...");
-            await clearAllTestDataToGoLive();
-            sessionStorage.setItem('hosp_production_initialized', 'true');
-          }
-        } catch (err) {
-          console.warn("Auto-cleanup or production check skipped: ", err);
-        }
-
         // Setup base reference dictionaries (Whitelist, Standard Lab/Pharmacy Catalogs)
         await seedDatabaseIfEmpty();
       };
@@ -805,7 +782,6 @@ export default function App() {
                 onAddExpense={handleAddExpense}
                 onRemoveExpense={handleRemoveExpense}
                 currentUserEmail={currentUser.email}
-                onClearTestDataToGoLive={handleClearAllTestDataToGoLive}
               />
             )}
 

@@ -490,7 +490,7 @@ export function LabView({
                 <option value="">-- Choose Patient of record --</option>
                 {patients.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.name} ({p.gender}, {p.age} yrs) {p.walkInTag ? `[${p.walkInTag}]` : `- ${p.category}`}
+                    {p.name} ({p.gender}, {p.age} {p.ageUnit === 'Months' ? 'months' : 'yrs'}) {p.walkInTag ? `[${p.walkInTag}]` : `- ${p.category}`}
                   </option>
                 ))}
               </select>

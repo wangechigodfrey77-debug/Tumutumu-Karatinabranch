@@ -27,6 +27,7 @@ export interface Patient {
   opNumber?: string;
   name: string;
   age: number;
+  ageUnit?: 'Years' | 'Months';
   gender: 'Male' | 'Female' | 'Other';
   phone: string;
   category: 'General Consultation' | 'Consultant Clinic';

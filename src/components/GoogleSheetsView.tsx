@@ -187,12 +187,12 @@ export function GoogleSheetsView({
       if (syncPatients) {
         setSyncMessage('Generating active clinic directory rows...');
         const patientsData = [
-          ["Ref Patient ID", "Full Name", "Gender", "Age (Years)", "Consultation Type", "Contact Phone", "Registration Date"],
+          ["Ref Patient ID", "Full Name", "Gender", "Age", "Consultation Type", "Contact Phone", "Registration Date"],
           ...patients.map(p => [
             p.id,
             p.name,
             p.gender,
-            p.age,
+            p.ageUnit === 'Months' ? `${p.age} months` : `${p.age} years`,
             p.category,
             p.phone || 'N/A',
             p.registeredAt || 'N/A'

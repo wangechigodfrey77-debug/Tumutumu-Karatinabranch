@@ -42,6 +42,7 @@ export function RecordsReceptionView({
   // New Patient Form State
   const [newName, setNewName] = useState<string>('');
   const [newAge, setNewAge] = useState<number>(30);
+  const [newAgeUnit, setNewAgeUnit] = useState<'Years' | 'Months'>('Years');
   const [newGender, setNewGender] = useState<'Male' | 'Female' | 'Other'>('Male');
   const [newPhone, setNewPhone] = useState<string>('');
   const [newCategory, setNewCategory] = useState<'General Consultation' | 'Consultant Clinic'>('General Consultation');
@@ -81,6 +82,7 @@ export function RecordsReceptionView({
       opNumber: newOpNumber.trim() || `OP-${regDateTime.substring(0, 7)}-${Math.floor(Math.random() * 9000 + 1000)}`,
       name: newName.trim(),
       age: Number(newAge),
+      ageUnit: newAgeUnit,
       gender: newGender,
       phone: newPhone.trim(),
       category: newCategory,
@@ -112,6 +114,7 @@ export function RecordsReceptionView({
 
     setNewName('');
     setNewAge(30);
+    setNewAgeUnit('Years');
     setNewPhone('');
     alert(`Patient ${newPatient.name} standard registration compiled! Assigned Patient ID: ${patientId} & OP-Number: ${newPatient.opNumber}. A triage billing invoice has been generated under Appointments.`);
   };
@@ -256,7 +259,7 @@ export function RecordsReceptionView({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-2">
                 <div>
                   <label id="input-patient-age" className="block text-xs font-medium text-stone-500 mb-1">Age</label>
                   <input
@@ -267,8 +270,28 @@ export function RecordsReceptionView({
                     max={120}
                     value={newAge}
                     onChange={(e) => setNewAge(Number(e.target.value))}
-                    className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                    className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-mono"
                   />
+                </div>
+                <div>
+                  <label id="input-patient-age-unit" className="block text-xs font-medium text-stone-500 mb-1">Unit</label>
+                  <select
+                    id="reg-patient-age-unit"
+                    value={newAgeUnit}
+                    onChange={(e) => {
+                      const unit = e.target.value as 'Years' | 'Months';
+                      setNewAgeUnit(unit);
+                      if (unit === 'Months') {
+                        setNewAge(newAge > 36 ? 6 : newAge);
+                      } else {
+                        setNewAge(newAge === 6 ? 30 : newAge);
+                      }
+                    }}
+                    className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-mono"
+                  >
+                    <option value="Years">Years</option>
+                    <option value="Months">Months</option>
+                  </select>
                 </div>
                 <div>
                   <label id="input-patient-gender" className="block text-xs font-medium text-stone-500 mb-1">Gender</label>
@@ -433,7 +456,7 @@ export function RecordsReceptionView({
                       <td className="py-2.5 font-mono text-stone-500">{p.id}</td>
                       <td className="py-2.5 font-mono font-semibold text-emerald-700">{p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`}</td>
                       <td className="py-2.5 font-medium">{p.name}</td>
-                      <td className="py-2.5">{p.age} Yrs / {p.gender}</td>
+                      <td className="py-2.5">{p.age} {p.ageUnit === 'Months' ? 'Months' : 'Yrs'} / {p.gender}</td>
                       <td className="py-2.5">{p.phone}</td>
                       <td className="py-2.5">
                         <span className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${
@@ -491,7 +514,7 @@ export function RecordsReceptionView({
                 >
                   <p className="font-bold text-stone-900">{p.name}</p>
                   <div className="flex justify-between items-center text-stone-400 text-[10px] mt-1 pr-6">
-                    <span>{p.id} • {p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`} • {p.gender} • {p.age} yrs</span>
+                    <span>{p.id} • {p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`} • {p.gender} • {p.age} {p.ageUnit === 'Months' ? 'months' : 'yrs'}</span>
                     <span className="font-semibold text-stone-600">{p.consultantSubCategory || 'General'}</span>
                   </div>
                 </button>

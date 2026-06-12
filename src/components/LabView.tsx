@@ -16,9 +16,11 @@ import {
   Check, 
   Loader2, 
   Sparkles, 
-  SlidersHorizontal 
+  SlidersHorizontal,
+  Search
 } from 'lucide-react';
 import { LabTest, Patient, LabCatalogItem } from '../types';
+import { defaultLabCatalog } from '../mockData';
 
 interface LabViewProps {
   labTests: LabTest[];
@@ -146,22 +148,23 @@ export function LabView({
   const [uploadFeedback, setUploadFeedback] = useState<{ success: boolean; message: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Default hardcoded catalog menu in case Firestore list is empty and still loading
-  const defaultFallbackMenu = [
-    { name: 'Malaria Slide/RDT test', fee: 350 },
-    { name: 'Complete Blood Count (CBC)', fee: 1200 },
-    { name: 'Urinalysis Dipstick', fee: 400 },
-    { name: 'Blood Sugar (FBG/RBS)', fee: 300 },
-    { name: 'Typhoid Widal test', fee: 600 },
-    { name: 'Stool O&P Microscopy', fee: 450 },
-    { name: 'COVID-19 Antigen Rapid', fee: 1500 },
-    { name: 'Liver Function Tests (LFT)', fee: 2500 }
-  ];
+  // Dynamic search parameters for catalog
+  const [catalogSearchQuery, setCatalogSearchQuery] = useState<string>('');
+  const [manageSearchQuery, setManageSearchQuery] = useState<string>('');
 
-  // Resolve active catalog menu (dynamic Firestore items first, with fallback to hardcoded menu)
+  // Resolve active catalog menu (dynamic Firestore items first, with fallback to imported default catalog)
   const activeCatalog = labCatalog.length > 0 
     ? labCatalog.map(item => ({ name: item.name, fee: item.fee })) 
-    : defaultFallbackMenu;
+    : defaultLabCatalog.map(item => ({ name: item.name, fee: item.fee }));
+
+  // Filter lists based on search queries
+  const filteredDropdownCatalog = activeCatalog.filter(item => 
+    item.name.toLowerCase().includes(catalogSearchQuery.toLowerCase())
+  );
+
+  const filteredManageCatalog = activeCatalog.filter(item => 
+    item.name.toLowerCase().includes(manageSearchQuery.toLowerCase())
+  );
 
   // Sync test fee when default first option changes or option selected
   React.useEffect(() => {
@@ -186,8 +189,8 @@ export function LabView({
     if (!patient) return;
 
     const finalTestName = testType === 'Custom' ? customTestName : testType;
-    if (!finalTestName) {
-      alert('Please enter a custom name for the clinical diagnostic test.');
+    if (!finalTestName || finalTestName === '') {
+      alert('Please choose a valid laboratory diagnostic test panel or specify a custom diagnostics title.');
       return;
     }
 
@@ -215,6 +218,8 @@ export function LabView({
     setTestType(val);
     if (val === 'Custom') {
       setTestFee(1000);
+    } else if (!val) {
+      setTestFee(0);
     } else {
       const match = activeCatalog.find((t) => t.name === val);
       if (match) {
@@ -495,15 +500,42 @@ export function LabView({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label id="lbl-lab-testtype" className="block font-medium text-stone-500 mb-1">Diagnostic Panel</label>
+              
+              {/* Filter search box */}
+              <div className="relative mb-2">
+                <input
+                  type="text"
+                  placeholder="Type to filter tests instantly..."
+                  value={catalogSearchQuery}
+                  onChange={(e) => setCatalogSearchQuery(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 pl-8 pr-8 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                />
+                <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-3" />
+                {catalogSearchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setCatalogSearchQuery('')}
+                    className="absolute right-2.5 top-2.5 text-stone-400 hover:text-stone-600 bg-stone-200/50 hover:bg-stone-200/90 rounded-full w-4.5 h-4.5 flex items-center justify-center text-[10px] font-bold"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
               <select
                 id="select-lab-testtype"
                 value={testType}
                 onChange={(e) => handleTestTypeChange(e.target.value)}
-                className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden font-medium"
+                className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden font-medium text-xs"
               >
-                {activeCatalog.map((item) => (
+                <option value="">
+                  {filteredDropdownCatalog.length === 0
+                    ? '-- No tests match search query --'
+                    : `-- Choose Test (${filteredDropdownCatalog.length} matched) --`}
+                </option>
+                {filteredDropdownCatalog.map((item) => (
                   <option key={item.name} value={item.name}>
-                    {item.name}
+                    {item.name} (Ksh {item.fee})
                   </option>
                 ))}
                 <option value="Custom">-- Custom Test Panel --</option>
@@ -806,15 +838,45 @@ export function LabView({
 
               {/* Current test panels list card */}
               <div className="border-t border-stone-100 pt-5">
-                <h4 className="text-xs font-bold text-stone-700 uppercase tracking-wide mb-3">Active Laboratory diagnostic price sheet directory</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {activeCatalog.map((item, idx) => (
-                    <div key={idx} className="bg-stone-50 border border-stone-200/50 p-2.5 rounded-lg flex justify-between items-center text-xs shadow-2xs font-sans">
-                      <span className="font-semibold text-stone-800 line-clamp-1">{item.name}</span>
-                      <span className="font-extrabold text-emerald-800 font-mono bg-white border border-stone-200/30 px-1.5 py-0.5 rounded shadow-3xs shrink-0 ml-2">Ksh {item.fee}</span>
-                    </div>
-                  ))}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                  <h4 className="text-xs font-bold text-stone-700 uppercase tracking-wide">
+                    Active Laboratory diagnostic price sheet directory ({filteredManageCatalog.length} of {activeCatalog.length})
+                  </h4>
+                  <div className="relative max-w-xs w-full">
+                    <input
+                      type="text"
+                      placeholder="Search active catalog..."
+                      value={manageSearchQuery}
+                      onChange={(e) => setManageSearchQuery(e.target.value)}
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 pl-8 pr-8 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                    />
+                    <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-3" />
+                    {manageSearchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setManageSearchQuery('')}
+                        className="absolute right-2.5 top-2.5 text-stone-400 hover:text-stone-600 bg-stone-200/50 hover:bg-stone-200/90 rounded-full w-4.5 h-4.5 flex items-center justify-center text-[10px] font-bold"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
                 </div>
+
+                {filteredManageCatalog.length === 0 ? (
+                  <div className="bg-stone-50 border border-stone-200 rounded-lg p-6 text-center text-xs text-stone-500 leading-normal">
+                    No clinical diagnostic test matched your search criteria. Add it manually above or check the query.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-y-auto pr-1">
+                    {filteredManageCatalog.map((item, idx) => (
+                      <div key={idx} className="bg-stone-50 border border-stone-200/50 p-2.5 rounded-lg flex justify-between items-center text-xs shadow-2xs font-sans">
+                        <span className="font-semibold text-stone-800 line-clamp-1" title={item.name}>{item.name}</span>
+                        <span className="font-extrabold text-emerald-800 font-mono bg-white border border-stone-100 px-1.5 py-0.5 rounded shadow-3xs shrink-0 ml-2">Ksh {item.fee}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
             </div>

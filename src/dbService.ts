@@ -67,7 +67,20 @@ export async function seedDatabaseIfEmpty() {
   // 3. Lab Catalog - Master list of standard clinical laboratories
   try {
     const lcSnap = await getDocs(collection(db, 'labCatalog'));
-    if (lcSnap.empty) {
+    let shouldReSeed = lcSnap.empty;
+    if (!lcSnap.empty) {
+      const hasOldData = lcSnap.docs.some(doc => doc.data().name === 'Malaria Slide/RDT test' || doc.id === 'LC-8');
+      if (hasOldData || lcSnap.size < 100) {
+        shouldReSeed = true;
+        console.log('Pristine mode: Cleaning old lab catalog items from Firestore...');
+        const deleteBatch = writeBatch(db);
+        lcSnap.docs.forEach((document) => {
+          deleteBatch.delete(document.ref);
+        });
+        await deleteBatch.commit();
+      }
+    }
+    if (shouldReSeed) {
       console.log('Seeding standard clinical Lab Catalog to Firestore...');
       const batch = writeBatch(db);
       defaultLabCatalog.forEach((item) => {

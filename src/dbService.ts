@@ -109,6 +109,363 @@ export async function seedDatabaseIfEmpty() {
   } catch (err: any) {
     console.warn('Silent seeding warning (pharmacyItems): ', err?.message || err);
   }
+
+  // 5. Seed actual May 2026 Patient records extracted from the printed register sheet
+  await seedMay2026Patients();
+}
+
+interface RawRow {
+  no: number;
+  opNumber: string;
+  name: string;
+  age: number;
+  ageUnit: 'Years' | 'Months';
+  gender: 'Male' | 'Female' | 'Other';
+  diagnosis: string;
+  date: string;
+  timeRegistered: string;
+  timeSeen: string;
+  seenBy: string;
+}
+
+const rawMayPatients: RawRow[] = [
+  {
+    no: 1,
+    opNumber: "OP001724/26",
+    name: "Elvian Waweru Ngani",
+    age: 3,
+    ageUnit: "Months",
+    gender: "Male",
+    diagnosis: "Candidiasis, Unspecified",
+    date: "2026-05-01",
+    timeRegistered: "08:53:21",
+    timeSeen: "09:15:50",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 2,
+    opNumber: "OP000301/26",
+    name: "Fidel Mbugua Kairu",
+    age: 9,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Chronic Tonsillitis",
+    date: "2026-05-01",
+    timeRegistered: "09:35:32",
+    timeSeen: "09:47:07",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 3,
+    opNumber: "OP00161968",
+    name: "Mwai Mwangi Danson",
+    age: 45,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "-",
+    date: "2026-05-01",
+    timeRegistered: "09:47:13",
+    timeSeen: "09:57:11",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 4,
+    opNumber: "OP000742/23",
+    name: "Bernad Mwangi Muteithia",
+    age: 85,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Heart Failure",
+    date: "2026-05-01",
+    timeRegistered: "11:05:20",
+    timeSeen: "11:16:49",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 5,
+    opNumber: "OP000978/23",
+    name: "Alice Wanjiru Maguru",
+    age: 61,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Essential (Primary) Hypertension",
+    date: "2026-05-01",
+    timeRegistered: "11:06:43",
+    timeSeen: "11:41:44",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 6,
+    opNumber: "OP000189/26",
+    name: "Watson Wanjau Githae",
+    age: 68,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Hyperplasia Of Prostate",
+    date: "2026-05-01",
+    timeRegistered: "11:35:04",
+    timeSeen: "12:17:23",
+    seenBy: "drjohn"
+  },
+  {
+    no: 7,
+    opNumber: "OP017774/25",
+    name: "Leyla Wangui Mwangi",
+    age: 7,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Amebiasis",
+    date: "2026-05-01",
+    timeRegistered: "11:45:51",
+    timeSeen: "12:21:52",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 8,
+    opNumber: "OP013125/25",
+    name: "Mikeian Chege Wahome",
+    age: 3,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Upper Respiratory Tract, Part Unspecified",
+    date: "2026-05-01",
+    timeRegistered: "12:13:11",
+    timeSeen: "12:35:42",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 9,
+    opNumber: "OP002191/26",
+    name: "Jackline Muthoni Mwangi",
+    age: 26,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Acute Tonsillitis",
+    date: "2026-05-01",
+    timeRegistered: "12:29:51",
+    timeSeen: "13:03:47",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 10,
+    opNumber: "OP00252688",
+    name: "Chepyegon Oliver",
+    age: 31,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Acute Gingivitis",
+    date: "2026-05-01",
+    timeRegistered: "12:56:18",
+    timeSeen: "13:12:59",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 11,
+    opNumber: "OP00216872",
+    name: "Kinyua Wangari Mercy",
+    age: 38,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "-",
+    date: "2026-05-01",
+    timeRegistered: "12:59:41",
+    timeSeen: "",
+    seenBy: ""
+  },
+  {
+    no: 12,
+    opNumber: "OP000698/26",
+    name: "Peter Njoroge Kimani",
+    age: 27,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Atopic Dermatitis",
+    date: "2026-05-01",
+    timeRegistered: "13:11:30",
+    timeSeen: "13:47:38",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 13,
+    opNumber: "OP002195/26",
+    name: "Jemimah Wambui Miringu",
+    age: 23,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Acute Tonsillitis",
+    date: "2026-05-01",
+    timeRegistered: "15:35:13",
+    timeSeen: "15:38:32",
+    seenBy: "eunah"
+  },
+  {
+    no: 14,
+    opNumber: "OP002196/26",
+    name: "Bianca Britta Wambui",
+    age: 5,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Chronic Tonsillitis",
+    date: "2026-05-01",
+    timeRegistered: "15:41:18",
+    timeSeen: "16:03:55",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 15,
+    opNumber: "OP002197/26",
+    name: "Dalia Wanjiku Murimi",
+    age: 1,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Pneumonia Due To Other Specified Infectious Organisms",
+    date: "2026-05-01",
+    timeRegistered: "16:18:01",
+    timeSeen: "16:35:44",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 16,
+    opNumber: "OP016120/25",
+    name: "Agatha Wothaya Wachira",
+    age: 29,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Unspecified Infection Of Urinary Tract In Pregnancy",
+    date: "2026-05-01",
+    timeRegistered: "16:24:12",
+    timeSeen: "13:37:21",
+    seenBy: "eunah"
+  },
+  {
+    no: 17,
+    opNumber: "OP018328/25",
+    name: "Andric Wanjiru Githu",
+    age: 3,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "-",
+    date: "2026-05-02",
+    timeRegistered: "11:09:52",
+    timeSeen: "11:35:36",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 18,
+    opNumber: "OP00234718",
+    name: "Njeri Kirangi Avril",
+    age: 6,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Diarrhea And Gastroenteritis Of Presumed Infectious Origin",
+    date: "2026-05-02",
+    timeRegistered: "11:39:39",
+    timeSeen: "11:55:20",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 19,
+    opNumber: "OP001760/23",
+    name: "Jane Wangui Mwangi",
+    age: 78,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Tinea Pedis",
+    date: "2026-05-02",
+    timeRegistered: "11:44:48",
+    timeSeen: "12:37:44",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 20,
+    opNumber: "OP019175/25",
+    name: "Justus Mwangi Kihara",
+    age: 78,
+    ageUnit: "Years",
+    gender: "Male",
+    diagnosis: "Essential (Primary) Hypertension",
+    date: "2026-05-02",
+    timeRegistered: "11:56:47",
+    timeSeen: "12:30:19",
+    seenBy: "jimmwangi"
+  },
+  {
+    no: 21,
+    opNumber: "OP008904/24",
+    name: "Florence Wanjiru Kiritu",
+    age: 50,
+    ageUnit: "Years",
+    gender: "Female",
+    diagnosis: "Essential (Primary) Hypertension",
+    date: "2026-05-02",
+    timeRegistered: "13:24:23",
+    timeSeen: "14:26:59",
+    seenBy: "jimmwangi"
+  }
+];
+
+export async function seedMay2026Patients() {
+  try {
+    console.log(`Force synchronizing all ${rawMayPatients.length} transcribed May 2026 active register records...`);
+    const batch = writeBatch(db);
+
+    rawMayPatients.forEach((p) => {
+      const patientId = `PT-202605-${String(p.no).padStart(2, '0')}`;
+      const isMOPC = p.seenBy.toLowerCase().trim() === 'drjohn';
+
+      const patObj: Patient = {
+        id: patientId,
+        opNumber: p.opNumber,
+        name: p.name,
+        age: p.age,
+        ageUnit: p.ageUnit,
+        gender: p.gender,
+        phone: '',
+        category: isMOPC ? 'Consultant Clinic' : 'General Consultation',
+        consultantSubCategory: isMOPC ? 'MOPC' : undefined,
+        registeredAt: `${p.date}T${p.timeRegistered}Z`,
+        registeredBy: 'gmaurice101@gmail.com',
+        medicalHistory: p.diagnosis && p.diagnosis !== '-' ? [
+          {
+            id: `MR-202605-${String(p.no).padStart(2, '0')}`,
+            date: p.date,
+            symptoms: 'Referred Diagnosis',
+            diagnoses: p.diagnosis,
+            notes: p.timeSeen ? `Registered at ${p.timeRegistered}, Seen at ${p.timeSeen} by doctor: ${p.seenBy}` : `Registered at ${p.timeRegistered}`,
+            prescriptions: '',
+            doctorName: p.seenBy || 'General Duty Officer',
+            doctorEmail: p.seenBy ? `${p.seenBy.toLowerCase()}@tumutumu.org` : 'reception@tumutumu.org'
+          }
+        ] : []
+      };
+
+      const apptObj: Appointment = {
+        id: `APT-202605-${String(p.no).padStart(2, '0')}`,
+        patientId: patientId,
+        patientName: p.name,
+        patientPhone: '',
+        date: p.date,
+        time: p.timeRegistered.substring(0, 5),
+        category: isMOPC ? 'Consultant Clinic' : 'General Consultation',
+        consultantSubCategory: isMOPC ? 'MOPC' : undefined,
+        doctorEmail: p.seenBy ? `${p.seenBy.toLowerCase()}@tumutumu.org` : 'doctor@tumutumu.org',
+        status: 'Completed',
+        billingStatus: 'Paid',
+        billingAmount: isMOPC ? 1500 : 300
+      };
+
+      const patDocRef = doc(db, 'patients', patientId);
+      const apptDocRef = doc(db, 'appointments', apptObj.id);
+
+      batch.set(patDocRef, cleanUndefined(patObj));
+      batch.set(apptDocRef, cleanUndefined(apptObj));
+    });
+
+    await batch.commit();
+    console.log('May 2026 active registers synchronized successfully under correct dates.');
+  } catch (err: any) {
+    console.error('Failed to seed May 2026 active patient directory: ', err?.message || err);
+  }
 }
 
 // -------------------------------------------------------------

@@ -27,9 +27,9 @@ service cloud.firestore {
     // Bootstrapped Admin concept for development
     function isBootstrappedAdmin() {
       return isVerified() && (
-        request.auth.token.email == 'gmaurice101@gmail.com' ||
-        request.auth.token.email == 'admin@tumutumu.org' ||
-        request.auth.token.email == 'wangechigodfrey77@gmail.com'
+        request.auth.token.email.matches('(?i)^gmaurice101@gmail\\.com$') ||
+        request.auth.token.email.matches('(?i)^admin@tumutumu\\.org$') ||
+        request.auth.token.email.matches('(?i)^wangechigodfrey77@gmail\\.com$')
       );
     }
 

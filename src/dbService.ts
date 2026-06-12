@@ -393,13 +393,32 @@ export function listenAppointments(onUpdate: (data: Appointment[]) => void, onEr
 }
 
 // -------------------------------------------------------------
-// SECURE MUTATION API PATH ACTIONS
+// SECURE MUTATION API PATH ACTIONS (With automatic undefined sanitation)
 // -------------------------------------------------------------
+function cleanUndefined<T>(obj: T): T {
+  if (obj === undefined) return undefined as any;
+  if (obj === null) return null as any;
+  if (Array.isArray(obj)) {
+    return obj.map(cleanUndefined) as any;
+  }
+  if (typeof obj === 'object') {
+    const cleaned: any = {};
+    for (const key of Object.keys(obj)) {
+      const val = (obj as any)[key];
+      if (val !== undefined) {
+        cleaned[key] = cleanUndefined(val);
+      }
+    }
+    return cleaned as T;
+  }
+  return obj;
+}
+
 export async function saveWhitelistUser(user: WhitelistUser) {
   const path = `whitelist/${user.email}`;
   try {
     const docRef = doc(db, 'whitelist', user.email);
-    await setDoc(docRef, user);
+    await setDoc(docRef, cleanUndefined(user));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -419,7 +438,7 @@ export async function savePatient(patient: Patient) {
   const path = `patients/${patient.id}`;
   try {
     const docRef = doc(db, 'patients', patient.id);
-    await setDoc(docRef, patient);
+    await setDoc(docRef, cleanUndefined(patient));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -439,7 +458,7 @@ export async function saveAppointment(appt: Appointment) {
   const path = `appointments/${appt.id}`;
   try {
     const docRef = doc(db, 'appointments', appt.id);
-    await setDoc(docRef, appt);
+    await setDoc(docRef, cleanUndefined(appt));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -449,7 +468,7 @@ export async function saveLabTest(test: LabTest) {
   const path = `labTests/${test.id}`;
   try {
     const docRef = doc(db, 'labTests', test.id);
-    await setDoc(docRef, test);
+    await setDoc(docRef, cleanUndefined(test));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -459,7 +478,7 @@ export async function saveLabCatalogItem(item: LabCatalogItem) {
   const path = `labCatalog/${item.id}`;
   try {
     const docRef = doc(db, 'labCatalog', item.id);
-    await setDoc(docRef, item);
+    await setDoc(docRef, cleanUndefined(item));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -469,7 +488,7 @@ export async function saveMedicationDispense(disp: MedicationDispense) {
   const path = `medicationDispenses/${disp.id}`;
   try {
     const docRef = doc(db, 'medicationDispenses', disp.id);
-    await setDoc(docRef, disp);
+    await setDoc(docRef, cleanUndefined(disp));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -479,7 +498,7 @@ export async function savePharmacyItem(item: PharmacyItem) {
   const path = `pharmacyItems/${item.id}`;
   try {
     const docRef = doc(db, 'pharmacyItems', item.id);
-    await setDoc(docRef, item);
+    await setDoc(docRef, cleanUndefined(item));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -489,7 +508,7 @@ export async function saveDutyAllocation(duty: DutyAllocation) {
   const path = `dutyAllocations/${duty.id}`;
   try {
     const docRef = doc(db, 'dutyAllocations', duty.id);
-    await setDoc(docRef, duty);
+    await setDoc(docRef, cleanUndefined(duty));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -509,7 +528,7 @@ export async function saveLeaveRequest(req: LeaveRequest) {
   const path = `leaveRequests/${req.id}`;
   try {
     const docRef = doc(db, 'leaveRequests', req.id);
-    await setDoc(docRef, req);
+    await setDoc(docRef, cleanUndefined(req));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -529,7 +548,7 @@ export async function saveMessage(msg: Message) {
   const path = `messages/${msg.id}`;
   try {
     const docRef = doc(db, 'messages', msg.id);
-    await setDoc(docRef, msg);
+    await setDoc(docRef, cleanUndefined(msg));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -572,7 +591,7 @@ export async function saveExpense(expense: Expense) {
   const path = `expenses/${expense.id}`;
   try {
     const docRef = doc(db, 'expenses', expense.id);
-    await setDoc(docRef, expense);
+    await setDoc(docRef, cleanUndefined(expense));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -615,7 +634,7 @@ export async function saveAuditLog(log: AuditLog) {
   const path = `auditLogs/${log.id}`;
   try {
     const docRef = doc(db, 'auditLogs', log.id);
-    await setDoc(docRef, log);
+    await setDoc(docRef, cleanUndefined(log));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -648,7 +667,7 @@ export async function saveBoardReport(report: GeneratedReport) {
   const path = `boardReports/${report.id}`;
   try {
     const docRef = doc(db, 'boardReports', report.id);
-    await setDoc(docRef, report);
+    await setDoc(docRef, cleanUndefined(report));
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }

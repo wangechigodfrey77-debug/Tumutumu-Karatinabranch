@@ -186,7 +186,9 @@ export function RecordsReceptionView({
   };
 
   const filteredPatients = patients.filter((p) => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.id.includes(searchQuery) || p.phone.includes(searchQuery);
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          p.id.includes(searchQuery) || 
+                          (p.phone && p.phone.includes(searchQuery));
     if (filterCategory === 'all') return matchesSearch;
     if (filterCategory === 'general') return matchesSearch && p.category === 'General Consultation';
     return matchesSearch && p.consultantSubCategory === filterCategory;

@@ -5,12 +5,13 @@
 
 import React, { useState } from 'react';
 import { ShieldAlert, Users, CalendarPlus, CheckSquare, Trash, BarChart3, TrendingUp, Sparkles, Building, Layers, Landmark, Calendar, Plus, X, FileSpreadsheet, History } from 'lucide-react';
-import { Patient, LabTest, MedicationDispense, DutyAllocation, LeaveRequest, WhitelistUser, UserRole, Expense, PharmacyItem, AuditLog } from '../types';
+import { Patient, LabTest, MedicationDispense, DutyAllocation, LeaveRequest, WhitelistUser, UserRole, Expense, PharmacyItem, AuditLog, Appointment } from '../types';
 import { GoogleSheetsView } from './GoogleSheetsView';
 
 interface AdminDashboardProps {
   patients: Patient[];
   labTests: LabTest[];
+  appointments: Appointment[];
   dispenses: MedicationDispense[];
   stock: PharmacyItem[];
   duties: DutyAllocation[];
@@ -31,6 +32,7 @@ interface AdminDashboardProps {
 export function AdminDashboard({
   patients,
   labTests,
+  appointments,
   dispenses,
   stock = [],
   duties,
@@ -48,6 +50,25 @@ export function AdminDashboard({
   currentUserEmail,
 }: AdminDashboardProps) {
   const [activeAdminSub, setActiveAdminSub] = useState<'rosters' | 'whitelist' | 'leaves' | 'finances' | 'sheets' | 'audit'>('finances');
+  const [selectedFinMonth, setSelectedFinMonth] = useState<string>('All');
+
+  // Gather available months dynamically from appointments, labTests, dispenses, and expenses
+  const availableMonths = React.useMemo(() => {
+    const months = new Set<string>();
+    appointments.forEach(a => {
+      if (a.date) months.add(a.date.substring(0, 7));
+    });
+    labTests.forEach(t => {
+      if (t.testDate) months.add(t.testDate.substring(0, 7));
+    });
+    dispenses.forEach(d => {
+      if (d.dispenseDate) months.add(d.dispenseDate.substring(0, 7));
+    });
+    expenses.forEach(e => {
+      if (e.date) months.add(e.date.substring(0, 7));
+    });
+    return Array.from(months).filter(m => m && m.length === 7).sort();
+  }, [appointments, labTests, dispenses, expenses]);
 
   // Filtering states for System Audit Logs mutations
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -83,19 +104,34 @@ export function AdminDashboard({
   const [expenseDescription, setExpenseDescription] = useState<string>('');
 
   // Compute departmental financial statistics
-  const patientRevenue = patients.length * 300; // Registration basic consultancy deposit
-  const labRevenue = labTests.reduce((sum, item) => sum + (item.fee || 0), 0);
-  
+  const filteredAppts = selectedFinMonth === 'All'
+    ? appointments.filter(a => a.billingStatus === 'Paid')
+    : appointments.filter(a => a.billingStatus === 'Paid' && a.date?.startsWith(selectedFinMonth));
+
+  const filteredLab = selectedFinMonth === 'All'
+    ? labTests
+    : labTests.filter(t => t.testDate?.startsWith(selectedFinMonth));
+
+  const filteredDispenses = selectedFinMonth === 'All'
+    ? dispenses
+    : dispenses.filter(d => d.dispenseDate?.startsWith(selectedFinMonth));
+
+  const filteredPatientsForCounts = selectedFinMonth === 'All' 
+    ? patients 
+    : patients.filter(p => p.registeredAt?.startsWith(selectedFinMonth));
+
   // Distinguish Pharma vs Non-Pharma
-  const pharmaDispenses = dispenses.filter(d => {
+  const pharmaDispenses = filteredDispenses.filter(d => {
     const matched = stock?.find(s => s.name === d.medicationName);
     return matched ? matched.category !== 'Non-Pharmaceutical' : true;
   });
-  const nonPharmaDispenses = dispenses.filter(d => {
+  const nonPharmaDispenses = filteredDispenses.filter(d => {
     const matched = stock?.find(s => s.name === d.medicationName);
     return matched ? matched.category === 'Non-Pharmaceutical' : false;
   });
 
+  const patientRevenue = filteredAppts.reduce((sum, a) => sum + (a.billingAmount || 0), 0);
+  const labRevenue = filteredLab.reduce((sum, item) => sum + (item.fee || 0), 0);
   const pharmaRevenue = pharmaDispenses.reduce((sum, item) => sum + (item.totalCost || 0), 0);
   const nonPharmaRevenue = nonPharmaDispenses.reduce((sum, item) => sum + (item.totalCost || 0), 0);
   
@@ -103,13 +139,13 @@ export function AdminDashboard({
   const totalCombinedRevenue = patientRevenue + labRevenue + pharmacyRevenue;
 
   // General patient split
-  const generalPatCount = patients.filter((p) => p.category === 'General Consultation').length;
-  const specialistPatCount = patients.filter((p) => p.category === 'Consultant Clinic').length;
+  const generalPatCount = filteredPatientsForCounts.filter((p) => p.category === 'General Consultation').length;
+  const specialistPatCount = filteredPatientsForCounts.filter((p) => p.category === 'Consultant Clinic').length;
 
-  const surgicalCount = patients.filter((p) => p.consultantSubCategory === 'Surgical').length;
-  const pediatricsCount = patients.filter((p) => p.consultantSubCategory === 'Pediatrics').length;
-  const mopcCount = patients.filter((p) => p.consultantSubCategory === 'MOPC').length;
-  const obsGynCount = patients.filter((p) => p.consultantSubCategory === 'Obs/Gyn').length;
+  const surgicalCount = filteredPatientsForCounts.filter((p) => p.consultantSubCategory === 'Surgical').length;
+  const pediatricsCount = filteredPatientsForCounts.filter((p) => p.consultantSubCategory === 'Pediatrics').length;
+  const mopcCount = filteredPatientsForCounts.filter((p) => p.consultantSubCategory === 'MOPC').length;
+  const obsGynCount = filteredPatientsForCounts.filter((p) => p.consultantSubCategory === 'Obs/Gyn').length;
 
   const handleAddWhitelistSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -220,22 +256,28 @@ export function AdminDashboard({
 
       {/* A. CFO FINANCIAL CONTROL & SATELLITE OPERATIONS DESK */}
       {activeAdminSub === 'finances' && (() => {
-        // Compute expenses statistics
-        const totalExpenses = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
-        const electricityExpenses = expenses.filter(e => e.category === 'Electricity').reduce((sum, e) => sum + e.amount, 0);
-        const waterExpenses = expenses.filter(e => e.category === 'Water').reduce((sum, e) => sum + e.amount, 0);
-        const securityExpenses = expenses.filter(e => e.category === 'Security').reduce((sum, e) => sum + e.amount, 0);
-        const otherExpenses = expenses.filter(e => !['Electricity', 'Water', 'Security'].includes(e.category)).reduce((sum, e) => sum + e.amount, 0);
+        // Compute expenses statistics based on selectedFinanceMonth
+        const finalExpenses = selectedFinMonth === 'All'
+          ? expenses
+          : expenses.filter(e => e.date?.startsWith(selectedFinMonth));
+
+        const totalExpenses = finalExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+        const electricityExpenses = finalExpenses.filter(e => e.category === 'Electricity').reduce((sum, e) => sum + (e.amount || 0), 0);
+        const waterExpenses = finalExpenses.filter(e => e.category === 'Water').reduce((sum, e) => sum + (e.amount || 0), 0);
+        const securityExpenses = finalExpenses.filter(e => e.category === 'Security').reduce((sum, e) => sum + (e.amount || 0), 0);
+        const otherExpenses = finalExpenses.filter(e => !['Electricity', 'Water', 'Security'].includes(e.category)).reduce((sum, e) => sum + (e.amount || 0), 0);
 
         const netBalance = totalCombinedRevenue - totalExpenses;
         const profitMargin = totalCombinedRevenue > 0 ? (netBalance / totalCombinedRevenue) * 100 : 0;
 
-        // Daily trend data aggregation for June 1st to June 8th
-        const trendDates = ['2026-06-01', '2026-06-02', '2026-06-03', '2026-06-04', '2026-06-05', '2026-06-06', '2026-06-07', '2026-06-08'];
+        // Daily trend data aggregation
+        const trendPrefix = selectedFinMonth === 'All' ? '2026-06' : selectedFinMonth;
+        const trendDates = ['01', '02', '03', '04', '05', '06', '07', '08'].map(day => `${trendPrefix}-${day}`);
         const dailyMetrics = trendDates.map(date => {
-          // Patient consulting registration revenue (300 Ksh deposit)
-          const patTodayCount = patients.filter(p => p.registeredAt && p.registeredAt.startsWith(date)).length;
-          const patRev = patTodayCount * 300;
+          // Patient consulting registration revenue from paid appointments on that day
+          const patTodayRev = appointments
+            .filter(a => a.date === date && a.billingStatus === 'Paid')
+            .reduce((sum, a) => sum + (a.billingAmount || 0), 0);
 
           // Lab tests today revenue
           const labTodayRev = labTests.filter(t => t.testDate === date).reduce((sum, t) => sum + (t.fee || 0), 0);
@@ -243,7 +285,7 @@ export function AdminDashboard({
           // Pharmacy dispenses today revenue
           const pharTodayRev = dispenses.filter(d => d.dispenseDate === date).reduce((sum, d) => sum + (d.totalCost || 0), 0);
 
-          const revenue = patRev + labTodayRev + pharTodayRev;
+          const revenue = patTodayRev + labTodayRev + pharTodayRev;
           const expense = expenses.filter(e => e.date === date).reduce((sum, e) => sum + (e.amount || 0), 0);
           const profit = revenue - expense;
 
@@ -289,6 +331,35 @@ export function AdminDashboard({
 
         return (
           <div id="admin-finances-submodule" className="space-y-6">
+            {/* Elegant Reporting Period Month Filter */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-stone-50 border border-stone-200 p-4 rounded-xl gap-4">
+              <div>
+                <h4 className="text-sm font-bold text-stone-800 flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-amber-600" />
+                  CFO Financial Statement Period
+                </h4>
+                <p className="text-[11px] text-stone-500 mt-0.5">
+                  Filter global income, lab invoices, opex billing, and treasury ledger stats by month.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-xs font-semibold text-stone-600 font-mono">Select Period:</span>
+                <select
+                  id="select-finance-period"
+                  value={selectedFinMonth}
+                  onChange={(e) => setSelectedFinMonth(e.target.value)}
+                  className="bg-white border border-stone-200 rounded-lg py-1.5 px-3 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 focus:border-amber-500 outline-none shadow-3xs cursor-pointer"
+                >
+                  <option value="All">All-Time Cumulative</option>
+                  {availableMonths.map((m) => (
+                    <option key={m} value={m}>
+                      {new Date(m + "-02").toLocaleString("default", { month: "long", year: "numeric" })} ({m})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             {/* Top Tier Financial Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-xl shadow-xs">
@@ -1117,6 +1188,8 @@ export function AdminDashboard({
         <GoogleSheetsView
           patients={patients}
           labTests={labTests}
+          appointments={appointments}
+          dispenses={dispenses}
           stock={stock}
           expenses={expenses}
           userEmail={currentUserEmail}

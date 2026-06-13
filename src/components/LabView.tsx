@@ -174,10 +174,14 @@ export function LabView({
     }
   }, [activeCatalog, testType]);
 
-  // Daily Stats Computed locally
-  const todayString = new Date().toISOString().split('T')[0];
+  // Daily Stats Computed locally (using local timezone-safe date)
+  const localToday = new Date();
+  const year = localToday.getFullYear();
+  const month = String(localToday.getMonth() + 1).padStart(2, '0');
+  const day = String(localToday.getDate()).padStart(2, '0');
+  const todayString = `${year}-${month}-${day}`;
   const todaysTests = labTests.filter((t) => t.testDate === todayString);
-  const todaysRevenue = todaysTests.reduce((sum, t) => sum + t.fee, 0);
+  const todaysRevenue = todaysTests.reduce((sum, t) => sum + Number(t.fee || 0), 0);
 
   const handleAddTest = (e: React.FormEvent) => {
     e.preventDefault();

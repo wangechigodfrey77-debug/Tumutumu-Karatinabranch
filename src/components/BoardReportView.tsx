@@ -772,11 +772,11 @@ export function BoardReportView({
       return match ? match.category === 'Non-Pharmaceutical' : false;
     });
 
-    const overRecRev = patients.length * 300;
-    const overClinRev = appointments.filter(a => a.category === 'Consultant Clinic' && a.billingStatus === 'Paid').reduce((sum, a) => sum + (a.billingAmount || 0), 0);
-    const overLabRev = labTests.reduce((sum, t) => sum + (t.fee || 0), 0);
-    const overPharmaRev = overPharmaDisp.reduce((sum, d) => sum + (d.totalCost || 0), 0);
-    const overNonPharmaRev = overNonPharmaDisp.reduce((sum, d) => sum + (d.totalCost || 0), 0);
+    const overRecRev = appointments.filter(a => a.category === 'General Consultation' && a.billingStatus === 'Paid').reduce((sum, a) => sum + Number(a.billingAmount || 0), 0);
+    const overClinRev = appointments.filter(a => a.category === 'Consultant Clinic' && a.billingStatus === 'Paid').reduce((sum, a) => sum + Number(a.billingAmount || 0), 0);
+    const overLabRev = labTests.reduce((sum, t) => sum + Number(t.fee || 0), 0);
+    const overPharmaRev = overPharmaDisp.reduce((sum, d) => sum + Number(d.totalCost || 0), 0);
+    const overNonPharmaRev = overNonPharmaDisp.reduce((sum, d) => sum + Number(d.totalCost || 0), 0);
 
     const isOverall = !activeReport || activeReport.totalRevenue === 0;
     const tR = isOverall ? overRecRev : patientRev;
@@ -1757,12 +1757,16 @@ export function BoardReportView({
   const obsGynSum = patients.filter((p) => p.consultantSubCategory === 'Obs/Gyn').length;
 
   const labTotal = labTests.length;
-  const labRevSum = labTests.reduce((sum, item) => sum + (item.fee || 0), 0);
+  const labRevSum = labTests.reduce((sum, item) => sum + Number(item.fee || 0), 0);
 
   const pharmacyTotal = dispenses.length;
-  const pharmacyRevSum = dispenses.reduce((sum, item) => sum + (item.totalCost || 0), 0);
+  const pharmacyRevSum = dispenses.reduce((sum, item) => sum + Number(item.totalCost || 0), 0);
 
-  const totalRevSum = labRevSum + pharmacyRevSum;
+  const appointmentRevenueSum = appointments
+    .filter((a) => a.billingStatus === 'Paid')
+    .reduce((sum, a) => sum + Number(a.billingAmount || 0), 0);
+
+  const totalRevSum = appointmentRevenueSum + labRevSum + pharmacyRevSum;
   const uniqueStaff = new Set(duties.map((d) => d.staffEmail)).size;
   const pendingLeaves = leaves.filter((l) => l.status === 'Pending').length;
 

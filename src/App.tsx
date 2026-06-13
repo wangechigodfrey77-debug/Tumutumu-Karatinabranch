@@ -794,6 +794,7 @@ export default function App() {
               <AdminDashboard
                 patients={patients}
                 labTests={labTests}
+                appointments={appointments}
                 dispenses={dispenses}
                 stock={stock}
                 duties={duties}

@@ -22,13 +22,15 @@ import {
   Beaker,
   Receipt
 } from 'lucide-react';
-import { Patient, LabTest, MedicationDispense, Expense, PharmacyItem } from '../types';
+import { Patient, LabTest, MedicationDispense, Expense, PharmacyItem, Appointment } from '../types';
 import { auth, googleProvider, setOAuthAccessToken, getOAuthAccessToken } from '../firebase';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 interface GoogleSheetsViewProps {
   patients: Patient[];
   labTests: LabTest[];
+  appointments: Appointment[];
+  dispenses: MedicationDispense[];
   stock: PharmacyItem[];
   expenses: Expense[];
   userEmail: string;
@@ -37,6 +39,8 @@ interface GoogleSheetsViewProps {
 export function GoogleSheetsView({
   patients,
   labTests,
+  appointments,
+  dispenses,
   stock,
   expenses,
   userEmail
@@ -158,9 +162,10 @@ export function GoogleSheetsView({
       // A. Executive Overview sheet
       if (syncOverview) {
         setSyncMessage('Compiling financial and capacity performance charts...');
-        const totalRev = (patients.length * 300) + 
-          labTests.reduce((sum, l) => sum + (l.fee || 0), 0) + 
-          stock.reduce((sum, item) => sum + (item.price * (100 - item.stockQuantity > 0 ? 100 - item.stockQuantity : 10)), 0); // Estimating dispenses
+        const apptRev = appointments.filter(a => a.billingStatus === 'Paid').reduce((sum, a) => sum + Number(a.billingAmount || 0), 0);
+        const labRev = labTests.reduce((sum, l) => sum + Number(l.fee || 0), 0);
+        const pharmaRev = dispenses.reduce((sum, d) => sum + Number(d.totalCost || 0), 0);
+        const totalRev = apptRev + labRev + pharmaRev;
         const totalExp = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
         const netProfit = totalRev - totalExp;
 

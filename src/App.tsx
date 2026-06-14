@@ -94,6 +94,7 @@ export default function App() {
 
   // Primary Workspace tab
   const [activeTab, setActiveTab] = useState<string>('records');
+  const [isIframe, setIsIframe] = useState<boolean>(false);
 
   const logMutation = async (action: string, details: string, severity: 'info' | 'warning' | 'critical' = 'info') => {
     const userEmail = sessionEmail || currentUser?.email || firebaseUser?.email || 'system@tumutumu.org';
@@ -115,6 +116,11 @@ export default function App() {
 
   // 1. Force a clean session sign-out and wipe all local storage test/sandbox data on first load
   useEffect(() => {
+    try {
+      setIsIframe(window.self !== window.top);
+    } catch (e) {
+      setIsIframe(true);
+    }
     const initSession = async () => {
       // Clean up local storage sandbox and keys completely
       try {
@@ -581,18 +587,19 @@ export default function App() {
                {isLoggingIn ? 'Contacting Google Auth...' : 'Sign In with Google Account'}
             </button>
 
-            {/* Top Level Tab Helper */}
-            <div className="text-center pt-1">
-              <p className="text-[11px] text-stone-500 mb-2">
-                Running in a preview iframe? Popups might be blocked.
-              </p>
-              <button
-                onClick={() => window.open(window.location.href, '_blank')}
-                className="w-full bg-white hover:bg-stone-50 text-stone-700 border border-stone-300 py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer shadow-2xs transition-all"
-              >
-                <ExternalLink className="w-4 h-4 text-emerald-600" /> Open App in New Browser Tab
-              </button>
-            </div>
+            {isIframe && (
+              <div className="text-center pt-1">
+                <p className="text-[11px] text-stone-500 mb-2">
+                  Running in a preview iframe? Popups might be blocked.
+                </p>
+                <button
+                  onClick={() => window.open(window.location.href, '_blank')}
+                  className="w-full bg-white hover:bg-stone-50 text-stone-700 border border-stone-300 py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer shadow-2xs transition-all"
+                >
+                  <ExternalLink className="w-4 h-4 text-emerald-600" /> Open App in New Browser Tab
+                </button>
+              </div>
+            )}
 
 
           </div>

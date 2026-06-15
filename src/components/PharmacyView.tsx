@@ -128,16 +128,21 @@ export function PharmacyView({
   const activeNonPharmaItem = stock.find((item) => item.id === selectedNonPharmaId);
   const computedNonPharmaCost = activeNonPharmaItem ? activeNonPharmaItem.price * nonPharmaQuantity : 0;
 
+  // Helper to identify non-pharmaceutical categories
+  const isNonPharma = (category: string) => {
+    return category === 'Non-Pharmaceutical' || category === 'Surgicals & Non-Pharmaceuticals';
+  };
+
   // Filter items with search input and optional minimum threshold filter logic
   const pharmaItems = stock.filter((item) => {
-    if (item.category === 'Non-Pharmaceutical') return false;
+    if (isNonPharma(item.category)) return false;
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || item.id.toLowerCase().includes(searchQuery.toLowerCase());
     const belowThreshold = item.stockQuantity <= (item.minThreshold ?? 15);
     return matchesSearch && (!showLowStockOnly || belowThreshold);
   });
 
   const nonPharmaItems = stock.filter((item) => {
-    if (item.category !== 'Non-Pharmaceutical') return false;
+    if (!isNonPharma(item.category)) return false;
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || item.id.toLowerCase().includes(searchQuery.toLowerCase());
     const belowThreshold = item.stockQuantity <= (item.minThreshold ?? 15);
     return matchesSearch && (!showLowStockOnly || belowThreshold);
@@ -145,14 +150,14 @@ export function PharmacyView({
 
   // Dedicated filters for the dispensation dropdown menus
   const dropdownPharmaItems = stock.filter((item) => {
-    if (item.category === 'Non-Pharmaceutical') return false;
+    if (isNonPharma(item.category)) return false;
     const matchesSearch = item.name.toLowerCase().includes(dispenseSearchQuery.toLowerCase()) || 
                           item.id.toLowerCase().includes(dispenseSearchQuery.toLowerCase());
     return matchesSearch;
   });
 
   const dropdownNonPharmaItems = stock.filter((item) => {
-    if (item.category !== 'Non-Pharmaceutical') return false;
+    if (!isNonPharma(item.category)) return false;
     const matchesSearch = item.name.toLowerCase().includes(nonPharmaSearchQuery.toLowerCase()) || 
                           item.id.toLowerCase().includes(nonPharmaSearchQuery.toLowerCase());
     return matchesSearch;

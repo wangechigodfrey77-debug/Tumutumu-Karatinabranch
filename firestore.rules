@@ -27,20 +27,20 @@ service cloud.firestore {
     // Bootstrapped Admin concept for development
     function isBootstrappedAdmin() {
       return isVerified() && (
-        request.auth.token.email.matches('(?i)^gmaurice101@gmail\\.com$') ||
-        request.auth.token.email.matches('(?i)^admin@tumutumu\\.org$') ||
-        request.auth.token.email.matches('(?i)^wangechigodfrey77@gmail\\.com$')
+        request.auth.token.email.lower() == 'gmaurice101@gmail.com' ||
+        request.auth.token.email.lower() == 'admin@tumutumu.org' ||
+        request.auth.token.email.lower() == 'wangechigodfrey77@gmail.com'
       );
     }
 
     // Fetches role from WhitelistUser document
     function getRole() {
-      return get(/databases/$(database)/documents/whitelist/$(request.auth.token.email)).data.role;
+      return get(/databases/$(database)/documents/whitelist/$(request.auth.token.email.lower())).data.role;
     }
 
     function hasRole(role) {
       return isVerified() && (
-        exists(/databases/$(database)/documents/whitelist/$(request.auth.token.email)) &&
+        exists(/databases/$(database)/documents/whitelist/$(request.auth.token.email.lower())) &&
         getRole() == role
       );
     }
@@ -99,7 +99,7 @@ service cloud.firestore {
     // -------------------------------------------------------------
     function isValidPatient(data) {
       return data.id is string && data.id.size() <= 64 &&
-             data.name is string && data.name.size() <= 128 &&
+             data.name is string && data.name.size() <= 256 &&
              (data.age is int || data.age is float) && data.age >= 0 && data.age <= 150 &&
              data.gender is string && (data.gender == 'Male' || data.gender == 'Female' || data.gender == 'Other') &&
              data.phone is string && data.phone.size() <= 32 &&
@@ -127,8 +127,8 @@ service cloud.firestore {
     // -------------------------------------------------------------
     function isValidLabTest(data) {
       return data.id is string && data.id.size() <= 64 &&
-             data.testName is string && data.testName.size() <= 128 &&
-             data.patientName is string && data.patientName.size() <= 128 &&
+             data.testName is string && data.testName.size() <= 256 &&
+             data.patientName is string && data.patientName.size() <= 256 &&
              data.patientId is string && data.patientId.size() <= 64 &&
              data.testDate is string &&
              data.performedBy is string &&
@@ -148,12 +148,12 @@ service cloud.firestore {
     // -------------------------------------------------------------
     function isValidMedicationDispense(data) {
       return data.id is string && data.id.size() <= 64 &&
-             data.medicationName is string && data.medicationName.size() <= 128 &&
-             data.patientName is string && data.patientName.size() <= 128 &&
+             data.medicationName is string && data.medicationName.size() <= 512 &&
+             data.patientName is string && data.patientName.size() <= 256 &&
              data.patientId is string && data.patientId.size() <= 64 &&
              data.dispenseDate is string &&
              data.dispensedBy is string &&
-             data.quantity is int && data.quantity > 0 &&
+             (data.quantity is int || data.quantity is float) && data.quantity > 0 &&
              (data.pricePerUnit is int || data.pricePerUnit is float) && data.pricePerUnit >= 0 &&
              (data.totalCost is int || data.totalCost is float) && data.totalCost >= 0;
     }
@@ -169,7 +169,7 @@ service cloud.firestore {
     // -------------------------------------------------------------
     function isValidPharmacyItem(data) {
       return data.id is string && data.id.size() <= 64 &&
-             data.name is string && data.name.size() <= 128 &&
+             data.name is string && data.name.size() <= 256 &&
              data.stockQuantity is int && data.stockQuantity >= 0 &&
              (data.price is int || data.price is float) && data.price >= 0 &&
              data.category is string && data.category.size() <= 128 &&
@@ -237,12 +237,12 @@ service cloud.firestore {
 
     match /leaveRequests/{requestId} {
       allow read: if isVerified();
-      allow create: if isVerified() && isValidId(requestId) && isValidLeaveRequest(incoming()) && (incoming().staffEmail == request.auth.token.email || isAdmin());
+      allow create: if isVerified() && isValidId(requestId) && isValidLeaveRequest(incoming()) && (incoming().staffEmail.lower() == request.auth.token.email.lower() || isAdmin());
       allow update: if isVerified() && isValidId(requestId) && isValidLeaveRequest(incoming()) && (
         isAdmin() ||
-        (existing().staffEmail == request.auth.token.email && existing().status == 'Pending' && incoming().status == 'Pending')
+        (existing().staffEmail.lower() == request.auth.token.email.lower() && existing().status == 'Pending' && incoming().status == 'Pending')
       );
-      allow delete: if isAdmin() || (existing().staffEmail == request.auth.token.email && existing().status == 'Pending');
+      allow delete: if isAdmin() || (existing().staffEmail.lower() == request.auth.token.email.lower() && existing().status == 'Pending');
     }
 
     // -------------------------------------------------------------
@@ -262,8 +262,8 @@ service cloud.firestore {
     match /messages/{messageId} {
       // Inward access limits: Messages are readable if you are signed in
       allow read: if isVerified();
-      allow create: if isVerified() && isValidId(messageId) && isValidMessage(incoming()) && (incoming().senderEmail == request.auth.token.email || isAdmin());
-      allow delete: if isVerified() && (existing().senderEmail == request.auth.token.email || isAdmin());
+      allow create: if isVerified() && isValidId(messageId) && isValidMessage(incoming()) && (incoming().senderEmail.lower() == request.auth.token.email.lower() || isAdmin());
+      allow delete: if isVerified() && (existing().senderEmail.lower() == request.auth.token.email.lower() || isAdmin());
     }
 
     // -------------------------------------------------------------
@@ -272,7 +272,7 @@ service cloud.firestore {
     function isValidAppointment(data) {
       return data.id is string && data.id.size() <= 64 &&
              data.patientId is string && data.patientId.size() <= 64 &&
-             data.patientName is string && data.patientName.size() <= 128 &&
+             data.patientName is string && data.patientName.size() <= 256 &&
              data.patientPhone is string && data.patientPhone.size() <= 32 &&
              data.date is string &&
              data.time is string &&

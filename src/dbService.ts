@@ -31,6 +31,7 @@ import {
 } from './mockData';
 import { rawMayPatients } from './extractedPatientsData';
 import { rawLabTests } from './extractedLabTestsData';
+import { rawExtractedDispenses } from './extractedDispensesData';
 
 // -------------------------------------------------------------
 // SEED DATABASE ON BOOTSTRAP if empty.
@@ -117,6 +118,9 @@ export async function seedDatabaseIfEmpty() {
 
   // 6. Seed actual May 2026 Lab Test records and register lab walk-ins
   await seedMay2026LabTests();
+
+  // 7. Seed actual May 2026 Pharmacy Dispense records (1,004 reports totaling 267,280.00 Ksh)
+  await seedMay2026PharmacyDispenses();
 }
 
 
@@ -258,7 +262,11 @@ export async function seedMay2026Patients() {
         await batch.commit();
         console.log(`Database sync: Successfully committed chunk of ${chunk.length} patients.`);
       } catch (chunkErr: any) {
-        console.error(`Failed to commit batch chunk starting with patient ${chunk[0].no}:`, chunkErr?.message || chunkErr);
+        if (chunkErr?.message?.toLowerCase().includes('permission') || chunkErr?.code === 'permission-denied') {
+          console.warn(`Patient seeding chunk commit skipped: insufficient Firestore write permissions.`);
+        } else {
+          console.error(`Failed to commit batch chunk starting with patient ${chunk[0].no}:`, chunkErr?.message || chunkErr);
+        }
         // Fallback: If writeBatch fails, write them individually so we isolate and bypass the offending item
         for (const p of chunk) {
           const patientId = `PT-202605-${String(p.no).padStart(2, '0')}`;
@@ -328,7 +336,11 @@ export async function seedMay2026Patients() {
             await setDoc(patDocRef, cleanUndefined(patObj));
             await setDoc(apptDocRef, cleanUndefined(apptObj));
           } catch (individualErr: any) {
-            console.error(`Durable individual seed failed for patient ${p.no} (${p.name}):`, individualErr?.message || individualErr);
+            if (individualErr?.message?.toLowerCase().includes('permission') || individualErr?.code === 'permission-denied') {
+              console.warn(`Individual patient/appointment seed skipped: insufficient Firestore write permissions.`);
+            } else {
+              console.error(`Durable individual seed failed for patient ${p.no} (${p.name}):`, individualErr?.message || individualErr);
+            }
           }
         }
       }
@@ -336,7 +348,11 @@ export async function seedMay2026Patients() {
 
     console.log('May 2026 active registers alignment phase completed successfully.');
   } catch (err: any) {
-    console.error('Failed to seed May 2026 active patient directory: ', err?.message || err);
+    if (err?.message?.toLowerCase().includes('permission') || err?.code === 'permission-denied') {
+      console.warn('Seeding May 2026 Patient Register was skipped: insufficient Firestore write permissions.');
+    } else {
+      console.error('Failed to seed May 2026 active patient directory: ', err?.message || err);
+    }
   }
 }
 
@@ -481,7 +497,39 @@ export async function seedMay2026LabTests() {
     }
 
   } catch (err: any) {
-    console.error('Failed to seed May 2026 lab tests registry:', err?.message || err);
+    if (err?.message?.toLowerCase().includes('permission') || err?.code === 'permission-denied') {
+      console.warn('Seeding May 2026 Lab Tests Registry was skipped: insufficient Firestore write permissions.');
+    } else {
+      console.error('Failed to seed May 2026 lab tests registry:', err?.message || err);
+    }
+  }
+}
+
+export async function seedMay2026PharmacyDispenses() {
+  try {
+    const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
+    if (dispSnap.size < 100) {
+      console.log(`Seeding May 2026 Pharmacy Dispenses: Seeding ${rawExtractedDispenses.length} records...`);
+      const batchSize = 450;
+      for (let i = 0; i < rawExtractedDispenses.length; i += batchSize) {
+        const batch = writeBatch(db);
+        const chunk = rawExtractedDispenses.slice(i, i + batchSize);
+        chunk.forEach(disp => {
+          const docRef = doc(db, 'medicationDispenses', disp.id);
+          batch.set(docRef, disp);
+        });
+        await batch.commit();
+        console.log(`Committed Firestore pharmacy dispense batch of size ${chunk.length}`);
+      }
+    } else {
+      console.log(`All May 2026 Pharmacy Dispenses (${dispSnap.size}) are already fully aligned in Firestore.`);
+    }
+  } catch (err: any) {
+    if (err?.message?.toLowerCase().includes('permission') || err?.code === 'permission-denied') {
+      console.warn('Seeding May 2026 Pharmacy Dispenses was skipped: insufficient Firestore write permissions.');
+    } else {
+      console.error('Failed to seed May 2026 Pharmacy Dispenses:', err?.message || err);
+    }
   }
 }
 

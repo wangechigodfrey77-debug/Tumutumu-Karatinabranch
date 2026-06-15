@@ -4,8 +4,10 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, TrendingUp, CalendarDays, Upload, FileSpreadsheet, FileText, Check, Loader2, Search } from 'lucide-react';
+import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, TrendingUp, CalendarDays, Upload, FileSpreadsheet, FileText, Check, Loader2, Search, X, Download } from 'lucide-react';
 import { MedicationDispense, PharmacyItem, Patient } from '../types';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface PharmacyViewProps {
   stock: PharmacyItem[];
@@ -119,6 +121,8 @@ export function PharmacyView({
   const [ledgerSearchQuery, setLedgerSearchQuery] = useState<string>('');
   const [ledgerTypeFilter, setLedgerTypeFilter] = useState<'all' | 'pharma' | 'non-pharma'>('all');
   const [ledgerPage, setLedgerPage] = useState<number>(1);
+  const [selectedHistoryPatientId, setSelectedHistoryPatientId] = useState<string | null>(null);
+  const [selectedHistoryPatientName, setSelectedHistoryPatientName] = useState<string | null>(null);
 
   React.useEffect(() => {
     setLedgerPage(1);
@@ -578,6 +582,127 @@ export function PharmacyView({
   const totalPages = Math.max(1, Math.ceil(totalLedgerItems / itemsPerPage));
   const paginatedLedger = sortedLedgerDispenses.slice((ledgerPage - 1) * itemsPerPage, ledgerPage * itemsPerPage);
   // --- End Periodic Ledger Calculations ---
+
+  const selectedPatientDispenses = selectedHistoryPatientId
+    ? dispenses.filter((d) => d.patientId === selectedHistoryPatientId)
+    : [];
+
+  const handleDownloadPatientPDF = () => {
+    if (!selectedHistoryPatientId) return;
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    // Printer-friendly corporate branding & audit layout (ink-safe)
+    doc.setDrawColor(15, 23, 42); // slate 900
+    doc.setLineWidth(0.8);
+    doc.line(14, 10, 196, 10); // top border line
+    doc.line(14, 40, 196, 40); // bottom border line
+
+    doc.setTextColor(15, 23, 42);
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text('PCEA TUMUTUMU SATELLITE MEDICAL HEALTH CENTER', 14, 18);
+
+    doc.setFont('Helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(71, 85, 105);
+    doc.text('OUTPATIENT CLINICAL DISPENSATION HISTORICAL LEDGER', 14, 25);
+    doc.text(`Patient ID: ${selectedHistoryPatientId} • Generated: ${new Date().toLocaleDateString()} • Official Hospital Audit Record`, 14, 31);
+
+    // Decorative Accent Line (Indigo / Blue Accent)
+    doc.setDrawColor(79, 70, 229); // indigo-600
+    doc.setLineWidth(0.5);
+    doc.line(14, 37, 196, 37);
+
+    // Let's add Patient Profile details
+    doc.setTextColor(15, 23, 42);
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text('PATIENT DEMOGRAPHIC & CLINICAL PROFILE', 14, 48);
+
+    const matchedPatient = patients.find(p => p.id === selectedHistoryPatientId);
+    let patientDetailsY = 54;
+    doc.setFont('Helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(51, 65, 85);
+
+    if (matchedPatient) {
+      doc.text(`Full Name: ${selectedHistoryPatientName || 'N/A'}`, 14, patientDetailsY);
+      doc.text(`OP Number: ${matchedPatient.opNumber || 'N/A'}`, 110, patientDetailsY);
+      patientDetailsY += 5;
+      doc.text(`Age / Gender: ${matchedPatient.age} ${matchedPatient.ageUnit || 'Years'} / ${matchedPatient.gender}`, 14, patientDetailsY);
+      doc.text(`Phone Contact: ${matchedPatient.phone || 'N/A'}`, 110, patientDetailsY);
+      patientDetailsY += 5;
+      doc.text(`Patient Category: ${matchedPatient.category} ${matchedPatient.isWalkIn ? '(Walk-In)' : '(Registered)'}`, 14, patientDetailsY);
+    } else {
+      doc.text(`Full Name: ${selectedHistoryPatientName || 'N/A'}`, 14, patientDetailsY);
+      doc.text(`OP Number: Walk-In Reference`, 110, patientDetailsY);
+      patientDetailsY += 5;
+      doc.text(`Age / Gender: Not Registered (Walk-In)`, 14, patientDetailsY);
+      doc.text(`Status: Temporary Registration`, 110, patientDetailsY);
+    }
+
+    doc.setDrawColor(226, 232, 240); // border-stone-200
+    doc.setLineWidth(0.3);
+    doc.line(14, patientDetailsY + 3, 196, patientDetailsY + 3);
+
+    let summaryY = patientDetailsY + 9;
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(15, 23, 42);
+    doc.text('LEDGER DISPENSATION METRICS SUMMARY', 14, summaryY);
+
+    const totalQty = selectedPatientDispenses.reduce((sum, d) => sum + d.quantity, 0);
+    const totalCostVal = selectedPatientDispenses.reduce((sum, d) => sum + d.totalCost, 0);
+
+    summaryY += 6;
+    doc.setFont('Helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(51, 65, 85);
+    doc.text(`Total Dispensation Incidents: ${selectedPatientDispenses.length}`, 14, summaryY);
+    doc.text(`Aggregate Units Supplied: ${totalQty} units`, 75, summaryY);
+    doc.text(`Cumulative Financial Billing: Ksh ${totalCostVal.toLocaleString()}`, 135, summaryY);
+
+    let tableY = summaryY + 8;
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(15, 23, 42);
+    doc.text('DETAILED DISPENSATION CHRONOLOGY', 14, tableY);
+
+    const tblHeaders = [['Dispense ID', 'Date', 'Classification', 'Dispatched Medical Item', 'Qty', 'Unit Price', 'Total Cost', 'Dispensed By']];
+    const tblRows = [...selectedPatientDispenses]
+      .sort((a, b) => new Date(b.dispenseDate).getTime() - new Date(a.dispenseDate).getTime())
+      .map(d => [
+        d.id,
+        d.dispenseDate,
+        getDispenseType(d.medicationName) === 'non-pharma' ? 'Non-Pharma' : 'Medicine',
+        d.medicationName,
+        String(d.quantity),
+        `Ksh ${d.pricePerUnit}`,
+        `Ksh ${d.totalCost}`,
+        d.dispensedBy
+      ]);
+
+    autoTable(doc, {
+      head: tblHeaders,
+      body: tblRows,
+      startY: tableY + 3,
+      theme: 'striped',
+      headStyles: { fillColor: [79, 70, 229], textColor: [255, 255, 255], fontStyle: 'bold' }, // indigo-600
+      styles: { fontSize: 8, cellPadding: 2 },
+      columnStyles: {
+        4: { halign: 'right' },
+        5: { halign: 'right' },
+        6: { halign: 'right', fontStyle: 'bold', textColor: [15, 23, 42] }
+      }
+    });
+
+    const patientSafeName = (selectedHistoryPatientName || 'patient').toLowerCase().replace(/[^a-z0-9]/g, '_');
+    doc.save(`clinical_ledger_${patientSafeName}_${selectedHistoryPatientId}.pdf`);
+  };
 
   return (
     <div id="pharmacy-module" className="space-y-6">
@@ -1670,7 +1795,17 @@ export function PharmacyView({
                   <tr key={d.id} className="hover:bg-stone-50/40 transition">
                     <td className="p-3 font-mono text-[10px] text-stone-400">{d.id}</td>
                     <td className="p-3">
-                      <div className="font-semibold text-slate-800">{d.patientName}</div>
+                      <button
+                        type="button"
+                        id={`btn-ledger-patient-${d.patientId}`}
+                        onClick={() => {
+                          setSelectedHistoryPatientId(d.patientId);
+                          setSelectedHistoryPatientName(d.patientName);
+                        }}
+                        className="font-semibold text-indigo-600 hover:text-indigo-800 hover:underline text-left cursor-pointer transition focus:outline-hidden"
+                      >
+                        {d.patientName}
+                      </button>
                       <div className="text-[10px] text-stone-400 font-mono mt-0.5">{d.patientId}</div>
                     </td>
                     <td className="p-3 whitespace-nowrap">
@@ -1748,6 +1883,218 @@ export function PharmacyView({
           </div>
         )}
       </div>
+
+      {/* Patient Medication History Modal overlay */}
+      {selectedHistoryPatientId && (
+        <div id="patient-history-modal" className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-stone-200 shadow-2xl rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in duration-250">
+            {/* Header */}
+            <div className="bg-indigo-700 text-white px-6 py-4 flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-2.5">
+                <CalendarDays className="w-5 h-5 text-indigo-100" />
+                <div>
+                  <h3 className="font-bold text-sm">Patient Clinical Dispensation Record</h3>
+                  <p className="text-[11px] text-indigo-100/90 mt-0.5">
+                    Historical ledger of administered medicines and supplies.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                id="btn-close-patient-history"
+                onClick={() => {
+                  setSelectedHistoryPatientId(null);
+                  setSelectedHistoryPatientName(null);
+                }}
+                className="hover:bg-indigo-800 p-1.5 rounded-lg transition-all text-white/80 hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="p-6 space-y-6 overflow-y-auto text-xs leading-relaxed flex-1">
+              {/* Patient Basic Card & Metrics Summary */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Profile Card */}
+                <div className="bg-stone-50 border border-stone-200 rounded-xl p-4 space-y-3">
+                  <div className="border-b border-stone-200 pb-2">
+                    <span className="text-[10px] font-semibold text-indigo-700 uppercase font-mono tracking-wider">Clinical Profile</span>
+                    <h4 className="text-sm font-bold text-stone-900 mt-1">
+                      {selectedHistoryPatientName || 'Unnamed Patient'}
+                    </h4>
+                    <span className="text-[10px] font-mono text-stone-400 block mt-0.5">ID: {selectedHistoryPatientId}</span>
+                  </div>
+
+                  {(() => {
+                    const matchedPatient = patients.find(p => p.id === selectedHistoryPatientId);
+                    if (matchedPatient) {
+                      return (
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-stone-600">
+                          <div>
+                            <span className="text-[10px] text-stone-400 block uppercase font-mono tracking-wider">OP Number</span>
+                            <span className="font-semibold text-stone-800">{matchedPatient.opNumber || 'N/A'}</span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-stone-400 block uppercase font-mono tracking-wider">Gender</span>
+                            <span className="font-semibold text-stone-800">{matchedPatient.gender}</span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-stone-400 block uppercase font-mono tracking-wider">Age</span>
+                            <span className="font-semibold text-stone-800">{matchedPatient.age} {matchedPatient.ageUnit || 'Years'}</span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-stone-400 block uppercase font-mono tracking-wider">Phone</span>
+                            <span className="font-semibold text-stone-800">{matchedPatient.phone || 'N/A'}</span>
+                          </div>
+                          <div className="col-span-2">
+                            <span className="text-[10px] text-stone-400 block uppercase font-mono tracking-wider">Type</span>
+                            <span className="inline-flex text-[10px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded px-1.5 py-0.5 mt-0.5">
+                              {matchedPatient.category} {matchedPatient.isWalkIn ? '(Walk-In)' : ''}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div className="space-y-1 py-1 text-stone-500">
+                          <p>No formal electronic registry card exists for this patient ID. Dispensed as an external cardholder or pharmacy walk-in.</p>
+                          <span className="inline-flex text-[10px] font-semibold text-stone-600 bg-stone-100 border border-stone-200 rounded px-1.5 py-0.5 mt-2">
+                            Walk-In Reference
+                          </span>
+                        </div>
+                      );
+                    }
+                  })()}
+                </div>
+
+                {/* Metrics block */}
+                <div className="lg:col-span-2 grid grid-cols-3 gap-4">
+                  <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[9px] font-mono font-bold text-indigo-600 uppercase tracking-widest block">Dispensation Events</span>
+                      <span className="text-2xl font-black text-indigo-900 mt-1 block">
+                        {selectedPatientDispenses.length}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-indigo-500 font-medium font-sans block">Total encounters logged</span>
+                  </div>
+
+                  <div className="bg-emerald-50/50 border border-emerald-100 rounded-xl p-4 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[9px] font-mono font-bold text-emerald-600 uppercase tracking-widest block">Total Items Supplied</span>
+                      <span className="text-2xl font-black text-emerald-900 mt-1 block">
+                        {selectedPatientDispenses.reduce((sum, d) => sum + d.quantity, 0)}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-emerald-600 font-medium font-sans block">Aggregate dosage packs</span>
+                  </div>
+
+                  <div className="bg-amber-50/50 border border-amber-100 rounded-xl p-4 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[9px] font-mono font-bold text-amber-600 uppercase tracking-widest block">Cumulative Billing</span>
+                      <span className="text-xl font-bold font-mono text-amber-950 mt-1 block">
+                        Ksh {selectedPatientDispenses.reduce((sum, d) => sum + d.totalCost, 0).toLocaleString()}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-amber-600 font-medium font-sans block font-semibold">Gross outpatient billing value</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Detailed dispensations log table */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-stone-800 flex items-center gap-1.5 uppercase tracking-wide">
+                  <Pill className="w-4 h-4 text-indigo-600" />
+                  Chronological Itemized Ledger
+                </h4>
+                
+                <div className="overflow-x-auto border border-stone-200 rounded-xl">
+                  <table className="w-full text-left font-sans">
+                    <thead className="bg-stone-50 text-stone-500 font-medium border-b border-stone-200 text-[11px]">
+                      <tr>
+                        <th className="p-3">Reference ID</th>
+                        <th className="p-3">Date Dispensed</th>
+                        <th className="p-3">Classification</th>
+                        <th className="p-3">Dispatched Medical Item</th>
+                        <th className="p-3 text-right">Quantity</th>
+                        <th className="p-3 text-right">Unit Rate</th>
+                        <th className="p-3 text-right font-semibold text-stone-900">Total Billed</th>
+                        <th className="p-3">Dispatched By</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100 text-stone-700 text-xs">
+                      {[...selectedPatientDispenses]
+                        .sort((a, b) => new Date(b.dispenseDate).getTime() - new Date(a.dispenseDate).getTime())
+                        .map((d) => {
+                          const itemType = getDispenseType(d.medicationName);
+                          return (
+                            <tr key={d.id} className="hover:bg-stone-50/20 transition">
+                              <td className="p-3 font-mono text-[10px] text-stone-400">{d.id}</td>
+                              <td className="p-3 whitespace-nowrap">
+                                <span className="bg-stone-100 text-stone-800 px-2.5 py-0.5 rounded text-[10px] font-semibold font-mono">
+                                  {d.dispenseDate}
+                                </span>
+                              </td>
+                              <td className="p-3 whitespace-nowrap">
+                                {itemType === 'non-pharma' ? (
+                                  <span className="inline-flex items-center gap-1 bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                                    📦 Non-Pharma
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 bg-emerald-50 border border-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                                    💊 Medicine
+                                  </span>
+                                )}
+                              </td>
+                              <td className="p-3 font-medium text-stone-900">{d.medicationName}</td>
+                              <td className="p-3 text-right font-semibold font-mono">{d.quantity}</td>
+                              <td className="p-3 text-right text-stone-500 font-mono">Ksh {d.pricePerUnit}</td>
+                              <td className="p-3 text-right font-bold text-stone-900 font-mono">Ksh {d.totalCost}</td>
+                              <td className="p-3 text-stone-600 font-medium">{d.dispensedBy}</td>
+                            </tr>
+                          );
+                        })}
+
+                      {selectedPatientDispenses.length === 0 && (
+                        <tr>
+                          <td colSpan={8} className="p-8 text-center text-stone-400 font-medium">
+                            No discrete medication or supply logs registered for this patient ID.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer actions */}
+            <div className="bg-stone-50 px-6 py-4 border-t border-stone-200 flex justify-end items-center gap-2 shrink-0">
+              <button
+                type="button"
+                id="btn-download-patient-history-pdf"
+                onClick={handleDownloadPatientPDF}
+                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg font-bold bg-indigo-600 hover:bg-indigo-700 text-white text-xs transition cursor-pointer "
+              >
+                <Download className="w-4 h-4" />
+                Save to PDF
+              </button>
+              <button
+                type="button"
+                id="btn-dismiss-patient-history"
+                onClick={() => {
+                  setSelectedHistoryPatientId(null);
+                  setSelectedHistoryPatientName(null);
+                }}
+                className="px-5 py-2 rounded-lg border border-stone-250 font-bold bg-white text-stone-700 hover:bg-stone-100 text-xs transition cursor-pointer"
+              >
+                Dismiss Ledger
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

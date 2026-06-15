@@ -20,6 +20,15 @@ export interface MedicalRecord {
   prescriptions: string;
   doctorName: string;
   doctorEmail: string;
+  prescribedItems?: {
+    itemId: string;
+    name: string;
+    quantity: number;
+    price: number;
+    dosage?: string;
+  }[];
+  billingStatus?: 'Unpaid' | 'Paid' | 'Dispensed';
+  invoiceAmount?: number;
 }
 
 export interface Patient {
@@ -37,6 +46,8 @@ export interface Patient {
   medicalHistory: MedicalRecord[];
   isWalkIn?: boolean;
   walkInTag?: 'Lab Walk-In' | 'Pharmacy Walk-In';
+  paymentMode?: 'Cash' | 'Insurance';
+  insuranceCompany?: string;
 }
 
 export interface LabCatalogItem {

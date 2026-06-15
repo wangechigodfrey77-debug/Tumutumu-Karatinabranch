@@ -310,6 +310,19 @@ export default function App() {
     }
   };
 
+  const handleUpdatePatientHistory = async (patientId: string, updatedHistory: MedicalRecord[]) => {
+    try {
+      const patient = patients.find((p) => p.id === patientId);
+      if (patient) {
+        await savePatient({ ...patient, medicalHistory: updatedHistory });
+        await logMutation('UPDATE_PATIENT_HISTORY', `Updated medical/prescription status for Patient: ${patient.name} (${patientId})`);
+      }
+    } catch (error) {
+      console.error("Update patient history failed", error);
+      alert("Error updating patient history: " + (error instanceof Error ? error.message : String(error)));
+    }
+  };
+
   const handleAddAppointment = async (appt: Appointment) => {
     try {
       await saveAppointment(appt);
@@ -743,6 +756,8 @@ export default function App() {
                 onAddMedicalRecord={handleAddMedicalRecord}
                 onAddAppointment={handleAddAppointment}
                 onUpdateAppointmentBilling={handleUpdateApptBilling}
+                stock={stock}
+                onUpdatePatientHistory={handleUpdatePatientHistory}
               />
             )}
 
@@ -771,6 +786,7 @@ export default function App() {
                 onAddNewStockItem={handleAddNewStockItem}
                 onUpdateThreshold={handleUpdateThreshold}
                 onAddPatient={handleAddPatient}
+                onUpdatePatientHistory={handleUpdatePatientHistory}
               />
             )}
 

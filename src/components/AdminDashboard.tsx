@@ -4,9 +4,11 @@
  */
 
 import React, { useState } from 'react';
-import { ShieldAlert, Users, CalendarPlus, CheckSquare, Trash, BarChart3, TrendingUp, Sparkles, Building, Layers, Landmark, Calendar, Plus, X, FileSpreadsheet, History } from 'lucide-react';
+import { ShieldAlert, Users, CalendarPlus, CheckSquare, Trash, BarChart3, TrendingUp, Sparkles, Building, Layers, Landmark, Calendar, Plus, X, FileSpreadsheet, History, Download } from 'lucide-react';
 import { Patient, LabTest, MedicationDispense, DutyAllocation, LeaveRequest, WhitelistUser, UserRole, Expense, PharmacyItem, AuditLog, Appointment } from '../types';
 import { GoogleSheetsView } from './GoogleSheetsView';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface AdminDashboardProps {
   patients: Patient[];
@@ -51,6 +53,14 @@ export function AdminDashboard({
 }: AdminDashboardProps) {
   const [activeAdminSub, setActiveAdminSub] = useState<'rosters' | 'whitelist' | 'leaves' | 'finances' | 'sheets' | 'audit'>('finances');
   const [selectedFinMonth, setSelectedFinMonth] = useState<string>('All');
+
+  // Periodic Audit Reports Filter Selection States
+  const [reportTarget, setReportTarget] = useState<'cash' | 'insurance' | 'lab' | 'pharmacy'>('cash');
+  const [reportPeriodType, setReportPeriodType] = useState<'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'>('daily');
+  const [reportCustomDate, setReportCustomDate] = useState<string>('2026-06-15');
+  const [reportCustomMonth, setReportCustomMonth] = useState<string>('2026-06');
+  const [reportCustomYear, setReportCustomYear] = useState<string>('2026');
+  const [reportCustomQuarter, setReportCustomQuarter] = useState<string>('2');
 
   // Gather available months dynamically from appointments, labTests, dispenses, and expenses
   const availableMonths = React.useMemo(() => {
@@ -150,6 +160,212 @@ export function AdminDashboard({
   const pediatricsCount = filteredPatientsForCounts.filter((p) => p.consultantSubCategory === 'Pediatrics').length;
   const mopcCount = filteredPatientsForCounts.filter((p) => p.consultantSubCategory === 'MOPC').length;
   const obsGynCount = filteredPatientsForCounts.filter((p) => p.consultantSubCategory === 'Obs/Gyn').length;
+
+  const handleGenerateReportPDF = () => {
+    const isWithinPeriod = (rawDate: string | undefined): boolean => {
+      if (!rawDate) return false;
+      const dateOnlyStr = rawDate.substring(0, 10); // YYYY-MM-DD
+      if (reportPeriodType === 'daily') {
+        return dateOnlyStr === reportCustomDate;
+      }
+      if (reportPeriodType === 'weekly') {
+        const targetDate = new Date(reportCustomDate);
+        const day = targetDate.getDay();
+        const diff = targetDate.getDate() - day; // Sunday of the week
+        const sunday = new Date(targetDate.setDate(diff));
+        sunday.setHours(0,0,0,0);
+        const saturday = new Date(sunday.getTime() + 6 * 24 * 60 * 60 * 1000);
+        saturday.setHours(23,59,59,999);
+
+        const recordDate = new Date(dateOnlyStr);
+        recordDate.setHours(12,0,0,0);
+        return recordDate >= sunday && recordDate <= saturday;
+      }
+      if (reportPeriodType === 'monthly') {
+        return dateOnlyStr.startsWith(reportCustomMonth);
+      }
+      if (reportPeriodType === 'quarterly') {
+        const year = dateOnlyStr.substring(0, 4);
+        if (year !== reportCustomYear) return false;
+        const month = parseInt(dateOnlyStr.substring(5, 7), 10);
+        const q = Math.ceil(month / 3);
+        return String(q) === reportCustomQuarter;
+      }
+      if (reportPeriodType === 'yearly') {
+        return dateOnlyStr.startsWith(reportCustomYear);
+      }
+      return false;
+    };
+
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    // Printer-friendly corporate branding header (ink-safe)
+    doc.setDrawColor(15, 23, 42); // slate 900
+    doc.setLineWidth(0.8);
+    doc.line(14, 10, 196, 10); // top border line
+    doc.line(14, 40, 196, 40); // bottom border line
+
+    doc.setTextColor(15, 23, 42);
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text('PCEA TUMUTUMU SATELLITE MEDICAL HEALTH CENTER', 14, 18);
+
+    doc.setFont('Helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(71, 85, 105);
+    doc.text('OUTPATIENT COMPLIANCE & ADMINISTRATIVE AUDIT LEDGER', 14, 25);
+    doc.text(`Generated: ${new Date().toLocaleString()} • Authorized Administrative Records • Confidential`, 14, 31);
+
+    // Default accent/theme colors or line colors
+    let targetLabel = '';
+    let periodLabel = '';
+    let tableHeaders: string[][] = [];
+    let tableRows: string[][] = [];
+    let metricsSummary = '';
+    let pdfThemeColor: [number, number, number] = [16, 185, 129]; // default emerald/green
+
+    if (reportPeriodType === 'daily') {
+      periodLabel = `DAILY PERIOD - ${reportCustomDate}`;
+    } else if (reportPeriodType === 'weekly') {
+      const targetDate = new Date(reportCustomDate);
+      const day = targetDate.getDay();
+      const diff = targetDate.getDate() - day;
+      const sunday = new Date(targetDate.setDate(diff));
+      const saturday = new Date(sunday.getTime() + 6 * 24 * 60 * 60 * 1000);
+      periodLabel = `WEEKLY PERIOD - ${sunday.toLocaleDateString()} to ${saturday.toLocaleDateString()}`;
+    } else if (reportPeriodType === 'monthly') {
+      periodLabel = `MONTHLY PERIOD - ${reportCustomMonth}`;
+    } else if (reportPeriodType === 'quarterly') {
+      periodLabel = `QUARTERLY PERIOD - Q${reportCustomQuarter} of ${reportCustomYear}`;
+    } else if (reportPeriodType === 'yearly') {
+      periodLabel = `YEARLY PERIOD - FY ${reportCustomYear}`;
+    }
+
+    if (reportTarget === 'cash') {
+      targetLabel = 'CASH-PAYING OUTPATIENT REGISTRIES';
+      pdfThemeColor = [245, 158, 11]; // amber-500
+      doc.setDrawColor(245, 158, 11);
+
+      const filtered = patients.filter(p => p.paymentMode === 'Cash' && isWithinPeriod(p.registeredAt));
+      tableHeaders = [['Patient ID', 'OP-Number', 'Patient Name', 'Age / Sex', 'Phone', 'Clinic Department', 'Date Registered', 'Registered By']];
+      tableRows = filtered.map(p => [
+        p.id,
+        p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`,
+        p.name,
+        `${p.age} ${p.ageUnit === 'Months' ? 'Mos' : 'Yrs'} / ${p.gender}`,
+        p.phone || 'N/A',
+        p.category === 'General Consultation' ? 'General OPD' : `Consultant (${p.consultantSubCategory || 'N/A'})`,
+        p.registeredAt ? p.registeredAt.substring(0, 10) : 'N/A',
+        p.registeredBy || 'Receptionist'
+      ]);
+      metricsSummary = `Total Cash-Paying Patients: ${filtered.length} outpatient registries`;
+
+    } else if (reportTarget === 'insurance') {
+      targetLabel = 'HEALTH INSURANCE-COVERED PATIENTS';
+      pdfThemeColor = [147, 51, 234]; // purple-600
+      doc.setDrawColor(147, 51, 234);
+
+      const filtered = patients.filter(p => p.paymentMode === 'Insurance' && isWithinPeriod(p.registeredAt));
+      tableHeaders = [['Patient ID', 'OP-Number', 'Patient Name', 'Age / Sex', 'Insurance Provider', 'Phone', 'Clinic Department', 'Date Registered']];
+      tableRows = filtered.map(p => [
+        p.id,
+        p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`,
+        p.name,
+        `${p.age} ${p.ageUnit === 'Months' ? 'Mos' : 'Yrs'} / ${p.gender}`,
+        p.insuranceCompany || 'N/A',
+        p.phone || 'N/A',
+        p.category === 'General Consultation' ? 'General OPD' : `Consultant (${p.consultantSubCategory || 'N/A'})`,
+        p.registeredAt ? p.registeredAt.substring(0, 10) : 'N/A'
+      ]);
+      metricsSummary = `Total Insurance Patients: ${filtered.length} outpatient registries`;
+
+    } else if (reportTarget === 'lab') {
+      targetLabel = 'LABORATORY DIAGNOSIS SERVICES';
+      pdfThemeColor = [59, 130, 246]; // blue-500
+      doc.setDrawColor(59, 130, 246);
+
+      const filtered = labTests.filter(t => isWithinPeriod(t.testDate));
+      tableHeaders = [['Test ID', 'Date Performed', 'Patient Name', 'Patient ID', 'Conducted Lab Test', 'Technician', 'Billed Fee']];
+      tableRows = filtered.map(t => [
+        t.id,
+        t.testDate ? t.testDate.substring(0, 10) : 'N/A',
+        t.patientName,
+        t.patientId,
+        t.testName,
+        t.performedBy,
+        `Ksh ${t.fee.toLocaleString()}`
+      ]);
+      const totalFee = filtered.reduce((sum, t) => sum + (t.fee || 0), 0);
+      metricsSummary = `Total Diagnostic Encounters: ${filtered.length} tests | Total Labs Revenue Billed: Ksh ${totalFee.toLocaleString()}`;
+
+    } else if (reportTarget === 'pharmacy') {
+      targetLabel = 'PHARMACY DRUG & PRESCRIPTION DISPENSATIONS';
+      pdfThemeColor = [79, 70, 229]; // indigo-600
+      doc.setDrawColor(79, 70, 229);
+
+      const filtered = dispenses.filter(d => isWithinPeriod(d.dispenseDate));
+      tableHeaders = [['Dispense ID', 'Date Dispensed', 'Patient Name', 'Dispatched Medical Item', 'Qty', 'Unit Price', 'Billed Total', 'Dispensed By']];
+      tableRows = filtered.map(d => [
+        d.id,
+        d.dispenseDate ? d.dispenseDate.substring(0, 10) : 'N/A',
+        d.patientName,
+        d.medicationName,
+        String(d.quantity),
+        `Ksh ${d.pricePerUnit}`,
+        `Ksh ${d.totalCost.toLocaleString()}`,
+        d.dispensedBy
+      ]);
+      const totalCostVal = filtered.reduce((sum, d) => sum + (d.totalCost || 0), 0);
+      const totalQty = filtered.reduce((sum, d) => sum + (d.quantity || 0), 0);
+      metricsSummary = `Total Items Filled: ${filtered.length} orders | Total Units Supplied: ${totalQty} units | Cumulative Billing: Ksh ${totalCostVal.toLocaleString()}`;
+    }
+
+    doc.line(14, 37, 196, 37); // Draw colored accent line
+
+    // Section title
+    doc.setTextColor(15, 23, 42); 
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(10.5);
+    doc.text(`AUDIT PARAMETERS: ${targetLabel}`, 14, 48);
+
+    doc.setFont('Helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.text(`Reporting Cohort: ${periodLabel}`, 14, 53);
+
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(9.5);
+    doc.setTextColor(pdfThemeColor[0], pdfThemeColor[1], pdfThemeColor[2]);
+    doc.text(`${metricsSummary}`, 14, 59);
+
+    // Standard autoTable layout
+    autoTable(doc, {
+      head: tableHeaders,
+      body: tableRows,
+      startY: 64,
+      theme: 'striped',
+      headStyles: { fillColor: pdfThemeColor, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+      styles: { fontSize: 7.5, cellPadding: 2 },
+      columnStyles: {
+        ...(reportTarget === 'lab' ? { 6: { halign: 'right', fontStyle: 'bold' } } : {}),
+        ...(reportTarget === 'pharmacy' ? { 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right', fontStyle: 'bold' } } : {})
+      },
+      didDrawPage: (data) => {
+        doc.setFont('Helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(148, 163, 184);
+        doc.text(`PCEA Tumutumu Hospital Satellite Office Audit Record • Page ${data.pageNumber}`, 14, 285);
+        doc.text('STRICTLY CONFIDENTIAL - INTERNAL DISTRIBUTION ONLY', 132, 285);
+      }
+    });
+
+    const filePrefix = reportTarget.toUpperCase();
+    const cleanPeriodStr = periodLabel.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+    doc.save(`TUMUTUMU_AUDIT_${filePrefix}_${cleanPeriodStr}.pdf`);
+  };
 
   const handleAddWhitelistSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -388,6 +604,153 @@ export function AdminDashboard({
                 <span className="text-[10px] text-stone-400 font-mono block uppercase">Branch Net Performance</span>
                 <span className="text-2xl font-black text-stone-800">{profitMargin.toFixed(1)}%</span>
                 <span className="text-[10px] text-stone-500 block mt-0.5">Operational Profit Margin</span>
+              </div>
+            </div>
+
+            {/* Periodic Administrative Audit PDF Reports Generator Section */}
+            <div id="admin-reports-audit-section" className="bg-gradient-to-br from-stone-50 to-amber-50/20 border border-stone-200 p-5 rounded-xl shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 pb-3">
+                <div>
+                  <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <FileSpreadsheet className="w-4.5 h-4.5 text-amber-600 animate-pulse" />
+                    Periodic Administrative Audit PDF Reports Generator
+                  </h4>
+                  <p className="text-[11px] text-stone-500 mt-1">
+                    Export beautifully formatted, print-ready administrative compliance ledgers of cash patients, insurance details, diagnosed lab tests, and pharmacy prescriptions.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  id="btn-trigger-all-audit-pdf"
+                  onClick={handleGenerateReportPDF}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-sm transition-all cursor-pointer font-sans"
+                >
+                  <Download className="w-4 h-4" />
+                  Generate Audit PDF
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* 1. Report Target (Category) */}
+                <div>
+                  <label id="lbl-audit-target" className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5">1. Target Registry Department</label>
+                  <select
+                    id="audit-report-target-select"
+                    value={reportTarget}
+                    onChange={(e) => setReportTarget(e.target.value as any)}
+                    className="w-full bg-white border border-stone-200 rounded-lg p-2 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer"
+                  >
+                    <option value="cash">💵 Cash-Paying Outpatients</option>
+                    <option value="insurance">🛡️ Insurance-Covered Patients</option>
+                    <option value="lab">🧪 Laboratory Tests Conducted</option>
+                    <option value="pharmacy">💊 Pharmacy Prescriptions Dispensed</option>
+                  </select>
+                </div>
+
+                {/* 2. Reporting Period Type */}
+                <div>
+                  <label id="lbl-audit-frequency" className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5">2. Reporting Frequency / Period</label>
+                  <select
+                    id="audit-report-period-type-select"
+                    value={reportPeriodType}
+                    onChange={(e) => setReportPeriodType(e.target.value as any)}
+                    className="w-full bg-white border border-stone-200 rounded-lg p-2 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer"
+                  >
+                    <option value="daily">📆 Daily Journal</option>
+                    <option value="weekly">🗓️ Weekly Audit Range</option>
+                    <option value="monthly">📅 Monthly Financial Ledger</option>
+                    <option value="quarterly">📐 Quarterly Business Statement</option>
+                    <option value="yearly">🏛️ Yearly Institutional Report</option>
+                  </select>
+                </div>
+
+                {/* 3. Contextual Data Selector */}
+                <div>
+                  <label id="lbl-audit-scope" className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5">3. Select Date / Period Scope</label>
+                  
+                  {reportPeriodType === 'daily' && (
+                    <input
+                      id="audit-report-date-daily"
+                      type="date"
+                      value={reportCustomDate}
+                      onChange={(e) => setReportCustomDate(e.target.value)}
+                      className="w-full bg-white border border-stone-200 rounded-lg p-2 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer font-mono"
+                    />
+                  )}
+
+                  {reportPeriodType === 'weekly' && (
+                    <div className="space-y-1">
+                      <input
+                        id="audit-report-date-weekly"
+                        type="date"
+                        value={reportCustomDate}
+                        onChange={(e) => setReportCustomDate(e.target.value)}
+                        className="w-full bg-white border border-stone-200 rounded-lg p-2 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer font-mono"
+                      />
+                      {(() => {
+                        const targetDate = new Date(reportCustomDate);
+                        const day = targetDate.getDay();
+                        const diff = targetDate.getDate() - day;
+                        const sun = new Date(targetDate.setDate(diff));
+                        const sat = new Date(sun.getTime() + 6 * 24 * 60 * 60 * 1000);
+                        return (
+                          <span className="text-[10px] text-indigo-600 block font-mono font-medium mt-0.5">
+                            Scope: {sun.toLocaleDateString('default', { month: 'short', day: 'numeric' })} - {sat.toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {reportPeriodType === 'monthly' && (
+                    <input
+                      id="audit-report-date-monthly"
+                      type="month"
+                      value={reportCustomMonth}
+                      onChange={(e) => setReportCustomMonth(e.target.value)}
+                      className="w-full bg-white border border-stone-200 rounded-lg p-2 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer font-mono"
+                    />
+                  )}
+
+                  {reportPeriodType === 'quarterly' && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <select
+                        id="audit-report-quarter-select"
+                        value={reportCustomQuarter}
+                        onChange={(e) => setReportCustomQuarter(e.target.value)}
+                        className="bg-white border border-stone-200 rounded-lg p-2 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer"
+                      >
+                        <option value="1">Q1 (Jan - Mar)</option>
+                        <option value="2">Q2 (Apr - Jun)</option>
+                        <option value="3">Q3 (Jul - Sep)</option>
+                        <option value="4">Q4 (Oct - Dec)</option>
+                      </select>
+                      <select
+                        id="audit-report-quarter-year-select"
+                        value={reportCustomYear}
+                        onChange={(e) => setReportCustomYear(e.target.value)}
+                        className="bg-white border border-stone-200 rounded-lg p-2 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer font-mono"
+                      >
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2027">2027</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {reportPeriodType === 'yearly' && (
+                    <select
+                      id="audit-report-yearly-select"
+                      value={reportCustomYear}
+                      onChange={(e) => setReportCustomYear(e.target.value)}
+                      className="w-full bg-white border border-stone-200 rounded-lg p-2 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer font-mono"
+                    >
+                      <option value="2026">2026 Financial Year</option>
+                      <option value="2025">2025 Financial Year</option>
+                      <option value="2027">2027 Financial Year</option>
+                    </select>
+                  )}
+                </div>
               </div>
             </div>
 

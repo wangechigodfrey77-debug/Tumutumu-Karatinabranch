@@ -4,8 +4,8 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, TrendingUp, CalendarDays, Upload, FileSpreadsheet, FileText, Check, Loader2, Search, X, Download } from 'lucide-react';
-import { MedicationDispense, PharmacyItem, Patient } from '../types';
+import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, TrendingUp, CalendarDays, Upload, FileSpreadsheet, FileText, Check, Loader2, Search, X, Download, Stethoscope } from 'lucide-react';
+import { MedicationDispense, PharmacyItem, Patient, MedicalRecord } from '../types';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -20,6 +20,7 @@ interface PharmacyViewProps {
   onAddNewStockItem: (item: PharmacyItem) => void;
   onUpdateThreshold?: (itemId: string, threshold: number) => void;
   onAddPatient?: (patient: Patient) => void;
+  onUpdatePatientHistory?: (patientId: string, history: MedicalRecord[]) => void;
 }
 
 export function PharmacyView({
@@ -33,6 +34,7 @@ export function PharmacyView({
   onAddNewStockItem,
   onUpdateThreshold,
   onAddPatient,
+  onUpdatePatientHistory,
 }: PharmacyViewProps) {
   const [dispensePatientId, setDispensePatientId] = useState<string>('');
   const [selectedStockId, setSelectedStockId] = useState<string>('');
@@ -81,6 +83,86 @@ export function PharmacyView({
     } else {
       alert("Patient registration hook not configured in application root.");
     }
+  };
+
+  const handleDispensePrescription = (patientId: string, recordId: string) => {
+    if (!onUpdatePatientHistory) {
+      alert("Database error: patient updater callbacks are unconfigured.");
+      return;
+    }
+    const patient = patients.find(p => p.id === patientId);
+    if (!patient) {
+      alert("Error: Patient records do not exist for this ID!");
+      return;
+    }
+    const record = patient.medicalHistory?.find(r => r.id === recordId);
+    if (!record || !record.prescribedItems || record.prescribedItems.length === 0) {
+      alert("Error: No prescribed medication items found in clinical history!");
+      return;
+    }
+
+    // Check stock for ALL items in prescription
+    const stockErrors: string[] = [];
+    const validatedItems = record.prescribedItems.map(pItem => {
+      const sItem = stock.find(s => s.id === pItem.itemId || s.name === pItem.name);
+      if (!sItem) {
+        stockErrors.push(`Medication "${pItem.name}" is no longer inside pharmacy stock catalog.`);
+        return null;
+      }
+      if (sItem.stockQuantity < pItem.quantity) {
+        stockErrors.push(`Insufficient stock for "${pItem.name}". Requires ${pItem.quantity} units, but only ${sItem.stockQuantity} remains.`);
+      }
+      return { sItem, ...pItem };
+    });
+
+    if (stockErrors.length > 0) {
+      alert(`Dispensation blocked by stock constraints:\n${stockErrors.join('\n')}`);
+      return;
+    }
+
+    // Process dispenses
+    validatedItems.forEach((info, idx) => {
+      if (!info) return;
+      const newD: MedicationDispense = {
+        id: `DSP-${Date.now()}-${idx}`,
+        medicationName: info.name,
+        patientId,
+        patientName: patient.name,
+        dispenseDate: new Date().toISOString().split('T')[0],
+        dispensedBy: dispensingOfficer || 'Pharmacist Officer',
+        quantity: info.quantity,
+        pricePerUnit: info.price,
+        totalCost: info.quantity * info.price
+      };
+      onDispenseMedication(newD);
+    });
+
+    // Mark as Dispensed
+    const updatedHistory = (patient.medicalHistory || []).map(r => {
+      if (r.id === recordId) {
+        return { ...r, billingStatus: 'Dispensed' as const };
+      }
+      return r;
+    });
+
+    onUpdatePatientHistory(patientId, updatedHistory);
+    alert(`Success: Prescribed medicines dispensed and stock deducted successfully for patient: ${patient.name}.`);
+  };
+
+  const handlePayPrescriptionFromPharmacy = (patientId: string, recordId: string) => {
+    if (!onUpdatePatientHistory) return;
+    const patient = patients.find(p => p.id === patientId);
+    if (!patient) return;
+
+    const updatedHistory = (patient.medicalHistory || []).map(record => {
+      if (record.id === recordId) {
+        return { ...record, billingStatus: 'Paid' as const };
+      }
+      return record;
+    });
+
+    onUpdatePatientHistory(patientId, updatedHistory);
+    alert(`Prescription billing payment logged successfully! Medicines are now ready for dispensation.`);
   };
 
   // Sub-tabs state
@@ -733,6 +815,202 @@ export function PharmacyView({
             <span className="text-xs text-emerald-600 font-semibold block mt-1">Ksh {monthlyRev.toLocaleString()} generated</span>
           </div>
           <CalendarDays className="w-8 h-8 text-teal-600" />
+        </div>
+      </div>
+
+      {/* Doctor Prescriptions Pending Dispensation Desk */}
+      <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm leading-relaxed space-y-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-stone-100 pb-3">
+          <div>
+            <h3 className="text-sm font-bold text-stone-900 flex items-center gap-2">
+              <Stethoscope className="w-5 h-5 text-emerald-600" />
+              Doctors' Clinical Prescriptions & Dispensing Desk
+            </h3>
+            <p className="text-[11px] text-stone-500 mt-0.5">Real-time clinical prescription logs and itemized billing status</p>
+          </div>
+          <span className="bg-emerald-50 text-emerald-800 text-[10px] font-bold font-mono px-2.5 py-1 rounded-full border border-emerald-100">
+            Real-time Sync Active
+          </span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs whitespace-nowrap sm:whitespace-normal">
+            <thead>
+              <tr className="border-b border-stone-200 text-stone-500 font-medium col-span-5">
+                <th className="py-2.5">Date</th>
+                <th className="py-2.5">Patient Details</th>
+                <th className="py-2.5">Prescription & Diagnostic Info</th>
+                <th className="py-2.5">Bill Amount</th>
+                <th className="py-2.5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-stone-100 text-stone-700">
+              {(() => {
+                const rxList = patients.flatMap(p => {
+                  return (p.medicalHistory || [])
+                    .filter(record => record.prescribedItems && record.prescribedItems.length > 0)
+                    .map(record => ({
+                      patientId: p.id,
+                      patientName: p.name,
+                      opNumber: p.opNumber,
+                      recordId: record.id,
+                      date: record.date,
+                      symptoms: record.symptoms,
+                      diagnoses: record.diagnoses,
+                      prescribedItems: record.prescribedItems || [],
+                      billingStatus: record.billingStatus || 'Unpaid',
+                      invoiceAmount: record.invoiceAmount || 0,
+                      doctorName: record.doctorName,
+                      paymentMode: p.paymentMode || 'Cash',
+                      insuranceCompany: p.insuranceCompany
+                    }));
+                }).sort((a, b) => b.date.localeCompare(a.date));
+
+                if (rxList.length === 0) {
+                  return (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-stone-400">
+                        No physician prescriptions generated in database history.
+                      </td>
+                    </tr>
+                  );
+                }
+
+                return rxList.map(rx => (
+                  <tr id={`p-rx-tr-${rx.recordId}`} key={rx.recordId} className="hover:bg-stone-50/50">
+                    <td className="py-3 font-mono text-[11px]">{rx.date}</td>
+                    <td className="py-3">
+                      <span className="font-bold text-stone-900 block">{rx.patientName}</span>
+                      <span className="text-[10px] text-stone-400 font-mono block">OP-No: {rx.opNumber} • ID: {rx.patientId}</span>
+                      <span className="text-[10px] text-stone-500 block mt-1">
+                        Mode: <strong className="font-semibold text-stone-700">{rx.paymentMode}</strong>
+                        {rx.paymentMode === 'Insurance' && ` (${rx.insuranceCompany})`}
+                      </span>
+                    </td>
+                    <td className="py-3">
+                      <div className="max-w-[320px] space-y-1">
+                        <div>
+                          <span className="text-[9px] uppercase font-bold text-stone-400 tracking-wider">Diagnosis:</span>
+                          <p className="text-[11px] text-stone-800 leading-tight font-medium pb-1">{rx.diagnoses}</p>
+                        </div>
+                        <div>
+                          <span className="text-[9px] uppercase font-bold text-stone-400 tracking-wider">Medications:</span>
+                          <div className="space-y-0.5">
+                            {rx.prescribedItems.map((med: any, idx: number) => (
+                              <div key={idx} className="text-[11px] text-emerald-800 font-mono font-medium leading-none">
+                                • {med.name} x{med.quantity} {med.dosage ? `[${med.dosage}]` : ''}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-3">
+                      <span className="font-bold text-stone-900 block">Ksh {rx.invoiceAmount.toLocaleString()}</span>
+                      <span className="text-[10px] text-stone-400 font-mono block">Dr. {rx.doctorName}</span>
+                    </td>
+                    <td className="py-3 text-right">
+                      <div className="flex justify-end gap-2 items-center">
+                        {rx.billingStatus === 'Unpaid' ? (
+                          <>
+                            <span className="text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full shrink-0">
+                              Awaiting Payment
+                            </span>
+                            <button
+                              id={`btn-rx-pay-direct-${rx.recordId}`}
+                              onClick={() => handlePayPrescriptionFromPharmacy(rx.patientId, rx.recordId)}
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] py-1 px-2.5 rounded font-medium border border-emerald-500 cursor-pointer"
+                            >
+                              Collect Cash
+                            </button>
+                          </>
+                        ) : rx.billingStatus === 'Paid' ? (
+                          <>
+                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full shrink-0">
+                              Ready To Dispense
+                            </span>
+                            <button
+                              id={`btn-rx-dispense-${rx.recordId}`}
+                              onClick={() => handleDispensePrescription(rx.patientId, rx.recordId)}
+                              className="bg-stone-900 hover:bg-stone-800 text-white text-[10px] py-1 px-3 rounded font-bold border border-stone-950 cursor-pointer animate-pulse"
+                            >
+                              Dispense Rx Medicine
+                            </button>
+                          </>
+                        ) : (
+                          <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-0.5 rounded-full shrink-0">
+                            Dispensed & Cleared
+                          </span>
+                        )}
+                        <button
+                          id={`btn-pdf-rx-phm-${rx.recordId}`}
+                          onClick={() => {
+                            const doc = new jsPDF();
+                            
+                            doc.setFont("Helvetica", "bold");
+                            doc.setFontSize(18);
+                            doc.setTextColor(31, 41, 55);
+                            doc.text("TUMUTUMU HOSPITAL", 14, 20);
+                            
+                            doc.setFont("Helvetica", "normal");
+                            doc.setFontSize(9);
+                            doc.setTextColor(107, 114, 128);
+                            doc.text("P.O. Box 123, Nyeri County • Tel: +254 700 000 000", 14, 26);
+                            doc.text(`Bill Ref: PHM-INV-${rx.recordId} • Date: ${rx.date}`, 14, 31);
+                            
+                            doc.setDrawColor(229, 231, 235);
+                            doc.line(14, 36, 196, 36);
+                            
+                            doc.setFont("Helvetica", "bold");
+                            doc.setFontSize(10);
+                            doc.text("BILLING & RX RECEIPT DETAILS:", 14, 44);
+                            
+                            doc.setFont("Helvetica", "normal");
+                            doc.setFontSize(9);
+                            doc.text(`Patient Name: ${rx.patientName}`, 14, 50);
+                            doc.text(`Reference ID: ${rx.patientId} • OP Number: ${rx.opNumber || 'N/A'}`, 14, 55);
+                            doc.text(`Payment Mode: ${rx.paymentMode} ${rx.paymentMode === 'Insurance' ? `(${rx.insuranceCompany || 'N/A'})` : ''}`, 14, 60);
+                            doc.text(`Prescribed By: Dr. ${rx.doctorName}`, 14, 65);
+                            doc.text(`Invoiced Amount: Ksh ${rx.invoiceAmount.toLocaleString()} (${rx.billingStatus.toUpperCase()})`, 14, 70);
+                            
+                            const rows = rx.prescribedItems.map((item: any, idx: number) => [
+                              idx + 1,
+                              item.name,
+                              item.quantity,
+                              `Ksh ${item.price.toLocaleString()}`,
+                              `Ksh ${(item.quantity * item.price).toLocaleString()}`
+                            ]);
+                            
+                            autoTable(doc, {
+                              startY: 76,
+                              head: [['#', 'Medication Item', 'Qty', 'Unit Price', 'Total']],
+                              body: rows,
+                              theme: 'striped',
+                              headStyles: { fillColor: [68, 64, 60] },
+                              styles: { fontSize: 8 }
+                            });
+                            
+                            const finalRowY = (doc as any).lastAutoTable.finalY + 12;
+                            doc.setFont("Helvetica", "bold");
+                            doc.text(`TOTAL CHARGED: Ksh ${rx.invoiceAmount.toLocaleString()}`, 14, finalRowY);
+                            doc.text(`RECEIPT STATUS: ${rx.billingStatus === 'Unpaid' ? 'UNPAID / PENDING' : 'PAID & REGISTERED'}`, 14, finalRowY + 5);
+                            
+                            doc.setFont("Helvetica", "italic");
+                            doc.text("Serving Nyeri County with dignity and care. Quick Recovery!", 14, finalRowY + 15);
+                            
+                            doc.save(`Rx_Invoice_${rx.patientName.replace(/\s+/g, '_')}_${rx.recordId}.pdf`);
+                          }}
+                          className="bg-stone-100 hover:bg-stone-200 text-stone-700 text-[10px] px-2 py-1 rounded inline-flex items-center gap-1 border border-stone-300 cursor-pointer"
+                        >
+                          <Download className="w-2.5 h-2.5" /> PDF
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ));
+              })()}
+            </tbody>
+          </table>
         </div>
       </div>
 

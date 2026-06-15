@@ -123,11 +123,15 @@ export function AdminDashboard({
   // Distinguish Pharma vs Non-Pharma
   const pharmaDispenses = filteredDispenses.filter(d => {
     const matched = stock?.find(s => s.name === d.medicationName);
-    return matched ? matched.category !== 'Non-Pharmaceutical' : true;
+    if (!matched) return true;
+    const cat = matched.category;
+    return cat !== 'Non-Pharmaceutical' && cat !== 'Surgicals & Non-Pharmaceuticals';
   });
   const nonPharmaDispenses = filteredDispenses.filter(d => {
     const matched = stock?.find(s => s.name === d.medicationName);
-    return matched ? matched.category === 'Non-Pharmaceutical' : false;
+    if (!matched) return false;
+    const cat = matched.category;
+    return cat === 'Non-Pharmaceutical' || cat === 'Surgicals & Non-Pharmaceuticals';
   });
 
   const patientRevenue = filteredAppts.reduce((sum, a) => sum + (a.billingAmount || 0), 0);

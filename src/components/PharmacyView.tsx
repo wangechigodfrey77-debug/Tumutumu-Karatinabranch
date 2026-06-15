@@ -113,6 +113,17 @@ export function PharmacyView({
   const [dispenseSearchQuery, setDispenseSearchQuery] = useState<string>('');
   const [nonPharmaSearchQuery, setNonPharmaSearchQuery] = useState<string>('');
 
+  // Period filter states for history ledger
+  const [periodFilter, setPeriodFilter] = useState<'all' | 'weekly' | 'monthly' | 'quarterly' | 'search-month'>('all');
+  const [searchMonthVal, setSearchMonthVal] = useState<string>('2026-05');
+  const [ledgerSearchQuery, setLedgerSearchQuery] = useState<string>('');
+  const [ledgerTypeFilter, setLedgerTypeFilter] = useState<'all' | 'pharma' | 'non-pharma'>('all');
+  const [ledgerPage, setLedgerPage] = useState<number>(1);
+
+  React.useEffect(() => {
+    setLedgerPage(1);
+  }, [periodFilter, searchMonthVal, ledgerSearchQuery, ledgerTypeFilter]);
+
   React.useEffect(() => {
     if (restockStockId) {
       const selectedItem = stock.find((item) => item.id === restockStockId);
@@ -484,6 +495,89 @@ export function PharmacyView({
     setNewItemThreshold(15);
     alert(`Successfully registered new item: ${newItem.name} (Threshold: ${newItemThreshold} units)`);
   };
+
+  // Helper to resolve whether a record is a pharmaceutical or non-pharmaceutical item
+  const getDispenseType = (medName: string): 'pharma' | 'non-pharma' => {
+    const matched = stock.find((s) => s.name.toLowerCase() === medName.toLowerCase());
+    if (matched) {
+      return isNonPharma(matched.category) ? 'non-pharma' : 'pharma';
+    }
+    const lower = medName.toLowerCase();
+    const isSupply = lower.includes('needle') || 
+                     lower.includes('syringe') || 
+                     lower.includes('glove') || 
+                     lower.includes('bandage') || 
+                     lower.includes('wool') || 
+                     lower.includes('spirit') || 
+                     lower.includes('strips') || 
+                     lower.includes('strip') || 
+                     lower.includes('giving set') || 
+                     lower.includes('admin set') || 
+                     lower.includes('catheter') || 
+                     lower.includes('gauze') || 
+                     lower.includes('plaster') || 
+                     lower.includes('surgical') || 
+                     lower.includes('canula') || 
+                     lower.includes('cannula');
+    return isSupply ? 'non-pharma' : 'pharma';
+  };
+
+  // --- Periodic Ledger Calculations ---
+  const filteredLedgerDispenses = dispenses.filter((d) => {
+    // Apply period filter
+    let inPeriod = true;
+    const dispenseDateObj = new Date(d.dispenseDate);
+    const timeDiff = today.getTime() - dispenseDateObj.getTime();
+    const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+
+    if (periodFilter === 'weekly') {
+      inPeriod = daysDiff >= 0 && daysDiff <= 7;
+    } else if (periodFilter === 'monthly') {
+      inPeriod = daysDiff >= 0 && daysDiff <= 30;
+    } else if (periodFilter === 'quarterly') {
+      inPeriod = daysDiff >= 0 && daysDiff <= 90;
+    } else if (periodFilter === 'search-month') {
+      inPeriod = d.dispenseDate.startsWith(searchMonthVal);
+    }
+
+    if (!inPeriod) return false;
+
+    // Apply ledger type (Pharma vs Non-Pharma) filter
+    if (ledgerTypeFilter !== 'all') {
+      const type = getDispenseType(d.medicationName);
+      if (type !== ledgerTypeFilter) return false;
+    }
+
+    // Apply ledger search query filter (Patient Name, Patient ID, Medication, Dispensed By)
+    if (ledgerSearchQuery.trim()) {
+      const q = ledgerSearchQuery.toLowerCase();
+      const matchesPatientName = d.patientName && d.patientName.toLowerCase().includes(q);
+      const matchesPatientId = d.patientId && d.patientId.toLowerCase().includes(q);
+      const matchesMedName = d.medicationName && d.medicationName.toLowerCase().includes(q);
+      const matchesBy = d.dispensedBy && d.dispensedBy.toLowerCase().includes(q);
+      return matchesPatientName || matchesPatientId || matchesMedName || matchesBy;
+    }
+
+    return true;
+  });
+
+  const sortedLedgerDispenses = [...filteredLedgerDispenses].sort((a, b) => {
+    return new Date(b.dispenseDate).getTime() - new Date(a.dispenseDate).getTime();
+  });
+
+  // Unique Patients count
+  const uniquePatientsCount = new Set(filteredLedgerDispenses.map(d => d.patientId)).size;
+  // Total Items Dispensed
+  const totalQtyDispensed = filteredLedgerDispenses.reduce((sum, d) => sum + d.quantity, 0);
+  // Total Period Revenue Cost
+  const totalPeriodCost = filteredLedgerDispenses.reduce((sum, d) => sum + d.totalCost, 0);
+
+  // Pagination Parameters
+  const itemsPerPage = 15;
+  const totalLedgerItems = sortedLedgerDispenses.length;
+  const totalPages = Math.max(1, Math.ceil(totalLedgerItems / itemsPerPage));
+  const paginatedLedger = sortedLedgerDispenses.slice((ledgerPage - 1) * itemsPerPage, ledgerPage * itemsPerPage);
+  // --- End Periodic Ledger Calculations ---
 
   return (
     <div id="pharmacy-module" className="space-y-6">
@@ -1383,6 +1477,276 @@ export function PharmacyView({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Dispensation History & Patient Period Ledger Section */}
+      <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-xs space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-100 pb-4">
+          <div>
+            <h3 className="text-sm font-bold text-stone-900 flex items-center gap-2">
+              <CalendarDays className="w-5 h-5 text-indigo-600" />
+              Patient Dispensation & Supply/Medication Ledger
+            </h3>
+            <p className="text-xs text-stone-500 mt-1">
+              Filter by period or calendar month to view patients served, medications, and non-pharmaceutical formulas dispensed.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Range Select Controls */}
+            <div className="inline-flex rounded-lg border border-stone-200 p-0.5 bg-stone-50 text-xs">
+              <button
+                type="button"
+                id="btn-ledger-filter-all"
+                onClick={() => setPeriodFilter('all')}
+                className={`px-3 py-1.5 rounded-md font-semibold transition cursor-pointer ${
+                  periodFilter === 'all'
+                    ? 'bg-white text-stone-900 shadow-xs'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                All Time
+              </button>
+              <button
+                type="button"
+                id="btn-ledger-filter-weekly"
+                onClick={() => setPeriodFilter('weekly')}
+                className={`px-3 py-1.5 rounded-md font-semibold transition cursor-pointer ${
+                  periodFilter === 'weekly'
+                    ? 'bg-white text-indigo-700 shadow-xs'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                Weekly (7d)
+              </button>
+              <button
+                type="button"
+                id="btn-ledger-filter-monthly"
+                onClick={() => setPeriodFilter('monthly')}
+                className={`px-3 py-1.5 rounded-md font-semibold transition cursor-pointer ${
+                  periodFilter === 'monthly'
+                    ? 'bg-white text-indigo-700 shadow-xs'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                Monthly (30d)
+              </button>
+              <button
+                type="button"
+                id="btn-ledger-filter-quarterly"
+                onClick={() => setPeriodFilter('quarterly')}
+                className={`px-3 py-1.5 rounded-md font-semibold transition cursor-pointer ${
+                  periodFilter === 'quarterly'
+                    ? 'bg-white text-indigo-700 shadow-xs'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                Quarterly (90d)
+              </button>
+              <button
+                type="button"
+                id="btn-ledger-filter-search"
+                onClick={() => setPeriodFilter('search-month')}
+                className={`px-3 py-1.5 rounded-md font-semibold transition cursor-pointer ${
+                  periodFilter === 'search-month'
+                    ? 'bg-white text-indigo-700 shadow-xs'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                Search Month
+              </button>
+            </div>
+
+            {/* Custom Month Picker */}
+            {periodFilter === 'search-month' && (
+              <input
+                type="month"
+                id="inp-ledger-search-month"
+                value={searchMonthVal}
+                onChange={(e) => setSearchMonthVal(e.target.value)}
+                className="bg-white border border-stone-200 rounded-lg py-1.5 px-3 text-xs focus:ring-1 focus:ring-indigo-500 outline-hidden text-stone-700 w-36"
+              />
+            )}
+
+            {/* Item Category Toggle Segment */}
+            <div className="inline-flex rounded-lg border border-stone-200 p-0.5 bg-stone-100 text-xs shadow-xs">
+              <button
+                type="button"
+                id="btn-ledger-type-all"
+                onClick={() => setLedgerTypeFilter('all')}
+                className={`px-2.5 py-1.5 rounded-md font-semibold transition cursor-pointer ${
+                  ledgerTypeFilter === 'all'
+                    ? 'bg-white text-stone-900 shadow-xs'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                All Items
+              </button>
+              <button
+                type="button"
+                id="btn-ledger-type-pharma"
+                onClick={() => setLedgerTypeFilter('pharma')}
+                className={`px-2.5 py-1.5 rounded-md font-semibold transition cursor-pointer ${
+                  ledgerTypeFilter === 'pharma'
+                    ? 'bg-white text-emerald-800 shadow-xs'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                Medicines (Pharma)
+              </button>
+              <button
+                type="button"
+                id="btn-ledger-type-nonpharma"
+                onClick={() => setLedgerTypeFilter('non-pharma')}
+                className={`px-2.5 py-1.5 rounded-md font-semibold transition cursor-pointer ${
+                  ledgerTypeFilter === 'non-pharma'
+                    ? 'bg-white text-indigo-800 shadow-xs'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                Supplies (Non-Pharma)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Dynamic Metrics Bar for active period */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-stone-50/50 p-4 rounded-xl border border-stone-250 text-xs">
+          <div className="text-center sm:text-left border-b sm:border-b-0 sm:border-r border-stone-200 pb-3 sm:pb-0 sm:pr-4">
+            <span className="text-[10px] text-stone-400 font-mono uppercase tracking-wider block">Patients Served (Period)</span>
+            <span className="text-lg font-bold text-stone-900 mt-0.5 block">{uniquePatientsCount} patients</span>
+          </div>
+          <div className="text-center sm:text-left border-b sm:border-b-0 sm:border-r border-stone-200 pb-3 sm:pb-0 sm:px-4">
+            <span className="text-[10px] text-stone-400 font-mono uppercase tracking-wider block">Medications & Supplies Dispatched</span>
+            <span className="text-lg font-bold text-stone-900 mt-0.5 block">{totalQtyDispensed} units</span>
+          </div>
+          <div className="text-center sm:text-left sm:pl-4">
+            <span className="text-[10px] text-stone-400 font-mono uppercase tracking-wider block">Financial Transaction Volume</span>
+            <span className="text-lg font-bold text-emerald-600 mt-0.5 block">Ksh {totalPeriodCost.toLocaleString()}</span>
+          </div>
+        </div>
+
+        {/* Ledger Table Filter Search Bar */}
+        <div className="relative">
+          <input
+            id="inp-ledger-search-query"
+            type="text"
+            placeholder="Search ledger by Patient Name, ID, Medication, or Officer..."
+            value={ledgerSearchQuery}
+            onChange={(e) => setLedgerSearchQuery(e.target.value)}
+            className="w-full bg-stone-50 border border-stone-200 rounded-lg py-2 pl-9 pr-8 focus:ring-1 focus:ring-indigo-500 outline-hidden text-xs"
+          />
+          <Search className="w-4 h-4 text-stone-400 absolute left-3 top-2.5" />
+          {ledgerSearchQuery && (
+            <button
+              onClick={() => setLedgerSearchQuery('')}
+              className="absolute right-3 top-2 text-stone-400 hover:text-stone-600 transition text-sm font-bold cursor-pointer"
+            >
+              ×
+            </button>
+          )}
+        </div>
+
+        {/* Ledger Data Table */}
+        <div className="overflow-x-auto border border-stone-200 rounded-xl">
+          <table className="w-full text-left text-xs font-sans">
+            <thead className="bg-stone-50 text-stone-500 font-medium border-b border-stone-200">
+              <tr>
+                <th className="p-3">Dispense ID</th>
+                <th className="p-3">Patient Info</th>
+                <th className="p-3">Item Type</th>
+                <th className="p-3">Dispatched Item</th>
+                <th className="p-3 text-right">Qty</th>
+                <th className="p-3 text-right">Unit Price</th>
+                <th className="p-3 text-right font-semibold text-stone-900">Total Cost</th>
+                <th className="p-3">Dispense Date</th>
+                <th className="p-3">Dispensed By</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-stone-100 text-stone-700">
+              {paginatedLedger.map((d) => {
+                const itemType = getDispenseType(d.medicationName);
+                return (
+                  <tr key={d.id} className="hover:bg-stone-50/40 transition">
+                    <td className="p-3 font-mono text-[10px] text-stone-400">{d.id}</td>
+                    <td className="p-3">
+                      <div className="font-semibold text-slate-800">{d.patientName}</div>
+                      <div className="text-[10px] text-stone-400 font-mono mt-0.5">{d.patientId}</div>
+                    </td>
+                    <td className="p-3 whitespace-nowrap">
+                      {itemType === 'non-pharma' ? (
+                        <span className="inline-flex items-center gap-1 bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                          📦 Non-Pharma
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 bg-emerald-50 border border-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                          💊 Medicine
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3 font-medium text-stone-900">{d.medicationName}</td>
+                    <td className="p-3 text-right font-semibold font-mono">{d.quantity}</td>
+                    <td className="p-3 text-right text-stone-500 font-mono">Ksh {d.pricePerUnit}</td>
+                    <td className="p-3 text-right font-bold text-stone-900 font-mono">Ksh {d.totalCost}</td>
+                    <td className="p-3 whitespace-nowrap">
+                      <span className="bg-stone-100 text-stone-800 px-2 py-0.5 rounded text-[10px] font-semibold font-mono">
+                        {d.dispenseDate}
+                      </span>
+                    </td>
+                    <td className="p-3 text-stone-600 font-medium">{d.dispensedBy}</td>
+                  </tr>
+                );
+              })}
+
+              {totalLedgerItems === 0 && (
+                <tr>
+                  <td colSpan={9} className="p-8 text-center text-stone-400 font-medium">
+                    No dispensation logs matched selected filters for this range.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Section */}
+        {totalLedgerItems > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 text-xs">
+            <span className="text-stone-500 font-sans">
+              Showing <strong className="text-stone-800">{(ledgerPage - 1) * itemsPerPage + 1}</strong> to{" "}
+              <strong className="text-stone-800">
+                {Math.min(ledgerPage * itemsPerPage, totalLedgerItems)}
+              </strong>{" "}
+              of <strong className="text-stone-800">{totalLedgerItems}</strong> logged entries
+            </span>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                disabled={ledgerPage === 1}
+                onClick={() => setLedgerPage(prev => Math.max(1, prev - 1))}
+                className="px-3 py-1.5 rounded-lg border border-stone-200 font-semibold bg-white text-stone-700 hover:bg-stone-50 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              >
+                Previous
+              </button>
+              
+              <div className="flex items-center gap-1 font-mono text-stone-500">
+                <span className="px-2 py-1 bg-stone-100 rounded text-stone-800 font-bold">{ledgerPage}</span>
+                <span>/</span>
+                <span>{totalPages}</span>
+              </div>
+
+              <button
+                type="button"
+                disabled={ledgerPage === totalPages}
+                onClick={() => setLedgerPage(prev => Math.min(totalPages, prev + 1))}
+                className="px-3 py-1.5 rounded-lg border border-stone-200 font-semibold bg-white text-stone-700 hover:bg-stone-50 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

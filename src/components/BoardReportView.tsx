@@ -751,11 +751,15 @@ export function BoardReportView({
     const actDispenses = dispenses.filter((d) => getPeriodKey(d.dispenseDate, scale) === activeKey);
     const pharmaDisp = actDispenses.filter(d => {
       const match = stock?.find(s => s.name === d.medicationName);
-      return match ? match.category !== 'Non-Pharmaceutical' : true;
+      if (!match) return true;
+      const cat = match.category;
+      return cat !== 'Non-Pharmaceutical' && cat !== 'Surgicals & Non-Pharmaceuticals';
     });
     const nonPharmaDisp = actDispenses.filter(d => {
       const match = stock?.find(s => s.name === d.medicationName);
-      return match ? match.category === 'Non-Pharmaceutical' : false;
+      if (!match) return false;
+      const cat = match.category;
+      return cat === 'Non-Pharmaceutical' || cat === 'Surgicals & Non-Pharmaceuticals';
     });
 
     const activePharmaRev = pharmaDisp.reduce((sum, item) => sum + (item.totalCost || 0), 0);
@@ -765,11 +769,15 @@ export function BoardReportView({
     const overDisp = dispenses;
     const overPharmaDisp = overDisp.filter(d => {
       const match = stock?.find(s => s.name === d.medicationName);
-      return match ? match.category !== 'Non-Pharmaceutical' : true;
+      if (!match) return true;
+      const cat = match.category;
+      return cat !== 'Non-Pharmaceutical' && cat !== 'Surgicals & Non-Pharmaceuticals';
     });
     const overNonPharmaDisp = overDisp.filter(d => {
       const match = stock?.find(s => s.name === d.medicationName);
-      return match ? match.category === 'Non-Pharmaceutical' : false;
+      if (!match) return false;
+      const cat = match.category;
+      return cat === 'Non-Pharmaceutical' || cat === 'Surgicals & Non-Pharmaceuticals';
     });
 
     const overRecRev = appointments.filter(a => a.category === 'General Consultation' && a.billingStatus === 'Paid').reduce((sum, a) => sum + Number(a.billingAmount || 0), 0);

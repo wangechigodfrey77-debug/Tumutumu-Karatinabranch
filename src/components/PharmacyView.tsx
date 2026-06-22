@@ -271,8 +271,8 @@ export function PharmacyView({
   };
 
   const todayStr = today.toISOString().split('T')[0];
-  const [pharmaDispenseDate, setPharmaDispenseDate] = useState<string>('2026-06-05');
-  const [nonPharmaDispenseDate, setNonPharmaDispenseDate] = useState<string>('2026-06-05');
+  const [pharmaDispenseDate, setPharmaDispenseDate] = useState<string>(todayStr);
+  const [nonPharmaDispenseDate, setNonPharmaDispenseDate] = useState<string>(todayStr);
   
   const dailyDispenses = dispenses.filter((d) => d.dispenseDate === todayStr);
   const dailyRev = dailyDispenses.reduce((sum, d) => sum + d.totalCost, 0);

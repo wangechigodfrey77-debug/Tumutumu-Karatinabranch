@@ -79,6 +79,7 @@ export function BoardReportView({
   const [activeSubTab, setActiveSubTab] = useState<'analytics' | 'ai_report'>('analytics');
   const [scale, setScale] = useState<'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'>('daily');
   const [activeReportKey, setActiveReportKey] = useState<string>('');
+  const [reportScope, setReportScope] = useState<'all-time' | 'period'>('period');
 
   // AI prompt state
   const [reportText, setReportText] = useState<string>('');
@@ -209,9 +210,9 @@ export function BoardReportView({
     // Department Revenues
     const apptsMatching = appointments.filter((a) => getPeriodKey(a.date, currentScale) === key && a.billingStatus === 'Paid');
     
-    // 1. Reception / Corporate Desk: general consultation billing
+    // 1. Reception / Corporate Desk: general consultation, walk-ins & procedures billing
     const receptionRevenue = apptsMatching
-      .filter((a) => a.category === 'General Consultation')
+      .filter((a) => a.category !== 'Consultant Clinic')
       .reduce((sum, a) => sum + (a.billingAmount || 0), 0);
 
     // 2. Specialized Consultant Clinics
@@ -1862,22 +1863,39 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
     setErrorMsg('');
     setReportText('');
 
-    const statsPayload = {
-      patientCount: totalPatientAggregate,
-      generalCount: generalSum,
-      consultantCount: consultantSum,
-      surgicalCount: surgicalSum,
-      pediatricsCount: pediatricsSum,
-      mopcCount: mopcSum,
-      obsGynCount: obsGynSum,
-      labTestsCount: labTotal,
-      labRevenue: labRevSum,
-      pharmacyDispensed: pharmacyTotal,
-      pharmacyRevenue: pharmacyRevSum,
-      totalRevenue: totalRevSum,
-      staffCount: uniqueStaff,
-      leavePendingCount: pendingLeaves,
-    };
+    const statsPayload = reportScope === 'period' && activeReport
+      ? {
+          patientCount: activeReport.patientsCount,
+          generalCount: patients.filter((p) => getPeriodKey(p.registeredAt, scale) === activeKey && p.category === 'General Consultation').length,
+          consultantCount: patients.filter((p) => getPeriodKey(p.registeredAt, scale) === activeKey && p.category === 'Consultant Clinic').length,
+          surgicalCount: patients.filter((p) => getPeriodKey(p.registeredAt, scale) === activeKey && p.consultantSubCategory === 'Surgical').length,
+          pediatricsCount: patients.filter((p) => getPeriodKey(p.registeredAt, scale) === activeKey && p.consultantSubCategory === 'Pediatrics').length,
+          mopcCount: patients.filter((p) => getPeriodKey(p.registeredAt, scale) === activeKey && p.consultantSubCategory === 'MOPC').length,
+          obsGynCount: patients.filter((p) => getPeriodKey(p.registeredAt, scale) === activeKey && p.consultantSubCategory === 'Obs/Gyn').length,
+          labTestsCount: activeReport.labTestsCount,
+          labRevenue: activeReport.labRevenue,
+          pharmacyDispensed: activeReport.pharmacyCount,
+          pharmacyRevenue: activeReport.pharmacyRevenue,
+          totalRevenue: activeReport.totalRevenue,
+          staffCount: new Set(duties.filter((d) => getPeriodKey(d.date || '2026-06-05', scale) === activeKey).map(d => d.staffEmail)).size,
+          leavePendingCount: pendingLeaves,
+        }
+      : {
+          patientCount: totalPatientAggregate,
+          generalCount: generalSum,
+          consultantCount: consultantSum,
+          surgicalCount: surgicalSum,
+          pediatricsCount: pediatricsSum,
+          mopcCount: mopcSum,
+          obsGynCount: obsGynSum,
+          labTestsCount: labTotal,
+          labRevenue: labRevSum,
+          pharmacyDispensed: pharmacyTotal,
+          pharmacyRevenue: pharmacyRevSum,
+          totalRevenue: totalRevSum,
+          staffCount: uniqueStaff,
+          leavePendingCount: pendingLeaves,
+        };
 
     try {
       // Construct absolute API URL if environment variables VITE_API_URL or VITE_APP_URL are specified.
@@ -2397,53 +2415,109 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
               </p>
             </div>
 
-            <button
-              id="btn-generate-board-report"
-              onClick={runReportGeneration}
-              disabled={generating}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs px-4 py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 disabled:bg-emerald-400 cursor-pointer"
-            >
-              {generating ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Compiling Hospital Data...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  Generate Comprehensive Board Report
-                </>
-              )}
-            </button>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="flex items-center gap-1 p-1 bg-stone-100 rounded-lg border border-stone-200">
+                <button
+                  type="button"
+                  onClick={() => setReportScope('period')}
+                  className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
+                    reportScope === 'period' ? 'bg-white text-slate-900 shadow-xs' : 'text-stone-500 hover:text-stone-700'
+                  }`}
+                  title="Generate a report specifically for the selected date or operational period"
+                >
+                  Period Specific ({activeKey || 'Selected Period'})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setReportScope('all-time')}
+                  className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
+                    reportScope === 'all-time' ? 'bg-white text-slate-900 shadow-xs' : 'text-stone-500 hover:text-stone-700'
+                  }`}
+                  title="Generate an cumulative all-time branch metrics report"
+                >
+                  All-Time Cumulative
+                </button>
+              </div>
+
+              <button
+                id="btn-generate-board-report"
+                onClick={runReportGeneration}
+                disabled={generating}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs px-4 py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 disabled:bg-emerald-400 cursor-pointer"
+              >
+                {generating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Compiling Hospital Data...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Generate Comprehensive Board Report
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-stone-50 p-4 rounded-lg border border-stone-200">
               <span className="text-xs text-stone-500 block">Total Patients Attended</span>
-              <span className="text-2xl font-bold text-stone-800">{totalPatientAggregate}</span>
+              <span className="text-2xl font-bold text-stone-800">
+                {reportScope === 'period' && activeReport ? activeReport.patientsCount : totalPatientAggregate}
+              </span>
               <span className="text-[10px] text-stone-400 block mt-1">
-                General: {generalSum} | Consultant: {consultantSum}
+                General:{' '}
+                {reportScope === 'period' && activeReport
+                  ? patients.filter((p) => getPeriodKey(p.registeredAt, scale) === activeKey && p.category === 'General Consultation').length
+                  : generalSum}{' '}
+                | Consultant:{' '}
+                {reportScope === 'period' && activeReport
+                  ? patients.filter((p) => getPeriodKey(p.registeredAt, scale) === activeKey && p.category === 'Consultant Clinic').length
+                  : consultantSum}
               </span>
             </div>
             <div className="bg-stone-50 p-4 rounded-lg border border-stone-200">
               <span className="text-xs text-stone-500 block">Lab Activity & Revenue</span>
-              <span className="text-2xl font-bold text-cyan-700">{labTotal} Tests</span>
+              <span className="text-2xl font-bold text-cyan-700">
+                {reportScope === 'period' && activeReport ? activeReport.labTestsCount : labTotal} Tests
+              </span>
               <span className="text-[10px] text-emerald-600 block mt-1 font-semibold">
-                Ksh {labRevSum.toLocaleString()}
+                Ksh{' '}
+                {(reportScope === 'period' && activeReport
+                  ? activeReport.labRevenue
+                  : labRevSum
+                ).toLocaleString()}
               </span>
             </div>
             <div className="bg-stone-50 p-4 rounded-lg border border-stone-200">
               <span className="text-xs text-stone-500 block">Pharmacy Dispenses</span>
-              <span className="text-2xl font-bold text-purple-700">{pharmacyTotal} Rx</span>
+              <span className="text-2xl font-bold text-purple-700">
+                {reportScope === 'period' && activeReport ? activeReport.pharmacyCount : pharmacyTotal} Rx
+              </span>
               <span className="text-[10px] text-emerald-600 block mt-1 font-semibold">
-                Ksh {pharmacyRevSum.toLocaleString()}
+                Ksh{' '}
+                {(reportScope === 'period' && activeReport
+                  ? activeReport.pharmacyRevenue
+                  : pharmacyRevSum
+                ).toLocaleString()}
               </span>
             </div>
             <div className="bg-stone-50 p-4 rounded-lg border border-stone-200">
               <span className="text-xs text-stone-500 block">Combined Satellite Income</span>
-              <span className="text-2xl font-bold text-emerald-700">Ksh {totalRevSum.toLocaleString()}</span>
+              <span className="text-2xl font-bold text-emerald-700">
+                Ksh{' '}
+                {(reportScope === 'period' && activeReport
+                  ? activeReport.totalRevenue
+                  : totalRevSum
+                ).toLocaleString()}
+              </span>
               <span className="text-[10px] text-stone-400 block mt-1">
-                Staff Active: {uniqueStaff} | Leaves: {pendingLeaves}
+                Staff Active:{' '}
+                {reportScope === 'period' && activeReport
+                  ? new Set(duties.filter((d) => getPeriodKey(d.date || '2026-06-05', scale) === activeKey).map((d) => d.staffEmail)).size
+                  : uniqueStaff}{' '}
+                | Leaves: {pendingLeaves}
               </span>
             </div>
           </div>

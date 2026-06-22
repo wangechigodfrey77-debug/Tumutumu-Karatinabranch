@@ -103,14 +103,14 @@ export function AdminDashboard({
   const [dutyEmail, setDutyEmail] = useState<string>('');
   const [dutyShift, setDutyShift] = useState<'Day Shift' | 'Night Shift' | 'On Call'>('Day Shift');
   const [dutyDept, setDutyDept] = useState<'Reception' | 'Lab' | 'Pharmacy' | 'Clinical' | 'Admin'>('Clinical');
-  const [dutyDate, setDutyDate] = useState<string>('2026-06-05');
+  const [dutyDate, setDutyDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
 
   // New Expense modal state
   const [showExpenseModal, setShowExpenseModal] = useState<boolean>(false);
   const [expenseCategory, setExpenseCategory] = useState<string>('Electricity');
   const [expenseCustomCategory, setExpenseCustomCategory] = useState<string>('');
   const [expenseAmount, setExpenseAmount] = useState<string>('');
-  const [expenseDate, setExpenseDate] = useState<string>('2026-06-05');
+  const [expenseDate, setExpenseDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
   const [expenseDescription, setExpenseDescription] = useState<string>('');
 
   // Compute departmental financial statistics

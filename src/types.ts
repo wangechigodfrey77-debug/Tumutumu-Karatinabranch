@@ -39,13 +39,13 @@ export interface Patient {
   ageUnit?: 'Years' | 'Months';
   gender: 'Male' | 'Female' | 'Other';
   phone: string;
-  category: 'General Consultation' | 'Consultant Clinic';
+  category: 'General Consultation' | 'Consultant Clinic' | 'Walk-in Lab' | 'Walk-in Pharmacy' | 'Outpatient Procedure';
   consultantSubCategory?: 'Surgical' | 'Pediatrics' | 'MOPC' | 'Obs/Gyn';
   registeredAt: string;
   registeredBy: string;
   medicalHistory: MedicalRecord[];
   isWalkIn?: boolean;
-  walkInTag?: 'Lab Walk-In' | 'Pharmacy Walk-In';
+  walkInTag?: 'Lab Walk-In' | 'Pharmacy Walk-In' | 'Outpatient Procedure Walk-In';
   paymentMode?: 'Cash' | 'Insurance';
   insuranceCompany?: string;
 }
@@ -128,7 +128,7 @@ export interface Appointment {
   patientPhone: string;
   date: string;
   time: string;
-  category: 'General Consultation' | 'Consultant Clinic';
+  category: 'General Consultation' | 'Consultant Clinic' | 'Walk-in Lab' | 'Walk-in Pharmacy' | 'Outpatient Procedure';
   consultantSubCategory?: 'Surgical' | 'Pediatrics' | 'MOPC' | 'Obs/Gyn';
   doctorEmail?: string;
   status: 'Scheduled' | 'Completed' | 'Cancelled';

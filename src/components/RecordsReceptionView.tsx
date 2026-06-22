@@ -42,6 +42,7 @@ export function RecordsReceptionView({
   // Search/Filters
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [ehrSearchQuery, setEhrSearchQuery] = useState<string>('');
+  const [apptSearchQuery, setApptSearchQuery] = useState<string>('');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [curSelectedPatient, setCurSelectedPatient] = useState<Patient | null>(null);
 
@@ -51,9 +52,10 @@ export function RecordsReceptionView({
   const [newAgeUnit, setNewAgeUnit] = useState<'Years' | 'Months'>('Years');
   const [newGender, setNewGender] = useState<'Male' | 'Female' | 'Other'>('Male');
   const [newPhone, setNewPhone] = useState<string>('');
-  const [newCategory, setNewCategory] = useState<'General Consultation' | 'Consultant Clinic'>('General Consultation');
+  const [newCategory, setNewCategory] = useState<'General Consultation' | 'Consultant Clinic' | 'Walk-in Lab' | 'Walk-in Pharmacy' | 'Outpatient Procedure'>('General Consultation');
+  const [customProcedureAmount, setCustomProcedureAmount] = useState<number>(300);
   const [newSubCategory, setNewSubCategory] = useState<'Surgical' | 'Pediatrics' | 'MOPC' | 'Obs/Gyn'>('Surgical');
-  const [customRegDate, setCustomRegDate] = useState<string>('2026-06-05');
+  const [customRegDate, setCustomRegDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
   const [newOpNumber, setNewOpNumber] = useState<string>('');
   const [newPaymentMode, setNewPaymentMode] = useState<'Cash' | 'Insurance'>('Cash');
   const [newInsuranceCompany, setNewInsuranceCompany] = useState<string>('');
@@ -64,6 +66,29 @@ export function RecordsReceptionView({
     const rand = Math.floor(Math.random() * 9000 + 1000);
     setNewOpNumber(`OP-${yearMonth}-${rand}`);
   }, [customRegDate]);
+
+  // Auto-set default billing fee based on category
+  useEffect(() => {
+    switch (newCategory) {
+      case 'General Consultation':
+        setCustomProcedureAmount(300);
+        break;
+      case 'Consultant Clinic':
+        setCustomProcedureAmount(1500);
+        break;
+      case 'Walk-in Lab':
+        setCustomProcedureAmount(100);
+        break;
+      case 'Walk-in Pharmacy':
+        setCustomProcedureAmount(100);
+        break;
+      case 'Outpatient Procedure':
+        setCustomProcedureAmount(500);
+        break;
+      default:
+        break;
+    }
+  }, [newCategory]);
 
   // New Medical Record Form State (for Doctors / Admins)
   const [symptoms, setSymptoms] = useState<string>('');
@@ -143,7 +168,7 @@ export function RecordsReceptionView({
 
   // New Appointment Form State
   const [apptPatientId, setApptPatientId] = useState<string>('');
-  const [apptDate, setApptDate] = useState<string>('2026-06-05');
+  const [apptDate, setApptDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
   const [apptTime, setApptTime] = useState<string>('09:00');
   const [apptCategory, setApptCategory] = useState<'General Consultation' | 'Consultant Clinic'>('General Consultation');
   const [apptSub, setApptSub] = useState<'Surgical' | 'Pediatrics' | 'MOPC' | 'Obs/Gyn'>('Surgical');
@@ -188,7 +213,7 @@ export function RecordsReceptionView({
       doctorEmail: 'doctor@tumutumu.org',
       status: 'Scheduled',
       billingStatus: 'Unpaid',
-      billingAmount: newCategory === 'General Consultation' ? 300 : 1500,
+      billingAmount: Number(customProcedureAmount),
     };
     onAddAppointment(newAppt);
 
@@ -198,7 +223,7 @@ export function RecordsReceptionView({
     setNewPhone('');
     setNewPaymentMode('Cash');
     setNewInsuranceCompany('');
-    alert(`Patient ${newPatient.name} standard registration compiled! Assigned Patient ID: ${patientId} & OP-Number: ${newPatient.opNumber}. A triage billing invoice has been generated under Appointments.`);
+    alert(`Patient ${newPatient.name} standard registration compiled! Assigned Patient ID: ${patientId} & OP-Number: ${newPatient.opNumber}. A triage billing invoice of Ksh ${Number(customProcedureAmount)} has been generated under Appointments.`);
   };
 
   const handleAddMedicalHistory = (e: React.FormEvent) => {
@@ -412,6 +437,36 @@ export function RecordsReceptionView({
            p.phone.includes(query);
   });
 
+  const filteredAppointments = appointments
+    .filter((appt) => {
+      const query = apptSearchQuery.toLowerCase().trim();
+      if (!query) return true;
+      const patient = patients.find((p) => p.id === appt.patientId);
+      const op = patient?.opNumber || '';
+      return (
+        appt.patientName.toLowerCase().includes(query) ||
+        appt.patientId.toLowerCase().includes(query) ||
+        appt.id.toLowerCase().includes(query) ||
+        op.toLowerCase().includes(query) ||
+        (appt.category || '').toLowerCase().includes(query) ||
+        (appt.consultantSubCategory || '').toLowerCase().includes(query)
+      );
+    })
+    .sort((a, b) => {
+      const patA = patients.find((p) => p.id === a.patientId);
+      const patB = patients.find((p) => p.id === b.patientId);
+      const regA = patA?.registeredAt || `${a.date || ''}T${a.time || '00:00'}`;
+      const regB = patB?.registeredAt || `${b.date || ''}T${b.time || '00:00'}`;
+
+      if (regA !== regB) {
+        return regB.localeCompare(regA);
+      }
+
+      const dateTimeA = `${a.date || ''}T${a.time || '00:00'}`;
+      const dateTimeB = `${b.date || ''}T${b.time || '00:00'}`;
+      return dateTimeB.localeCompare(dateTimeA);
+    });
+
   return (
     <div id="reception-module" className="space-y-6">
       {/* Sub Tabs */}
@@ -569,7 +624,30 @@ export function RecordsReceptionView({
                 >
                   <option value="General Consultation">General Consultation (Ksh 300)</option>
                   <option value="Consultant Clinic">Consultant Clinic Focus (Ksh 1500)</option>
+                  <option value="Walk-in Lab">Walk-in Lab (Ksh 100)</option>
+                  <option value="Walk-in Pharmacy">Walk-in Pharmacy (Ksh 100)</option>
+                  <option value="Outpatient Procedure">Outpatient Procedure Walk-in</option>
                 </select>
+              </div>
+
+              <div>
+                <label id="input-procedure-amount" className="block text-xs font-medium text-stone-500 mb-1">
+                  {newCategory === 'Outpatient Procedure' 
+                    ? 'Procedure Amount / Cost (Ksh)' 
+                    : newCategory === 'Walk-in Lab' || newCategory === 'Walk-in Pharmacy'
+                      ? 'Walk-In Registration Fee (Ksh)'
+                      : 'Consultation Fee Amount (Ksh)'}
+                </label>
+                <input
+                  id="reg-procedure-amount"
+                  type="number"
+                  required
+                  min={0}
+                  value={customProcedureAmount}
+                  onChange={(e) => setCustomProcedureAmount(Number(e.target.value))}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-mono"
+                  placeholder="e.g. 500"
+                />
               </div>
 
               {newCategory === 'Consultant Clinic' && (
@@ -822,9 +900,17 @@ export function RecordsReceptionView({
                   </div>
                   <div className="text-right">
                     <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full block ${
-                      curSelectedPatient.category === 'General Consultation' ? 'bg-blue-100 text-blue-900' : 'bg-teal-100 text-teal-950'
+                      curSelectedPatient.category === 'General Consultation' 
+                        ? 'bg-blue-100 text-blue-900' 
+                        : curSelectedPatient.category === 'Consultant Clinic'
+                          ? 'bg-teal-100 text-teal-950'
+                          : 'bg-emerald-100 text-emerald-950'
                     }`}>
-                      {curSelectedPatient.category === 'General Consultation' ? 'General OPD' : `Consult: ${curSelectedPatient.consultantSubCategory}`}
+                      {curSelectedPatient.category === 'General Consultation' 
+                        ? 'General OPD' 
+                        : curSelectedPatient.category === 'Consultant Clinic'
+                          ? `Consult: ${curSelectedPatient.consultantSubCategory}`
+                          : curSelectedPatient.category}
                     </span>
                   </div>
                 </div>
@@ -1166,7 +1252,25 @@ export function RecordsReceptionView({
 
           {/* Appointment list & Invoice billing receipt desk */}
           <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm lg:col-span-2 space-y-4">
-            <h3 className="text-sm font-semibold text-stone-800">Hospital Billing Registers</h3>
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-stone-800">Hospital Billing Registers</h3>
+                <p className="text-[10px] text-stone-400 mt-0.5 font-sans">
+                  Sorted with the most recent patients first
+                </p>
+              </div>
+              <div className="relative max-w-xs w-full">
+                <input
+                  id="search-appointments"
+                  type="text"
+                  placeholder="Search patient, ID, OP-No or clinic..."
+                  value={apptSearchQuery}
+                  onChange={(e) => setApptSearchQuery(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-lg pl-8 pr-3 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-sans placeholder-stone-400 text-stone-800"
+                />
+                <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -1180,13 +1284,13 @@ export function RecordsReceptionView({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100 text-stone-700">
-                  {appointments.map((appt) => (
+                  {filteredAppointments.map((appt) => (
                     <tr id={`appt-tr-${appt.id}`} key={appt.id} className="hover:bg-stone-50/50">
-                      <td className="py-2.5 font-mono">
+                      <td className="py-2.5 font-mono text-stone-600">
                         {appt.date} <span className="text-[10px] text-stone-400">@{appt.time}</span>
                       </td>
                       <td className="py-2.5">
-                        <span className="font-semibold block">{appt.patientName}</span>
+                        <span className="font-semibold block text-stone-900">{appt.patientName}</span>
                         {(() => {
                           const patient = patients.find((p) => p.id === appt.patientId);
                           const op = patient?.opNumber || (patient ? `OP-${(patient.registeredAt ? patient.registeredAt.substring(0, 7) : '2026-06')}-${patient.id.split('-')[1]}` : '');
@@ -1219,7 +1323,7 @@ export function RecordsReceptionView({
                                 onUpdateAppointmentBilling(appt.id, 'Paid');
                                 alert('Billing transaction reported safely. Revenue generation logged under Department Reports.');
                               }}
-                              className="bg-stone-800 hover:bg-stone-900 text-white text-[10px] px-2 py-0.5 rounded border border-stone-700"
+                              className="bg-stone-800 hover:bg-stone-900 text-white text-[10px] px-2 py-0.5 rounded border border-stone-700 cursor-pointer"
                             >
                               Collect Cash
                             </button>
@@ -1228,9 +1332,13 @@ export function RecordsReceptionView({
                       </td>
                     </tr>
                   ))}
-                  {appointments.length === 0 && (
+                  {filteredAppointments.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-stone-400">No invoice items compiled under billing registers.</td>
+                      <td colSpan={5} className="py-8 text-center text-stone-400 font-mono">
+                        {appointments.length === 0 
+                          ? "No invoice items compiled under billing registers." 
+                          : "No matching appointment records found."}
+                      </td>
                     </tr>
                   )}
                 </tbody>

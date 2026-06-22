@@ -85,6 +85,7 @@ export function LabView({
   onAddPatient
 }: LabViewProps) {
   const [selectedPatientId, setSelectedPatientId] = useState<string>('');
+  const [patientSearchQuery, setPatientSearchQuery] = useState<string>('');
   const [testType, setTestType] = useState<string>('');
   const [customTestName, setCustomTestName] = useState<string>('');
   const [testFee, setTestFee] = useState<number>(350);
@@ -484,20 +485,68 @@ export function LabView({
                 </button>
               </div>
             ) : (
-              <select
-                id="select-lab-patient"
-                required
-                value={selectedPatientId}
-                onChange={(e) => setSelectedPatientId(e.target.value)}
-                className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden"
-              >
-                <option value="">-- Choose Patient of record --</option>
-                {patients.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({p.gender}, {p.age} {p.ageUnit === 'Months' ? 'months' : 'yrs'}) {p.walkInTag ? `[${p.walkInTag}]` : `- ${p.category}`}
-                  </option>
-                ))}
-              </select>
+              <>
+                {/* Search patient in list */}
+                <div className="relative mb-2">
+                  <input
+                    type="text"
+                    placeholder="Type to filter patients instantly..."
+                    value={patientSearchQuery}
+                    onChange={(e) => setPatientSearchQuery(e.target.value)}
+                    className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 pl-8 pr-8 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                  />
+                  <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-3" />
+                  {patientSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setPatientSearchQuery('')}
+                      className="absolute right-2.5 top-2.5 text-stone-400 hover:text-stone-600 bg-stone-200/50 hover:bg-stone-200/90 rounded-full w-4.5 h-4.5 flex items-center justify-center text-[10px] font-bold"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                <select
+                  id="select-lab-patient"
+                  required
+                  value={selectedPatientId}
+                  onChange={(e) => setSelectedPatientId(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden text-xs"
+                >
+                  {(() => {
+                    const filtered = patients.filter((p) => {
+                      const op = p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`;
+                      const q = patientSearchQuery.toLowerCase();
+                      return (
+                        p.name.toLowerCase().includes(q) ||
+                        p.id.toLowerCase().includes(q) ||
+                        op.toLowerCase().includes(q) ||
+                        (p.phone && p.phone.toLowerCase().includes(q)) ||
+                        (p.walkInTag && p.walkInTag.toLowerCase().includes(q)) ||
+                        (p.category && p.category.toLowerCase().includes(q))
+                      );
+                    });
+
+                    return (
+                      <>
+                        <option value="">
+                          {filtered.length === 0
+                            ? '-- No patients matched search query --'
+                            : `-- Choose Patient (${filtered.length} matched) --`}
+                        </option>
+                        {filtered.map((p) => {
+                          return (
+                            <option key={p.id} value={p.id}>
+                              {p.name} ({p.gender}, {p.age} {p.ageUnit === 'Months' ? 'months' : 'yrs'}) {p.walkInTag ? `[${p.walkInTag}]` : `- ${p.category}`}
+                            </option>
+                          );
+                        })}
+                      </>
+                    );
+                  })()}
+                </select>
+              </>
             )}
           </div>
 

@@ -59,6 +59,8 @@ export function RecordsReceptionView({
   const [newOpNumber, setNewOpNumber] = useState<string>('');
   const [newPaymentMode, setNewPaymentMode] = useState<'Cash' | 'Insurance'>('Cash');
   const [newInsuranceCompany, setNewInsuranceCompany] = useState<string>('');
+  const [isWalkIn, setIsWalkIn] = useState<boolean>(false);
+  const [walkInTag, setWalkInTag] = useState<'Lab Walk-In' | 'Pharmacy Walk-In' | 'Outpatient Procedure Walk-In' | undefined>(undefined);
 
   // Auto-generate OP Number when customRegDate changes
   useEffect(() => {
@@ -67,23 +69,51 @@ export function RecordsReceptionView({
     setNewOpNumber(`OP-${yearMonth}-${rand}`);
   }, [customRegDate]);
 
+  // Handle walk-in checkbox toggle
+  const handleWalkInToggle = (checked: boolean) => {
+    setIsWalkIn(checked);
+    if (checked) {
+      if (newCategory === 'General Consultation' || newCategory === 'Consultant Clinic') {
+        setNewCategory('Walk-in Lab');
+        setCustomProcedureAmount(100);
+        setWalkInTag('Lab Walk-In');
+      }
+    } else {
+      if (['Walk-in Lab', 'Walk-in Pharmacy', 'Outpatient Procedure'].includes(newCategory)) {
+        setNewCategory('General Consultation');
+        setCustomProcedureAmount(300);
+        setWalkInTag(undefined);
+      }
+    }
+  };
+
   // Auto-set default billing fee based on category
   useEffect(() => {
     switch (newCategory) {
       case 'General Consultation':
         setCustomProcedureAmount(300);
+        setIsWalkIn(false);
+        setWalkInTag(undefined);
         break;
       case 'Consultant Clinic':
         setCustomProcedureAmount(1500);
+        setIsWalkIn(false);
+        setWalkInTag(undefined);
         break;
       case 'Walk-in Lab':
         setCustomProcedureAmount(100);
+        setIsWalkIn(true);
+        setWalkInTag('Lab Walk-In');
         break;
       case 'Walk-in Pharmacy':
         setCustomProcedureAmount(100);
+        setIsWalkIn(true);
+        setWalkInTag('Pharmacy Walk-In');
         break;
       case 'Outpatient Procedure':
         setCustomProcedureAmount(500);
+        setIsWalkIn(true);
+        setWalkInTag('Outpatient Procedure Walk-In');
         break;
       default:
         break;
@@ -195,6 +225,8 @@ export function RecordsReceptionView({
       medicalHistory: [],
       paymentMode: newPaymentMode,
       insuranceCompany: newPaymentMode === 'Insurance' ? newInsuranceCompany.trim() : undefined,
+      isWalkIn: isWalkIn,
+      walkInTag: isWalkIn ? walkInTag : undefined,
     };
 
     onAddPatient(newPatient);
@@ -223,6 +255,8 @@ export function RecordsReceptionView({
     setNewPhone('');
     setNewPaymentMode('Cash');
     setNewInsuranceCompany('');
+    setIsWalkIn(false);
+    setWalkInTag(undefined);
     alert(`Patient ${newPatient.name} standard registration compiled! Assigned Patient ID: ${patientId} & OP-Number: ${newPatient.opNumber}. A triage billing invoice of Ksh ${Number(customProcedureAmount)} has been generated under Appointments.`);
   };
 
@@ -315,6 +349,9 @@ export function RecordsReceptionView({
                           (p.phone && p.phone.includes(searchQuery));
     if (filterCategory === 'all') return matchesSearch;
     if (filterCategory === 'general') return matchesSearch && p.category === 'General Consultation';
+    if (filterCategory === 'walk-in-lab') return matchesSearch && p.category === 'Walk-in Lab';
+    if (filterCategory === 'walk-in-pharmacy') return matchesSearch && p.category === 'Walk-in Pharmacy';
+    if (filterCategory === 'outpatient-procedure') return matchesSearch && p.category === 'Outpatient Procedure';
     return matchesSearch && p.consultantSubCategory === filterCategory;
   });
 
@@ -349,7 +386,13 @@ export function RecordsReceptionView({
       ? 'All Consultation Categories' 
       : filterCategory === 'general' 
         ? 'General Consultation Clinic' 
-        : `Consultant Specialty: ${filterCategory}`;
+        : filterCategory === 'walk-in-lab'
+          ? 'Walk-in Lab'
+          : filterCategory === 'walk-in-pharmacy'
+            ? 'Walk-in Pharmacy'
+            : filterCategory === 'outpatient-procedure'
+              ? 'Outpatient Procedure'
+              : `Consultant Specialty: ${filterCategory}`;
     const searchDesc = searchQuery ? `"${searchQuery}"` : 'None';
     doc.text(`Active Filters - Category: ${activeFilterDesc} | Search Query: ${searchDesc}`, 14, 62);
     doc.text(`Total Records Stamped: ${filteredPatients.length} Active Records`, 14, 67);
@@ -650,6 +693,42 @@ export function RecordsReceptionView({
                 />
               </div>
 
+              <div className="flex items-start gap-2.5 p-3 bg-stone-50 border border-stone-200 rounded-lg">
+                <input
+                  id="reg-patient-is-walk-in"
+                  type="checkbox"
+                  checked={isWalkIn}
+                  onChange={(e) => handleWalkInToggle(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded-sm border-stone-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                />
+                <div className="flex flex-col">
+                  <label htmlFor="reg-patient-is-walk-in" className="text-xs font-semibold text-stone-700 cursor-pointer">
+                    Identify as Walk-In Patient
+                  </label>
+                  <span className="text-[10px] text-stone-500">
+                    Saves registry with a 'Walk-In' flag. Ideal for quick diagnostic testing or pharmacy-only sessions.
+                  </span>
+                </div>
+              </div>
+
+              {isWalkIn && (
+                <div className="p-3 bg-emerald-50/40 border border-emerald-100 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200">
+                  <label id="input-walkin-tag" className="block text-xs font-medium text-stone-600 mb-1">
+                    Walk-In Specific Tag
+                  </label>
+                  <select
+                    id="reg-walkin-tag"
+                    value={walkInTag || 'Lab Walk-In'}
+                    onChange={(e) => setWalkInTag(e.target.value as any)}
+                    className="w-full bg-white border border-stone-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-mono"
+                  >
+                    <option value="Lab Walk-In">Lab Direct Walk-In</option>
+                    <option value="Pharmacy Walk-In">Pharmacy Direct Walk-In</option>
+                    <option value="Outpatient Procedure Walk-In">Outpatient Procedure Walk-In</option>
+                  </select>
+                </div>
+              )}
+
               {newCategory === 'Consultant Clinic' && (
                 <div id="sub-clinic-container">
                   <label id="input-patient-subcat" className="block text-xs font-medium text-stone-500 mb-1">Clinic Department Specialist</label>
@@ -754,6 +833,33 @@ export function RecordsReceptionView({
               >
                 General Consultation
               </button>
+              <button
+                id="filter-walk-in-lab"
+                onClick={() => setFilterCategory('walk-in-lab')}
+                className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg transition-all ${
+                  filterCategory === 'walk-in-lab' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700'
+                }`}
+              >
+                Walk-In Lab
+              </button>
+              <button
+                id="filter-walk-in-pharmacy"
+                onClick={() => setFilterCategory('walk-in-pharmacy')}
+                className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg transition-all ${
+                  filterCategory === 'walk-in-pharmacy' ? 'bg-teal-600 text-white' : 'bg-teal-50 hover:bg-teal-100 text-teal-700'
+                }`}
+              >
+                Walk-In Pharmacy
+              </button>
+              <button
+                id="filter-outpatient-procedure"
+                onClick={() => setFilterCategory('outpatient-procedure')}
+                className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg transition-all ${
+                  filterCategory === 'outpatient-procedure' ? 'bg-indigo-600 text-white' : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700'
+                }`}
+              >
+                Outpatient Procedure
+              </button>
               <option value="Surgical" disabled className="hidden"></option>
               {['Surgical', 'Pediatrics', 'MOPC', 'Obs/Gyn'].map((item) => (
                 <button
@@ -792,7 +898,15 @@ export function RecordsReceptionView({
                       <td className="py-2.5">
                         <div className="flex flex-col gap-1 items-start">
                           <span className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${
-                            p.category === 'General Consultation' ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-teal-50 text-teal-700 border border-teal-100'
+                            p.category === 'General Consultation' 
+                              ? 'bg-blue-50 text-blue-700 border border-blue-100' 
+                              : p.category === 'Consultant Clinic'
+                                ? 'bg-teal-50 text-teal-700 border border-teal-100'
+                                : p.category === 'Walk-in Lab'
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                  : p.category === 'Walk-in Pharmacy'
+                                    ? 'bg-amber-50 text-amber-700 border border-amber-100'
+                                    : 'bg-indigo-50 text-indigo-700 border border-indigo-100'
                           }`}>
                             {p.category} {p.consultantSubCategory ? `(${p.consultantSubCategory})` : ''}
                           </span>

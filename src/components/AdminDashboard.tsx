@@ -258,7 +258,11 @@ export function AdminDashboard({
         p.name,
         `${p.age} ${p.ageUnit === 'Months' ? 'Mos' : 'Yrs'} / ${p.gender}`,
         p.phone || 'N/A',
-        p.category === 'General Consultation' ? 'General OPD' : `Consultant (${p.consultantSubCategory || 'N/A'})`,
+        p.category === 'General Consultation' 
+          ? 'General OPD' 
+          : p.category === 'Consultant Clinic'
+            ? `Consultant (${p.consultantSubCategory || 'N/A'})`
+            : p.category,
         p.registeredAt ? p.registeredAt.substring(0, 10) : 'N/A',
         p.registeredBy || 'Receptionist'
       ]);
@@ -278,7 +282,11 @@ export function AdminDashboard({
         `${p.age} ${p.ageUnit === 'Months' ? 'Mos' : 'Yrs'} / ${p.gender}`,
         p.insuranceCompany || 'N/A',
         p.phone || 'N/A',
-        p.category === 'General Consultation' ? 'General OPD' : `Consultant (${p.consultantSubCategory || 'N/A'})`,
+        p.category === 'General Consultation' 
+          ? 'General OPD' 
+          : p.category === 'Consultant Clinic'
+            ? `Consultant (${p.consultantSubCategory || 'N/A'})`
+            : p.category,
         p.registeredAt ? p.registeredAt.substring(0, 10) : 'N/A'
       ]);
       metricsSummary = `Total Insurance Patients: ${filtered.length} outpatient registries`;

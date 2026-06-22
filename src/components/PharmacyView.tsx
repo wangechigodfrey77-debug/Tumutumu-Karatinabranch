@@ -196,6 +196,8 @@ export function PharmacyView({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [dispenseSearchQuery, setDispenseSearchQuery] = useState<string>('');
   const [nonPharmaSearchQuery, setNonPharmaSearchQuery] = useState<string>('');
+  const [patientSearchQuery, setPatientSearchQuery] = useState<string>('');
+  const [nonPharmaPatientSearchQuery, setNonPharmaPatientSearchQuery] = useState<string>('');
 
   // Period filter states for history ledger
   const [periodFilter, setPeriodFilter] = useState<'all' | 'weekly' | 'monthly' | 'quarterly' | 'search-month'>('all');
@@ -1142,23 +1144,67 @@ export function PharmacyView({
                       </button>
                     </div>
                   ) : (
-                    <select
-                      id="select-dispense-patient"
-                      required
-                      value={dispensePatientId}
-                      onChange={(e) => setDispensePatientId(e.target.value)}
-                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden"
-                    >
-                      <option value="">-- Choose Patient --</option>
-                      {patients.map((p) => {
-                        const op = p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`;
-                        return (
-                          <option key={p.id} value={p.id}>
-                            {p.name} {p.walkInTag ? `[${p.walkInTag}]` : ''} ({p.id} | {op})
-                          </option>
-                        );
-                      })}
-                    </select>
+                    <>
+                      {/* Search patient in list */}
+                      <div className="relative mb-2">
+                        <input
+                          type="text"
+                          placeholder="Type to filter patients instantly..."
+                          value={patientSearchQuery}
+                          onChange={(e) => setPatientSearchQuery(e.target.value)}
+                          className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 pl-8 pr-8 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                        />
+                        <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-3" />
+                        {patientSearchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => setPatientSearchQuery('')}
+                            className="absolute right-2.5 top-2.5 text-stone-400 hover:text-stone-600 bg-stone-200/50 hover:bg-stone-200/90 rounded-full w-4.5 h-4.5 flex items-center justify-center text-[10px] font-bold"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+
+                      <select
+                        id="select-dispense-patient"
+                        required
+                        value={dispensePatientId}
+                        onChange={(e) => setDispensePatientId(e.target.value)}
+                        className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                      >
+                        {(() => {
+                          const filtered = patients.filter((p) => {
+                            const op = p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`;
+                            const q = patientSearchQuery.toLowerCase();
+                            return (
+                              p.name.toLowerCase().includes(q) ||
+                              p.id.toLowerCase().includes(q) ||
+                              op.toLowerCase().includes(q) ||
+                              (p.walkInTag && p.walkInTag.toLowerCase().includes(q))
+                            );
+                          });
+
+                          return (
+                            <>
+                              <option value="">
+                                {filtered.length === 0 
+                                  ? '-- No patients matched search query --'
+                                  : `-- Choose Patient (${filtered.length} matched) --`}
+                              </option>
+                              {filtered.map((p) => {
+                                const op = p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`;
+                                return (
+                                  <option key={p.id} value={p.id}>
+                                    {p.name} {p.walkInTag ? `[${p.walkInTag}]` : ''} ({p.id} | {op})
+                                  </option>
+                                );
+                              })}
+                            </>
+                          );
+                        })()}
+                      </select>
+                    </>
                   )}
                 </div>
 
@@ -1358,23 +1404,67 @@ export function PharmacyView({
                       </button>
                     </div>
                   ) : (
-                    <select
-                      id="select-dispense-nonpharma-patient"
-                      required
-                      value={nonPharmaPatientId}
-                      onChange={(e) => setNonPharmaPatientId(e.target.value)}
-                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-indigo-500 outline-hidden"
-                    >
-                      <option value="">-- Choose Patient --</option>
-                      {patients.map((p) => {
-                        const op = p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`;
-                        return (
-                          <option key={p.id} value={p.id}>
-                            {p.name} {p.walkInTag ? `[${p.walkInTag}]` : ''} ({p.id} | {op})
-                          </option>
-                        );
-                      })}
-                    </select>
+                    <>
+                      {/* Search patient in list */}
+                      <div className="relative mb-2">
+                        <input
+                          type="text"
+                          placeholder="Type to filter patients instantly..."
+                          value={nonPharmaPatientSearchQuery}
+                          onChange={(e) => setNonPharmaPatientSearchQuery(e.target.value)}
+                          className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 pl-8 pr-8 text-xs focus:ring-1 focus:ring-indigo-500 outline-hidden"
+                        />
+                        <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-3" />
+                        {nonPharmaPatientSearchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => setNonPharmaPatientSearchQuery('')}
+                            className="absolute right-2.5 top-2.5 text-stone-400 hover:text-stone-600 bg-stone-200/50 hover:bg-stone-200/90 rounded-full w-4.5 h-4.5 flex items-center justify-center text-[10px] font-bold"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+
+                      <select
+                        id="select-dispense-nonpharma-patient"
+                        required
+                        value={nonPharmaPatientId}
+                        onChange={(e) => setNonPharmaPatientId(e.target.value)}
+                        className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-indigo-500 outline-hidden"
+                      >
+                        {(() => {
+                          const filtered = patients.filter((p) => {
+                            const op = p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`;
+                            const q = nonPharmaPatientSearchQuery.toLowerCase();
+                            return (
+                              p.name.toLowerCase().includes(q) ||
+                              p.id.toLowerCase().includes(q) ||
+                              op.toLowerCase().includes(q) ||
+                              (p.walkInTag && p.walkInTag.toLowerCase().includes(q))
+                            );
+                          });
+
+                          return (
+                            <>
+                              <option value="">
+                                {filtered.length === 0 
+                                  ? '-- No patients matched search query --'
+                                  : `-- Choose Patient (${filtered.length} matched) --`}
+                              </option>
+                              {filtered.map((p) => {
+                                const op = p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`;
+                                return (
+                                  <option key={p.id} value={p.id}>
+                                    {p.name} {p.walkInTag ? `[${p.walkInTag}]` : ''} ({p.id} | {op})
+                                  </option>
+                                );
+                              })}
+                            </>
+                          );
+                        })()}
+                      </select>
+                    </>
                   )}
                 </div>
 

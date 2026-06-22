@@ -168,6 +168,10 @@ export function PharmacyView({
   // Sub-tabs state
   const [activeSubTab, setActiveSubTab] = useState<'pharma' | 'non-pharma'>('pharma');
 
+  // Total pricing editable states
+  const [pharmaTotalCost, setPharmaTotalCost] = useState<number | ''>('');
+  const [nonPharmaTotalCost, setNonPharmaTotalCost] = useState<number | ''>('');
+
   // Non-Pharmaceutical dispense states
   const [nonPharmaPatientId, setNonPharmaPatientId] = useState<string>('');
   const [selectedNonPharmaId, setSelectedNonPharmaId] = useState<string>('');
@@ -226,6 +230,14 @@ export function PharmacyView({
 
   const activeNonPharmaItem = stock.find((item) => item.id === selectedNonPharmaId);
   const computedNonPharmaCost = activeNonPharmaItem ? activeNonPharmaItem.price * nonPharmaQuantity : 0;
+
+  React.useEffect(() => {
+    setPharmaTotalCost(computedTotalCost);
+  }, [computedTotalCost]);
+
+  React.useEffect(() => {
+    setNonPharmaTotalCost(computedNonPharmaCost);
+  }, [computedNonPharmaCost]);
 
   // Helper to identify non-pharmaceutical categories
   const isNonPharma = (category: string) => {
@@ -312,13 +324,14 @@ export function PharmacyView({
       dispensedBy: dispensingOfficer,
       quantity: dispenseQuantity,
       pricePerUnit: item.price,
-      totalCost: computedTotalCost,
+      totalCost: pharmaTotalCost !== '' ? Number(pharmaTotalCost) : computedTotalCost,
     };
 
     onDispenseMedication(newDispense);
     setDispensePatientId('');
     setSelectedStockId('');
     setDispenseQuantity(1);
+    setPharmaTotalCost('');
     alert(`Medication dispensed safely. Dispatched ${dispenseQuantity} units of ${item.name} to patient ${patient.name}.`);
   };
 
@@ -348,13 +361,14 @@ export function PharmacyView({
       dispensedBy: dispensingOfficer,
       quantity: nonPharmaQuantity,
       pricePerUnit: item.price,
-      totalCost: computedNonPharmaCost,
+      totalCost: nonPharmaTotalCost !== '' ? Number(nonPharmaTotalCost) : computedNonPharmaCost,
     };
 
     onDispenseMedication(newDispense);
     setNonPharmaPatientId('');
     setSelectedNonPharmaId('');
     setNonPharmaQuantity(1);
+    setNonPharmaTotalCost('');
     alert(`Non-pharmaceutical supplies dispensed safely. Dispatched ${nonPharmaQuantity} units of ${item.name} to patient ${patient.name}.`);
   };
 
@@ -1268,10 +1282,16 @@ export function PharmacyView({
                   </div>
 
                   <div>
-                    <span className="block font-medium text-stone-500 mb-1">Total Pricing</span>
-                    <span className="block text-md font-bold text-emerald-800 p-2 bg-stone-50 border border-stone-100 rounded-lg">
-                      Ksh {computedTotalCost.toLocaleString()}
-                    </span>
+                    <label id="lbl-pharma-total-cost" className="block font-medium text-stone-500 mb-1">Total Pricing (Ksh)</label>
+                    <input
+                      id="inp-pharma-total-cost"
+                      type="number"
+                      required
+                      min={0}
+                      value={pharmaTotalCost}
+                      onChange={(e) => setPharmaTotalCost(e.target.value === '' ? '' : Number(e.target.value))}
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 font-bold text-emerald-800 focus:ring-1 focus:ring-emerald-500 outline-hidden font-mono text-xs"
+                    />
                   </div>
                 </div>
 
@@ -1528,10 +1548,16 @@ export function PharmacyView({
                   </div>
 
                   <div>
-                    <span className="block font-medium text-stone-500 mb-1">Total Pricing</span>
-                    <span className="block text-md font-bold text-indigo-800 p-2 bg-stone-50 border border-stone-100 rounded-lg">
-                      Ksh {computedNonPharmaCost.toLocaleString()}
-                    </span>
+                    <label id="lbl-nonpharma-total-cost" className="block font-medium text-stone-500 mb-1">Total Pricing (Ksh)</label>
+                    <input
+                      id="inp-nonpharma-total-cost"
+                      type="number"
+                      required
+                      min={0}
+                      value={nonPharmaTotalCost}
+                      onChange={(e) => setNonPharmaTotalCost(e.target.value === '' ? '' : Number(e.target.value))}
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 font-bold text-indigo-800 focus:ring-1 focus:ring-indigo-500 outline-hidden font-mono text-xs"
+                    />
                   </div>
                 </div>
 

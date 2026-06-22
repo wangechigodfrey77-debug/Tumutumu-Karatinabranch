@@ -73,7 +73,7 @@ export function RecordsReceptionView({
 
   // Structured Medications Prescription Builder States
   const [selectedMedicationId, setSelectedMedicationId] = useState<string>('');
-  const [prescribeQty, setPrescribeQty] = useState<number>(1);
+  const [prescribeQty, setPrescribeQty] = useState<string | number>(1);
   const [prescribeDosage, setPrescribeDosage] = useState<string>('');
   const [activePrescriptionsList, setActivePrescriptionsList] = useState<{
     itemId: string;
@@ -94,19 +94,20 @@ export function RecordsReceptionView({
       return;
     }
 
-    if (prescribeQty <= 0) {
+    const qty = Number(prescribeQty) || 1;
+    if (qty <= 0) {
       alert("Please enter a valid quantity of 1 unit or more!");
       return;
     }
 
-    if (medication.stockQuantity < prescribeQty) {
-      alert(`Warning: Requested quantity (${prescribeQty}) exceeds currently available stock (${medication.stockQuantity} units).`);
+    if (medication.stockQuantity < qty) {
+      alert(`Warning: Requested quantity (${qty}) exceeds currently available stock (${medication.stockQuantity} units).`);
     }
 
     const newItem = {
       itemId: medication.id,
       name: medication.name,
-      quantity: prescribeQty,
+      quantity: qty,
       price: medication.price,
       dosage: prescribeDosage.trim() || undefined,
     };
@@ -114,7 +115,7 @@ export function RecordsReceptionView({
     setActivePrescriptionsList(prev => {
       const updated = [...prev, newItem];
       const dosageStr = prescribeDosage.trim() ? `, dosage: ${prescribeDosage.trim()}` : '';
-      const lineText = `💊 ${medication.name} (Qty: ${prescribeQty}${dosageStr})`;
+      const lineText = `💊 ${medication.name} (Qty: ${qty}${dosageStr})`;
       setPrescriptions(prevText => {
         const textLines = prevText.trim() ? prevText.trim().split('\n') : [];
         textLines.push(lineText);
@@ -959,7 +960,15 @@ export function RecordsReceptionView({
                                   type="number"
                                   min={1}
                                   value={prescribeQty}
-                                  onChange={(e) => setPrescribeQty(Math.max(1, parseInt(e.target.value) || 1))}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val === '') {
+                                      setPrescribeQty('');
+                                    } else {
+                                      const parsed = parseInt(val, 10);
+                                      setPrescribeQty(isNaN(parsed) ? '' : parsed);
+                                    }
+                                  }}
                                   className="w-full bg-white border border-stone-200 rounded-md p-1 px-2 text-[11px] text-center outline-hidden"
                                 />
                               </div>

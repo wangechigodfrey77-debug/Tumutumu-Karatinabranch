@@ -725,7 +725,7 @@ export default function App() {
                     }`}
                   >
                     <span className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-amber-400" /> AI Board Quality Reports
+                      <Sparkles className="w-4 h-4 text-amber-400" /> Comprehensive Board Reports
                     </span>
                   </button>
                 </>

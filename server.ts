@@ -99,7 +99,7 @@ Your responsibility is to analyze hospital operational metrics and formulate a h
 Use prestigious healthcare leadership language, formal formatting, clear sections (with bold headings, lists, and markdown tables if helpful). Be descriptive, highlighting bottlenecks and strategic insights.
 Do not use placeholders. Act on the real numbers provided.`;
 
-    const prompt = `Please generate an Executive Board Quality Report for the PCEA Tumutumu Hospital Karatina Satellite Branch based on this clinical period's statistics:
+    const prompt = `Please generate an Executive Comprehensive Board Report for the PCEA Tumutumu Hospital Karatina Satellite Branch based on this clinical period's statistics:
 
 OPERATIONAL STATISTICS:
 - Total Patients Registered & Attended: ${patientCount}
@@ -139,7 +139,7 @@ Create a beautifully formatted medical administrative board report with the foll
   } catch (error: any) {
     console.error('Error generating quality report:', error);
     res.status(500).json({
-      error: 'Failed to generate board quality report',
+      error: 'Failed to generate comprehensive board report',
       message: error.message || 'Unknown internal error',
     });
   }

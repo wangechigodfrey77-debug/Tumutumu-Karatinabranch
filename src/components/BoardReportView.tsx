@@ -1801,7 +1801,7 @@ export function BoardReportView({
     const activePercent = patientCount > 0 ? ((consultantCount / patientCount) * 100).toFixed(1) : '0';
 
     return `## PCEA TUMUTUMU HOSPITAL • KARATINA SATELLITE BRANCH
-### EXECUTIVE BOARD QUALITY REPORT
+### EXECUTIVE COMPREHENSIVE BOARD REPORT
 **Issued By:** Dr. Gladys Wanjiku, Head of Satellites & Quality Assurance Advisor
 **Date Generated:** ${new Date().toLocaleString('en-KE', { dateStyle: 'long', timeStyle: 'short' })}
 **Control Status:** Signed & Verified (Client-Side Operational Compliance)
@@ -2390,7 +2390,7 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
             <div>
               <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-amber-500" />
-                AI Board Quality Report Center
+                Comprehensive Board Report Center
               </h2>
               <p className="text-xs text-stone-500 mt-1">
                 Produce audited medical, revenue, and HR Quality Reports ready for the Tumutumu Executive Board.
@@ -2411,7 +2411,7 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  Generate Board Quality Report
+                  Generate Comprehensive Board Report
                 </>
               )}
             </button>

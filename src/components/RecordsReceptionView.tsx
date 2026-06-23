@@ -204,6 +204,8 @@ export function RecordsReceptionView({
 
   // New Appointment Form State
   const [apptPatientId, setApptPatientId] = useState<string>('');
+  const [apptSearchTerm, setApptSearchTerm] = useState<string>('');
+  const [isApptDropdownOpen, setIsApptDropdownOpen] = useState<boolean>(false);
   const [apptDate, setApptDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
   const [apptTime, setApptTime] = useState<string>('09:00');
   const [apptCategory, setApptCategory] = useState<'General Consultation' | 'Consultant Clinic'>('General Consultation');
@@ -348,19 +350,23 @@ export function RecordsReceptionView({
 
     onAddAppointment(newAppt);
     alert('Appointment booked successfully!');
+    setApptPatientId('');
+    setApptSearchTerm('');
   };
 
   const filteredPatients = patients.filter((p) => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          p.id.includes(searchQuery) || 
-                          (p.phone && p.phone.includes(searchQuery));
+    const q = searchQuery.toLowerCase();
+    const matchesSearch = p.name.toLowerCase().includes(q) || 
+                          p.id.toLowerCase().includes(q) || 
+                          (p.opNumber && p.opNumber.toLowerCase().includes(q)) ||
+                          (p.phone && p.phone.includes(q));
     if (filterCategory === 'all') return matchesSearch;
     if (filterCategory === 'general') return matchesSearch && p.category === 'General Consultation';
     if (filterCategory === 'walk-in-lab') return matchesSearch && p.category === 'Walk-in Lab';
     if (filterCategory === 'walk-in-pharmacy') return matchesSearch && p.category === 'Walk-in Pharmacy';
     if (filterCategory === 'outpatient-procedure') return matchesSearch && p.category === 'Outpatient Procedure';
     return matchesSearch && p.consultantSubCategory === filterCategory;
-  });
+  }).sort((a, b) => (b.registeredAt || '').localeCompare(a.registeredAt || ''));
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
@@ -485,7 +491,7 @@ export function RecordsReceptionView({
            p.id.toLowerCase().includes(query) || 
            (p.opNumber && p.opNumber.toLowerCase().includes(query)) ||
            p.phone.includes(query);
-  });
+  }).sort((a, b) => (b.registeredAt || '').localeCompare(a.registeredAt || ''));
 
   const filteredAppointments = appointments
     .filter((appt) => {
@@ -838,16 +844,26 @@ export function RecordsReceptionView({
                 >
                   <Download className="w-3.5 h-3.5" /> Download PDF Register
                 </button>
-                <div className="flex items-center gap-1.5 bg-stone-50 border border-stone-200 rounded px-2 py-1">
-                  <Search className="w-3.5 h-3.5 text-stone-400" />
+                <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 rounded-lg px-3 py-1.5 transition-all shadow-3xs w-full sm:w-64">
+                  <Search className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                   <input
                     id="search-patient-input"
                     type="text"
-                    placeholder="ID, name, or phone..."
+                    placeholder="Search ID, name, OP No, phone..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="bg-transparent text-xs outline-none border-none py-0.5 max-w-[150px]"
+                    className="bg-transparent text-xs outline-hidden border-hidden w-full text-stone-800 placeholder-stone-400 font-medium"
                   />
+                  {searchQuery && (
+                    <button
+                      id="btn-clear-reg-search"
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className="text-stone-400 hover:text-stone-600 font-bold text-xs cursor-pointer px-1 shrink-0"
+                    >
+                      ×
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -912,6 +928,20 @@ export function RecordsReceptionView({
                 </button>
               ))}
             </div>
+
+            {searchQuery && (
+              <div id="reception-search-match-badge" className="mb-4 text-[11px] font-semibold text-amber-700 bg-amber-50 rounded-lg p-2 border border-amber-100 flex justify-between items-center animate-in fade-in duration-100">
+                <span>🔍 Showing <strong>{filteredPatients.length}</strong> matching {filteredPatients.length === 1 ? 'patient record' : 'patient records'} from the register...</span>
+                <button
+                  id="btn-clear-main-search-indicator"
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="text-amber-800 hover:text-amber-950 font-bold ml-2 underline underline-offset-2 cursor-pointer text-[10px]"
+                >
+                  Show All
+                </button>
+              </div>
+            )}
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -1302,21 +1332,160 @@ export function RecordsReceptionView({
 
             <form onSubmit={handleBookAppointment} className="space-y-4 text-xs">
               <div>
-                <label id="lbl-appt-patient" className="block font-medium text-stone-500 mb-1">Select Patient</label>
-                <select
-                  id="select-appt-patient"
-                  required
+                <label id="lbl-appt-patient" className="block font-semibold text-stone-600 mb-1 flex justify-between items-center">
+                  <span>Select Patient (Real-time Search)</span>
+                  {apptPatientId ? (
+                    <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded-sm">
+                      ID Selected: {apptPatientId}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-stone-400 italic font-normal">
+                      Search by Name, ID, or OP number
+                    </span>
+                  )}
+                </label>
+                
+                <div className="relative">
+                  <div className="relative flex items-center">
+                    <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 pointer-events-none" />
+                    <input
+                      id="input-appt-patient-search"
+                      type="text"
+                      placeholder="Type patient name, ID, phone, or OP number..."
+                      value={apptSearchTerm}
+                      onFocus={() => setIsApptDropdownOpen(true)}
+                      onChange={(e) => {
+                        setApptSearchTerm(e.target.value);
+                        setIsApptDropdownOpen(true);
+                        // If exact match name or ID is entered, select it
+                        const matched = patients.find(
+                          (pat) =>
+                            pat.id.toLowerCase() === e.target.value.toLowerCase() ||
+                            pat.name.toLowerCase() === e.target.value.toLowerCase()
+                        );
+                        if (matched) {
+                          setApptPatientId(matched.id);
+                        } else {
+                          setApptPatientId('');
+                        }
+                      }}
+                      className="w-full bg-stone-50 border border-stone-200 focus:border-emerald-500 rounded-lg p-2 pl-9 pr-14 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-medium"
+                    />
+                    <div className="absolute right-3 flex items-center gap-1.5">
+                      {apptSearchTerm && (
+                        <button
+                          id="btn-clear-appt-search"
+                          type="button"
+                          onClick={() => {
+                            setApptSearchTerm('');
+                            setApptPatientId('');
+                          }}
+                          className="text-stone-400 hover:text-stone-600 font-bold text-xs cursor-pointer px-1"
+                          title="Clear Search"
+                        >
+                          ×
+                        </button>
+                      )}
+                      <button
+                        id="btn-toggle-appt-dropdown"
+                        type="button"
+                        onClick={() => setIsApptDropdownOpen(!isApptDropdownOpen)}
+                        className="text-stone-400 hover:text-stone-600 text-[10px] cursor-pointer"
+                        title="Toggle Patient Menu"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                  </div>
+
+                  {isApptDropdownOpen && (
+                    <>
+                      {/* Click outside backdrop to close overlay */}
+                      <div
+                        id="com-dropdown-backdrop"
+                        className="fixed inset-0 z-10 cursor-default"
+                        onClick={() => {
+                          setIsApptDropdownOpen(false);
+                          if (apptPatientId) {
+                            const p = patients.find(pat => pat.id === apptPatientId);
+                            if (p) {
+                              setApptSearchTerm(`${p.name} (${p.id})`);
+                            }
+                          } else {
+                            setApptSearchTerm('');
+                          }
+                        }}
+                      />
+                      
+                      <div className="absolute z-20 w-full mt-1 bg-white border border-stone-200 rounded-lg shadow-lg max-h-60 overflow-y-auto divide-y divide-stone-100 animate-in fade-in slide-in-from-top-1 duration-150">
+                        {patients
+                          .filter((p) => {
+                            const query = apptSearchTerm.toLowerCase();
+                            return (
+                              p.name.toLowerCase().includes(query) ||
+                              p.id.toLowerCase().includes(query) ||
+                              (p.opNumber && p.opNumber.toLowerCase().includes(query)) ||
+                              (p.phone && p.phone.includes(query))
+                            );
+                          })
+                          .sort((a, b) => (b.registeredAt || '').localeCompare(a.registeredAt || ''))
+                          .map((pat) => (
+                            <div
+                              id={`appt-patient-option-${pat.id}`}
+                              key={pat.id}
+                              onClick={() => {
+                                setApptPatientId(pat.id);
+                                setApptSearchTerm(`${pat.name} (${pat.id})`);
+                                setIsApptDropdownOpen(false);
+                              }}
+                              className={`p-2.5 hover:bg-stone-50 cursor-pointer text-[11px] transition-all flex flex-col ${
+                                apptPatientId === pat.id ? 'bg-emerald-50 text-emerald-900 border-l-2 border-emerald-500 font-medium' : 'text-stone-700'
+                              }`}
+                            >
+                              <div className="flex justify-between items-center">
+                                <span className="font-semibold">{pat.name}</span>
+                                <span className="text-[9px] font-mono font-semibold text-emerald-700 bg-emerald-50/80 px-1.5 py-0.5 rounded-sm">
+                                  {pat.opNumber || `OP-${pat.id}`}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center text-stone-400 text-[9px] mt-1">
+                                <span>Ref: {pat.id} • {pat.gender} • {pat.age} {pat.ageUnit === 'Months' ? 'months' : 'yrs'}</span>
+                                <span className="italic font-medium text-[8px] bg-stone-100 text-stone-600 px-1 py-0.2 rounded">
+                                  Coverage: {pat.paymentMode}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        {patients.filter((p) => {
+                          const query = apptSearchTerm.toLowerCase();
+                          return (
+                            p.name.toLowerCase().includes(query) ||
+                            p.id.toLowerCase().includes(query) ||
+                            (p.opNumber && p.opNumber.toLowerCase().includes(query)) ||
+                            (p.phone && p.phone.includes(query))
+                          );
+                        }).length === 0 && (
+                          <div className="p-3.5 text-center text-stone-400 text-[11px]">
+                            No patients found matching "{apptSearchTerm}"
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Validation helper to ensure form submission tracks select validity */}
+                <input
+                  type="hidden"
+                  name="apptPatientId"
                   value={apptPatientId}
-                  onChange={(e) => setApptPatientId(e.target.value)}
-                  className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden"
-                >
-                  <option value="">-- Choose Patient --</option>
-                  {patients.map((pat) => (
-                    <option key={pat.id} value={pat.id}>
-                      {pat.name} ({pat.id})
-                    </option>
-                  ))}
-                </select>
+                  required
+                />
+                {!apptPatientId && (
+                  <span className="text-[10px] text-rose-500 block mt-1 leading-normal">
+                    ⚠️ Please select a patient using the real-time search lookup to book.
+                  </span>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">

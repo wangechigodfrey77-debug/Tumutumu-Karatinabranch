@@ -52,7 +52,9 @@ export function AdminDashboard({
   currentUserEmail,
 }: AdminDashboardProps) {
   const [activeAdminSub, setActiveAdminSub] = useState<'rosters' | 'whitelist' | 'leaves' | 'finances' | 'sheets' | 'audit'>('finances');
+  const [financePeriodView, setFinancePeriodView] = useState<'monthly' | 'daily'>('monthly');
   const [selectedFinMonth, setSelectedFinMonth] = useState<string>('All');
+  const [selectedFinDate, setSelectedFinDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
 
   // Periodic Audit Reports Filter Selection States
   const [reportTarget, setReportTarget] = useState<'cash' | 'insurance' | 'lab' | 'pharmacy'>('cash');
@@ -78,6 +80,24 @@ export function AdminDashboard({
       if (e.date) months.add(e.date.substring(0, 7));
     });
     return Array.from(months).filter(m => m && m.length === 7).sort();
+  }, [appointments, labTests, dispenses, expenses]);
+
+  // Gather available dates dynamically from appointments, labTests, dispenses, and expenses
+  const availableDates = React.useMemo(() => {
+    const dates = new Set<string>();
+    appointments.forEach(a => {
+      if (a.date) dates.add(a.date.substring(0, 10));
+    });
+    labTests.forEach(t => {
+      if (t.testDate) dates.add(t.testDate.substring(0, 10));
+    });
+    dispenses.forEach(d => {
+      if (d.dispenseDate) dates.add(d.dispenseDate.substring(0, 10));
+    });
+    expenses.forEach(e => {
+      if (e.date) dates.add(e.date.substring(0, 10));
+    });
+    return Array.from(dates).filter(d => d && d.length === 10).sort().reverse();
   }, [appointments, labTests, dispenses, expenses]);
 
   // Filtering states for System Audit Logs mutations
@@ -114,21 +134,29 @@ export function AdminDashboard({
   const [expenseDescription, setExpenseDescription] = useState<string>('');
 
   // Compute departmental financial statistics
-  const filteredAppts = selectedFinMonth === 'All'
-    ? appointments.filter(a => a.billingStatus === 'Paid')
-    : appointments.filter(a => a.billingStatus === 'Paid' && a.date?.startsWith(selectedFinMonth));
+  const filteredAppts = financePeriodView === 'daily'
+    ? appointments.filter(a => a.billingStatus === 'Paid' && a.date === selectedFinDate)
+    : (selectedFinMonth === 'All'
+        ? appointments.filter(a => a.billingStatus === 'Paid')
+        : appointments.filter(a => a.billingStatus === 'Paid' && a.date?.startsWith(selectedFinMonth)));
 
-  const filteredLab = selectedFinMonth === 'All'
-    ? labTests
-    : labTests.filter(t => t.testDate?.startsWith(selectedFinMonth));
+  const filteredLab = financePeriodView === 'daily'
+    ? labTests.filter(t => t.testDate === selectedFinDate)
+    : (selectedFinMonth === 'All'
+        ? labTests
+        : labTests.filter(t => t.testDate?.startsWith(selectedFinMonth)));
 
-  const filteredDispenses = selectedFinMonth === 'All'
-    ? dispenses
-    : dispenses.filter(d => d.dispenseDate?.startsWith(selectedFinMonth));
+  const filteredDispenses = financePeriodView === 'daily'
+    ? dispenses.filter(d => d.dispenseDate === selectedFinDate)
+    : (selectedFinMonth === 'All'
+        ? dispenses
+        : dispenses.filter(d => d.dispenseDate?.startsWith(selectedFinMonth)));
 
-  const filteredPatientsForCounts = selectedFinMonth === 'All' 
-    ? patients 
-    : patients.filter(p => p.registeredAt?.startsWith(selectedFinMonth));
+  const filteredPatientsForCounts = financePeriodView === 'daily'
+    ? patients.filter(p => p.registeredAt?.substring(0, 10) === selectedFinDate)
+    : (selectedFinMonth === 'All'
+        ? patients
+        : patients.filter(p => p.registeredAt?.startsWith(selectedFinMonth)));
 
   // Distinguish Pharma vs Non-Pharma
   const pharmaDispenses = filteredDispenses.filter(d => {
@@ -485,9 +513,11 @@ export function AdminDashboard({
       {/* A. CFO FINANCIAL CONTROL & SATELLITE OPERATIONS DESK */}
       {activeAdminSub === 'finances' && (() => {
         // Compute expenses statistics based on selectedFinanceMonth
-        const finalExpenses = selectedFinMonth === 'All'
-          ? expenses
-          : expenses.filter(e => e.date?.startsWith(selectedFinMonth));
+        const finalExpenses = financePeriodView === 'daily'
+          ? expenses.filter(e => e.date === selectedFinDate)
+          : (selectedFinMonth === 'All'
+              ? expenses
+              : expenses.filter(e => e.date?.startsWith(selectedFinMonth)));
 
         const totalExpenses = finalExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
         const electricityExpenses = finalExpenses.filter(e => e.category === 'Electricity').reduce((sum, e) => sum + (e.amount || 0), 0);
@@ -499,8 +529,19 @@ export function AdminDashboard({
         const profitMargin = totalCombinedRevenue > 0 ? (netBalance / totalCombinedRevenue) * 100 : 0;
 
         // Daily trend data aggregation
-        const trendPrefix = selectedFinMonth === 'All' ? '2026-06' : selectedFinMonth;
-        const trendDates = ['01', '02', '03', '04', '05', '06', '07', '08'].map(day => `${trendPrefix}-${day}`);
+        let trendDates: string[];
+        if (financePeriodView === 'daily') {
+          const baseDate = new Date(selectedFinDate);
+          trendDates = [];
+          for (let i = 6; i >= 0; i--) {
+            const d = new Date(baseDate);
+            d.setDate(baseDate.getDate() - i);
+            trendDates.push(d.toISOString().split('T')[0]);
+          }
+        } else {
+          const trendPrefix = selectedFinMonth === 'All' ? '2026-06' : selectedFinMonth;
+          trendDates = ['01', '02', '03', '04', '05', '06', '07', '08'].map(day => `${trendPrefix}-${day}`);
+        }
         const dailyMetrics = trendDates.map(date => {
           // Patient consulting registration revenue from paid appointments on that day
           const patTodayRev = appointments
@@ -559,32 +600,96 @@ export function AdminDashboard({
 
         return (
           <div id="admin-finances-submodule" className="space-y-6">
-            {/* Elegant Reporting Period Month Filter */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-stone-50 border border-stone-200 p-4 rounded-xl gap-4">
+            {/* Elegant Reporting Period Filter */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between bg-stone-50 border border-stone-200 p-4 rounded-xl gap-4">
               <div>
                 <h4 className="text-sm font-bold text-stone-800 flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-amber-600" />
                   CFO Financial Statement Period
                 </h4>
                 <p className="text-[11px] text-stone-500 mt-0.5">
-                  Filter global income, lab invoices, opex billing, and treasury ledger stats by month.
+                  Filter global income, lab invoices, opex billing, and treasury ledger stats daily or monthly.
                 </p>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="text-xs font-semibold text-stone-600 font-mono">Select Period:</span>
-                <select
-                  id="select-finance-period"
-                  value={selectedFinMonth}
-                  onChange={(e) => setSelectedFinMonth(e.target.value)}
-                  className="bg-white border border-stone-200 rounded-lg py-1.5 px-3 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 focus:border-amber-500 outline-none shadow-3xs cursor-pointer"
-                >
-                  <option value="All">All-Time Cumulative</option>
-                  {availableMonths.map((m) => (
-                    <option key={m} value={m}>
-                      {new Date(m + "-02").toLocaleString("default", { month: "long", year: "numeric" })} ({m})
-                    </option>
-                  ))}
-                </select>
+              <div className="flex flex-wrap items-center gap-4 shrink-0">
+                {/* Segmented Period Toggle */}
+                <div className="flex items-center bg-stone-200/60 p-1 rounded-lg border border-stone-200">
+                  <button
+                    id="btn-fin-view-monthly"
+                    type="button"
+                    onClick={() => setFinancePeriodView('monthly')}
+                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                      financePeriodView === 'monthly'
+                        ? 'bg-white text-stone-800 shadow-xs'
+                        : 'text-stone-500 hover:text-stone-800'
+                    }`}
+                  >
+                    Monthly & Cumulative
+                  </button>
+                  <button
+                    id="btn-fin-view-daily"
+                    type="button"
+                    onClick={() => setFinancePeriodView('daily')}
+                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                      financePeriodView === 'daily'
+                        ? 'bg-white text-stone-800 shadow-xs'
+                        : 'text-stone-500 hover:text-stone-800'
+                    }`}
+                  >
+                    Daily Ledger
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {financePeriodView === 'monthly' ? (
+                    <>
+                      <span className="text-xs font-semibold text-stone-600 font-mono">Select Month:</span>
+                      <select
+                        id="select-finance-period-month"
+                        value={selectedFinMonth}
+                        onChange={(e) => setSelectedFinMonth(e.target.value)}
+                        className="bg-white border border-stone-200 rounded-lg py-1.5 px-3 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 focus:border-amber-500 outline-none shadow-3xs cursor-pointer"
+                      >
+                        <option value="All">All-Time Cumulative</option>
+                        {availableMonths.map((m) => (
+                          <option key={m} value={m}>
+                            {new Date(m + "-02").toLocaleString("default", { month: "long", year: "numeric" })} ({m})
+                          </option>
+                        ))}
+                      </select>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-xs font-semibold text-stone-600 font-mono">Select Day:</span>
+                      <div className="flex items-center gap-1">
+                        <select
+                          id="select-finance-period-day"
+                          value={selectedFinDate}
+                          onChange={(e) => setSelectedFinDate(e.target.value)}
+                          className="bg-white border border-stone-200 rounded-lg py-1.5 px-3 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 focus:border-amber-500 outline-none shadow-3xs cursor-pointer font-mono"
+                        >
+                          <option value={new Date().toISOString().split('T')[0]}>Today ({new Date().toISOString().split('T')[0]})</option>
+                          {availableDates.map((day) => (
+                            <option key={day} value={day}>
+                              {day}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          id="input-finance-period-day-picker"
+                          type="date"
+                          value={selectedFinDate}
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              setSelectedFinDate(e.target.value);
+                            }
+                          }}
+                          className="bg-white border border-stone-200 rounded-lg p-1.5 text-xs text-stone-700 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer h-[32px] w-[34px] flex items-center justify-center font-mono"
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 

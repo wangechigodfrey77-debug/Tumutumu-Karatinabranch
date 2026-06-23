@@ -59,6 +59,7 @@ export function RecordsReceptionView({
   const [newOpNumber, setNewOpNumber] = useState<string>('');
   const [newPaymentMode, setNewPaymentMode] = useState<'Cash' | 'Insurance'>('Cash');
   const [newInsuranceCompany, setNewInsuranceCompany] = useState<string>('');
+  const [insuranceConsultationPrice, setInsuranceConsultationPrice] = useState<number>(300);
   const [isWalkIn, setIsWalkIn] = useState<boolean>(false);
   const [walkInTag, setWalkInTag] = useState<'Lab Walk-In' | 'Pharmacy Walk-In' | 'Outpatient Procedure Walk-In' | undefined>(undefined);
 
@@ -92,26 +93,31 @@ export function RecordsReceptionView({
     switch (newCategory) {
       case 'General Consultation':
         setCustomProcedureAmount(300);
+        setInsuranceConsultationPrice(300);
         setIsWalkIn(false);
         setWalkInTag(undefined);
         break;
       case 'Consultant Clinic':
         setCustomProcedureAmount(1500);
+        setInsuranceConsultationPrice(1500);
         setIsWalkIn(false);
         setWalkInTag(undefined);
         break;
       case 'Walk-in Lab':
         setCustomProcedureAmount(100);
+        setInsuranceConsultationPrice(100);
         setIsWalkIn(true);
         setWalkInTag('Lab Walk-In');
         break;
       case 'Walk-in Pharmacy':
         setCustomProcedureAmount(100);
+        setInsuranceConsultationPrice(100);
         setIsWalkIn(true);
         setWalkInTag('Pharmacy Walk-In');
         break;
       case 'Outpatient Procedure':
         setCustomProcedureAmount(500);
+        setInsuranceConsultationPrice(500);
         setIsWalkIn(true);
         setWalkInTag('Outpatient Procedure Walk-In');
         break;
@@ -232,6 +238,7 @@ export function RecordsReceptionView({
     onAddPatient(newPatient);
 
     // Auto seed an appointment for registered billing
+    const finalBillingAmount = newPaymentMode === 'Insurance' ? Number(insuranceConsultationPrice) : Number(customProcedureAmount);
     const apptId = `APT-${Math.floor(Math.random() * 9000 + 1000)}`;
     const newAppt: Appointment = {
       id: apptId,
@@ -245,7 +252,7 @@ export function RecordsReceptionView({
       doctorEmail: 'doctor@tumutumu.org',
       status: 'Scheduled',
       billingStatus: 'Unpaid',
-      billingAmount: Number(customProcedureAmount),
+      billingAmount: finalBillingAmount,
     };
     onAddAppointment(newAppt);
 
@@ -257,7 +264,7 @@ export function RecordsReceptionView({
     setNewInsuranceCompany('');
     setIsWalkIn(false);
     setWalkInTag(undefined);
-    alert(`Patient ${newPatient.name} standard registration compiled! Assigned Patient ID: ${patientId} & OP-Number: ${newPatient.opNumber}. A triage billing invoice of Ksh ${Number(customProcedureAmount)} has been generated under Appointments.`);
+    alert(`Patient ${newPatient.name} standard registration compiled! Assigned Patient ID: ${patientId} & OP-Number: ${newPatient.opNumber}. A triage billing invoice of Ksh ${finalBillingAmount} has been generated under Appointments.`);
   };
 
   const handleAddMedicalHistory = (e: React.FormEvent) => {
@@ -686,11 +693,23 @@ export function RecordsReceptionView({
                   type="number"
                   required
                   min={0}
-                  value={customProcedureAmount}
-                  onChange={(e) => setCustomProcedureAmount(Number(e.target.value))}
-                  className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-mono"
+                  disabled={newPaymentMode === 'Insurance'}
+                  value={newPaymentMode === 'Insurance' ? insuranceConsultationPrice : customProcedureAmount}
+                  onChange={(e) => {
+                    if (newPaymentMode !== 'Insurance') {
+                      setCustomProcedureAmount(Number(e.target.value));
+                    }
+                  }}
+                  className={`w-full border border-stone-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-mono ${
+                    newPaymentMode === 'Insurance' ? 'bg-stone-100/90 text-stone-400 cursor-not-allowed' : 'bg-stone-50 text-stone-800'
+                  }`}
                   placeholder="e.g. 500"
                 />
+                {newPaymentMode === 'Insurance' && (
+                  <span className="text-[10px] text-amber-600 font-semibold block mt-1 leading-normal">
+                    💡 Consultation fee is customized under Health Insurance Cover details below.
+                  </span>
+                )}
               </div>
 
               <div className="flex items-start gap-2.5 p-3 bg-stone-50 border border-stone-200 rounded-lg">
@@ -764,17 +783,36 @@ export function RecordsReceptionView({
               </div>
 
               {newPaymentMode === 'Insurance' && (
-                <div id="insurance-company-container" className="animate-in fade-in slide-in-from-top-1 duration-200">
-                  <label id="input-patient-insurance-company" className="block text-xs font-medium text-stone-500 mb-1">Insurance Company Name</label>
-                  <input
-                    id="reg-patient-insurance-company"
-                    type="text"
-                    required
-                    placeholder="e.g. NHIF / AAR / Jubilee"
-                    value={newInsuranceCompany}
-                    onChange={(e) => setNewInsuranceCompany(e.target.value)}
-                    className="w-full bg-emerald-50/50 border border-emerald-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-medium"
-                  />
+                <div id="insurance-company-container" className="animate-in fade-in slide-in-from-top-1 duration-200 mt-2 space-y-3 bg-emerald-50/20 p-3 border border-emerald-100 rounded-lg">
+                  <div>
+                    <label id="input-patient-insurance-company" className="block text-xs font-semibold text-emerald-800 mb-1">Insurance Company Name</label>
+                    <input
+                      id="reg-patient-insurance-company"
+                      type="text"
+                      required
+                      placeholder="e.g. NHIF / AAR / Jubilee"
+                      value={newInsuranceCompany}
+                      onChange={(e) => setNewInsuranceCompany(e.target.value)}
+                      className="w-full bg-white border border-emerald-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label id="input-patient-insurance-price" className="block text-xs font-semibold text-emerald-800 mb-1">
+                      Custom Insurance Consultation Price (Ksh)
+                    </label>
+                    <input
+                      id="reg-patient-insurance-price"
+                      type="number"
+                      required
+                      min={0}
+                      value={insuranceConsultationPrice}
+                      onChange={(e) => setInsuranceConsultationPrice(e.target.value === '' ? 0 : Number(e.target.value))}
+                      className="w-full bg-white border border-emerald-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-mono font-bold text-emerald-900"
+                    />
+                    <span className="text-[10px] text-stone-500 block mt-1 leading-normal">
+                      Specify cover rate for this insurance type (e.g. general vs premium card covers vary).
+                    </span>
+                  </div>
                 </div>
               )}
 

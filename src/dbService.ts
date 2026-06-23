@@ -1037,3 +1037,56 @@ export async function deleteBoardReport(reportId: string) {
   }
 }
 
+export async function archiveDailyPharmacyData(
+  dispensesToArchive: MedicationDispense[],
+  patientsWithUnarchivedPrescriptions: Patient[],
+  dateStr: string
+) {
+  const batch = writeBatch(db);
+  let countDispenses = 0;
+  
+  dispensesToArchive.forEach(disp => {
+    if (!disp.isArchived) {
+      const docRef = doc(db, 'medicationDispenses', disp.id);
+      batch.set(docRef, cleanUndefined({ ...disp, isArchived: true }));
+      countDispenses++;
+    }
+  });
+
+  let countPrescriptions = 0;
+  patientsWithUnarchivedPrescriptions.forEach(patient => {
+    const updatedHistory = (patient.medicalHistory || []).map(record => {
+      if (record.date === dateStr && record.prescribedItems && record.prescribedItems.length > 0 && !record.isArchived) {
+        countPrescriptions++;
+        return { ...record, isArchived: true };
+      }
+      return record;
+    });
+
+    const docRef = doc(db, 'patients', patient.id);
+    batch.set(docRef, cleanUndefined({ ...patient, medicalHistory: updatedHistory }));
+  });
+
+  await batch.commit();
+  return { countDispenses, countPrescriptions };
+}
+
+export async function getSystemConfigLastReset(): Promise<string | null> {
+  try {
+    const snap = await getDocs(collection(db, 'system_config'));
+    const doc = snap.docs.find(d => d.id === 'lastPharmacyReset');
+    return doc ? doc.data().date : null;
+  } catch (err) {
+    console.warn("Failed to get last reset config", err);
+    return null;
+  }
+}
+
+export async function saveSystemConfigLastReset(dateStr: string) {
+  try {
+    await setDoc(doc(db, 'system_config', 'lastPharmacyReset'), { date: dateStr });
+  } catch (err) {
+    console.warn("Failed to save last reset config", err);
+  }
+}
+

@@ -29,6 +29,7 @@ export interface MedicalRecord {
   }[];
   billingStatus?: 'Unpaid' | 'Paid' | 'Dispensed';
   invoiceAmount?: number;
+  isArchived?: boolean;
 }
 
 export interface Patient {
@@ -78,6 +79,7 @@ export interface MedicationDispense {
   quantity: number;
   pricePerUnit: number;
   totalCost: number;
+  isArchived?: boolean;
 }
 
 export interface PharmacyItem {

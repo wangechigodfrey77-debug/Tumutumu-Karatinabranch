@@ -4,10 +4,11 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, TrendingUp, CalendarDays, Upload, FileSpreadsheet, FileText, Check, Loader2, Search, X, Download, Stethoscope } from 'lucide-react';
+import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, TrendingUp, CalendarDays, Upload, FileSpreadsheet, FileText, Check, Loader2, Search, X, Download, Stethoscope, Lock, Shield, Clock } from 'lucide-react';
 import { MedicationDispense, PharmacyItem, Patient, MedicalRecord } from '../types';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { archiveDailyPharmacyData, getSystemConfigLastReset, saveSystemConfigLastReset } from '../dbService';
 
 interface PharmacyViewProps {
   stock: PharmacyItem[];
@@ -172,6 +173,47 @@ export function PharmacyView({
   const [pharmaTotalCost, setPharmaTotalCost] = useState<number | ''>('');
   const [nonPharmaTotalCost, setNonPharmaTotalCost] = useState<number | ''>('');
 
+  // Unit price editable states
+  const [pharmaPricePerUnit, setPharmaPricePerUnit] = useState<number | ''>('');
+  const [nonPharmaPricePerUnit, setNonPharmaPricePerUnit] = useState<number | ''>('');
+
+  // Daily auto-reset state for prescriptions
+  const [showTodayOnly, setShowTodayOnly] = useState<boolean>(true);
+  const [excludeArchived, setExcludeArchived] = useState<boolean>(true);
+
+  // Automated/Manual Day Archiving States
+  const [archivingStatus, setArchivingStatus] = useState<'idle' | 'archiving' | 'success' | 'error'>('idle');
+  const [archivedCount, setArchivedCount] = useState<{ dispenses: number; prescriptions: number }>({ dispenses: 0, prescriptions: 0 });
+
+  const handleUpdatePrescribedItemPrice = (patientId: string, recordId: string, itemIndex: number, newPrice: number) => {
+    if (!onUpdatePatientHistory) return;
+    const patient = patients.find(p => p.id === patientId);
+    if (!patient) return;
+
+    const updatedHistory = (patient.medicalHistory || []).map(record => {
+      if (record.id === recordId) {
+        const updatedItems = (record.prescribedItems || []).map((item, idx) => {
+          if (idx === itemIndex) {
+            return { ...item, price: newPrice };
+          }
+          return item;
+        });
+
+        // Recompute the total invoice amount
+        const computedInvoiceAmount = updatedItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+
+        return {
+          ...record,
+          prescribedItems: updatedItems,
+          invoiceAmount: computedInvoiceAmount
+        };
+      }
+      return record;
+    });
+
+    onUpdatePatientHistory(patientId, updatedHistory);
+  };
+
   // Non-Pharmaceutical dispense states
   const [nonPharmaPatientId, setNonPharmaPatientId] = useState<string>('');
   const [selectedNonPharmaId, setSelectedNonPharmaId] = useState<string>('');
@@ -226,10 +268,29 @@ export function PharmacyView({
   }, [restockStockId]);
 
   const activeStockItem = stock.find((item) => item.id === selectedStockId);
-  const computedTotalCost = activeStockItem ? activeStockItem.price * dispenseQuantity : 0;
-
   const activeNonPharmaItem = stock.find((item) => item.id === selectedNonPharmaId);
-  const computedNonPharmaCost = activeNonPharmaItem ? activeNonPharmaItem.price * nonPharmaQuantity : 0;
+
+  React.useEffect(() => {
+    if (activeStockItem) {
+      setPharmaPricePerUnit(activeStockItem.price);
+    } else {
+      setPharmaPricePerUnit('');
+    }
+  }, [selectedStockId]);
+
+  React.useEffect(() => {
+    if (activeNonPharmaItem) {
+      setNonPharmaPricePerUnit(activeNonPharmaItem.price);
+    } else {
+      setNonPharmaPricePerUnit('');
+    }
+  }, [selectedNonPharmaId]);
+
+  const pharmaUnitPrice = pharmaPricePerUnit !== '' ? Number(pharmaPricePerUnit) : (activeStockItem?.price ?? 0);
+  const computedTotalCost = activeStockItem ? pharmaUnitPrice * dispenseQuantity : 0;
+
+  const nonPharmaUnitPrice = nonPharmaPricePerUnit !== '' ? Number(nonPharmaPricePerUnit) : (activeNonPharmaItem?.price ?? 0);
+  const computedNonPharmaCost = activeNonPharmaItem ? nonPharmaUnitPrice * nonPharmaQuantity : 0;
 
   React.useEffect(() => {
     setPharmaTotalCost(computedTotalCost);
@@ -298,6 +359,106 @@ export function PharmacyView({
   const totalLowStockCount = stock.filter((item) => item.stockQuantity <= (item.minThreshold ?? 15)).length;
   const criticalOutOfStockCount = stock.filter((item) => item.stockQuantity === 0).length;
 
+  // Background Cron-Like Daily Archiving & Reset Checker
+  React.useEffect(() => {
+    let active = true;
+    const checkAndRunAutoArchive = async () => {
+      try {
+        const lastResetDate = await getSystemConfigLastReset();
+        if (!active) return;
+
+        // If today is a new day and can see past records that have not been archived, auto-archive them to keep desk clean.
+        const pastUnarchivedDispenses = dispenses.filter(d => d.dispenseDate < todayStr && !d.isArchived);
+        const pastUnarchivedPatients = patients.filter(p => {
+          return (p.medicalHistory || []).some(record => 
+            record.date < todayStr && 
+            record.prescribedItems && 
+            record.prescribedItems.length > 0 && 
+            !record.isArchived
+          );
+        });
+
+        if (pastUnarchivedDispenses.length > 0 || pastUnarchivedPatients.length > 0) {
+          console.log("Automated Daily Cron Logic: Past unarchived records detected. Triggering automated rollover reset...");
+          setArchivingStatus('archiving');
+
+          const uniqueDates = Array.from(new Set([
+            ...pastUnarchivedDispenses.map(d => d.dispenseDate),
+            ...pastUnarchivedPatients.flatMap(p => (p.medicalHistory || [])
+              .filter(record => record.date < todayStr && !record.isArchived)
+              .map(record => record.date)
+            )
+          ])).sort();
+
+          let totalDisp = 0;
+          let totalRx = 0;
+
+          for (const dStr of uniqueDates) {
+            const dList = pastUnarchivedDispenses.filter(d => d.dispenseDate === dStr);
+            const pList = pastUnarchivedPatients.filter(p => (p.medicalHistory || []).some(r => r.date === dStr));
+            const result = await archiveDailyPharmacyData(dList, pList, dStr);
+            totalDisp += result.countDispenses;
+            totalRx += result.countPrescriptions;
+          }
+
+          if (active) {
+            setArchivedCount({ dispenses: totalDisp, prescriptions: totalRx });
+            setArchivingStatus('success');
+            await saveSystemConfigLastReset(todayStr);
+            
+            // Log an audit trial if possible
+            console.log(`Auto-archiver: rollover complete. Saved ${totalDisp} dispenses & ${totalRx} prescriptions.`);
+          }
+        } else {
+          // If already clean, update config to todayStr so we don't scan needlessly
+          if (lastResetDate !== todayStr && active) {
+            await saveSystemConfigLastReset(todayStr);
+          }
+        }
+      } catch (err) {
+        console.warn("Automated auto-archiving background worker warning: ", err);
+        if (active) setArchivingStatus('error');
+      }
+    };
+
+    if (patients.length > 0) {
+      checkAndRunAutoArchive();
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [patients, dispenses, todayStr]);
+
+  const handleManualArchiveToday = async () => {
+    if (!confirm("Are you sure you want to write-close and archive today's Pharmacy Active Desk?\n\nThis will instantly archive all today's prescriptions and medication dispenses, resetting the Pharmacy Active Desk for the next morning. Financial records will remain totally preserved and tabulated.")) {
+      return;
+    }
+
+    try {
+      setArchivingStatus('archiving');
+      const todayDispenses = dispenses.filter(d => d.dispenseDate === todayStr && !d.isArchived);
+      const todayPatients = patients.filter(p => {
+        return (p.medicalHistory || []).some(record => 
+          record.date === todayStr && 
+          record.prescribedItems && 
+          record.prescribedItems.length > 0 && 
+          !record.isArchived
+        );
+      });
+
+      const result = await archiveDailyPharmacyData(todayDispenses, todayPatients, todayStr);
+      setArchivedCount({ dispenses: result.countDispenses, prescriptions: result.countPrescriptions });
+      setArchivingStatus('success');
+      await saveSystemConfigLastReset(todayStr);
+      alert(`Pristine Rollover Successful!\n\nSuccessfully archived ${result.countDispenses} medication dispenses and ${result.countPrescriptions} physician prescriptions. Active Pharmacy desk is now reset for the next morning.`);
+    } catch (err: any) {
+      console.error("Manual rollover failed: ", err);
+      setArchivingStatus('error');
+      alert(`Archiving failed: ${err?.message || err}`);
+    }
+  };
+
   const handleDispense = (e: React.FormEvent) => {
     e.preventDefault();
     if (!dispensePatientId || !selectedStockId) {
@@ -323,7 +484,7 @@ export function PharmacyView({
       dispenseDate: pharmaDispenseDate,
       dispensedBy: dispensingOfficer,
       quantity: dispenseQuantity,
-      pricePerUnit: item.price,
+      pricePerUnit: pharmaPricePerUnit !== '' ? Number(pharmaPricePerUnit) : item.price,
       totalCost: pharmaTotalCost !== '' ? Number(pharmaTotalCost) : computedTotalCost,
     };
 
@@ -332,6 +493,7 @@ export function PharmacyView({
     setSelectedStockId('');
     setDispenseQuantity(1);
     setPharmaTotalCost('');
+    setPharmaPricePerUnit('');
     alert(`Medication dispensed safely. Dispatched ${dispenseQuantity} units of ${item.name} to patient ${patient.name}.`);
   };
 
@@ -360,7 +522,7 @@ export function PharmacyView({
       dispenseDate: nonPharmaDispenseDate,
       dispensedBy: dispensingOfficer,
       quantity: nonPharmaQuantity,
-      pricePerUnit: item.price,
+      pricePerUnit: nonPharmaPricePerUnit !== '' ? Number(nonPharmaPricePerUnit) : item.price,
       totalCost: nonPharmaTotalCost !== '' ? Number(nonPharmaTotalCost) : computedNonPharmaCost,
     };
 
@@ -369,6 +531,7 @@ export function PharmacyView({
     setSelectedNonPharmaId('');
     setNonPharmaQuantity(1);
     setNonPharmaTotalCost('');
+    setNonPharmaPricePerUnit('');
     alert(`Non-pharmaceutical supplies dispensed safely. Dispatched ${nonPharmaQuantity} units of ${item.name} to patient ${patient.name}.`);
   };
 
@@ -844,9 +1007,104 @@ export function PharmacyView({
             </h3>
             <p className="text-[11px] text-stone-500 mt-0.5">Real-time clinical prescription logs and itemized billing status</p>
           </div>
-          <span className="bg-emerald-50 text-emerald-800 text-[10px] font-bold font-mono px-2.5 py-1 rounded-full border border-emerald-100">
-            Real-time Sync Active
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-2 text-xs font-semibold text-stone-600 bg-stone-50 hover:bg-stone-100/90 p-1.5 px-3 border border-stone-200 rounded-lg cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showTodayOnly}
+                onChange={(e) => setShowTodayOnly(e.target.checked)}
+                className="rounded-sm border-stone-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer h-3.5 w-3.5"
+              />
+              <span className="text-[11px]">Today's Only</span>
+              <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1.5 py-0.2 rounded font-bold font-mono">Daily Reset</span>
+            </label>
+
+            <label className="flex items-center gap-2 text-xs font-semibold text-stone-600 bg-stone-50 hover:bg-stone-100/90 p-1.5 px-3 border border-stone-200 rounded-lg cursor-pointer">
+              <input
+                type="checkbox"
+                checked={excludeArchived}
+                onChange={(e) => setExcludeArchived(e.target.checked)}
+                className="rounded-sm border-stone-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer h-3.5 w-3.5"
+              />
+              <span className="text-[11px]">Hide Archived Logs</span>
+              <span className="bg-teal-100 text-teal-800 text-[9px] px-1.5 py-0.2 rounded font-bold font-mono">Clean Desk</span>
+            </label>
+
+            <span className="bg-emerald-50 text-emerald-800 text-[10px] font-bold font-mono px-2.5 py-1.5 rounded-full border border-emerald-100 shrink-0">
+              Real-time Sync Active
+            </span>
+          </div>
+        </div>
+
+        {/* End of Day Archiving & Financial Tabulation Center Panel */}
+        <div className="bg-stone-50 border border-stone-200 rounded-lg p-4 space-y-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div>
+                <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5 font-sans">
+                  End-of-Day Financial Tabulation & Archiving Center
+                </h4>
+                <p className="text-[10px] text-stone-500 font-sans">Automated midnight background cron worker & on-demand manual desk resetters</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {archivingStatus === 'archiving' && (
+                <span className="flex items-center gap-1 text-[10px] bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded font-medium animate-pulse">
+                  <Loader2 className="w-3 h-3 animate-spin text-amber-600" /> Archiving records...
+                </span>
+              )}
+              {archivingStatus === 'success' && (
+                <span className="flex items-center gap-1 text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-bold">
+                  <Check className="w-3 h-3 text-emerald-600" /> Tabulated (Archived {archivedCount.dispenses} dispenses, {archivedCount.prescriptions} rx)
+                </span>
+              )}
+              {archivingStatus === 'error' && (
+                <span className="flex items-center gap-1 text-[10px] bg-rose-50 text-rose-800 border border-rose-200 px-2 py-0.5 rounded font-medium">
+                  <AlertTriangle className="w-3 h-3 text-rose-600" /> Error saving archives
+                </span>
+              )}
+              <span className="text-[10px] text-stone-400 bg-stone-100 border border-stone-200 px-2 py-0.5 rounded font-mono">
+                System Time Check: Active
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+            <div className="bg-white p-2.5 rounded-lg border border-stone-200">
+              <span className="text-[9px] text-stone-400 font-bold uppercase tracking-wider block">Today's Revenue</span>
+              <span className="text-xs font-mono font-bold text-stone-900 block mt-0.5">Ksh {dailyRev.toLocaleString()}</span>
+              <span className="text-[8px] text-emerald-600 font-semibold mt-0.5 block">100% Tabulated</span>
+            </div>
+
+            <div className="bg-white p-2.5 rounded-lg border border-stone-200">
+              <span className="text-[9px] text-stone-400 font-bold uppercase tracking-wider block">Unarchived Today</span>
+              <span className="text-xs font-mono font-bold text-stone-900 block mt-0.5">
+                {dispenses.filter(d => d.dispenseDate === todayStr && !d.isArchived).length} Dispenses
+              </span>
+              <span className="text-[8px] text-stone-500 block mt-0.5 font-semibold">Ready for rollover</span>
+            </div>
+
+            <div className="bg-white p-2.5 rounded-lg border border-stone-200">
+              <span className="text-[9px] text-stone-400 font-bold uppercase tracking-wider block">Pending Active Rx</span>
+              <span className="text-xs font-mono font-bold text-stone-900 block mt-0.5">
+                {patients.flatMap(p => (p.medicalHistory || []).filter(r => r.date === todayStr && r.prescribedItems && r.prescribedItems.length > 0 && !r.isArchived)).length} Orders
+              </span>
+              <span className="text-[8px] text-stone-500 block mt-0.5">Active desk buffer</span>
+            </div>
+
+            <div className="bg-white p-2.5 rounded-lg border border-stone-200 flex flex-col justify-center">
+              <button
+                id="btn-manual-archive"
+                onClick={handleManualArchiveToday}
+                disabled={archivingStatus === 'archiving'}
+                className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-stone-300 text-white text-[10px] py-1.5 px-2.5 rounded font-bold transition-all flex items-center justify-center gap-1 border border-black cursor-pointer shadow-xs"
+              >
+                <Lock className="w-3.5 h-3.5 text-amber-400" />
+                Archive Today's Desk
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -862,7 +1120,7 @@ export function PharmacyView({
             </thead>
             <tbody className="divide-y divide-stone-100 text-stone-700">
               {(() => {
-                const rxList = patients.flatMap(p => {
+                let rxList = patients.flatMap(p => {
                   return (p.medicalHistory || [])
                     .filter(record => record.prescribedItems && record.prescribedItems.length > 0)
                     .map(record => ({
@@ -878,15 +1136,24 @@ export function PharmacyView({
                       invoiceAmount: record.invoiceAmount || 0,
                       doctorName: record.doctorName,
                       paymentMode: p.paymentMode || 'Cash',
-                      insuranceCompany: p.insuranceCompany
+                      insuranceCompany: p.insuranceCompany,
+                      isArchived: !!record.isArchived
                     }));
                 }).sort((a, b) => b.date.localeCompare(a.date));
+
+                if (showTodayOnly) {
+                  rxList = rxList.filter(rx => rx.date === todayStr);
+                }
+
+                if (excludeArchived) {
+                  rxList = rxList.filter(rx => !rx.isArchived);
+                }
 
                 if (rxList.length === 0) {
                   return (
                     <tr>
                       <td colSpan={5} className="py-8 text-center text-stone-400">
-                        No physician prescriptions generated in database history.
+                        No physician prescriptions generated {showTodayOnly ? "today." : "inside database history."} {excludeArchived && "(Archived records are excluded)"}
                       </td>
                     </tr>
                   );
@@ -904,17 +1171,34 @@ export function PharmacyView({
                       </span>
                     </td>
                     <td className="py-3">
-                      <div className="max-w-[320px] space-y-1">
+                      <div className="max-w-[420px] space-y-1.5">
                         <div>
                           <span className="text-[9px] uppercase font-bold text-stone-400 tracking-wider">Diagnosis:</span>
                           <p className="text-[11px] text-stone-800 leading-tight font-medium pb-1">{rx.diagnoses}</p>
                         </div>
                         <div>
-                          <span className="text-[9px] uppercase font-bold text-stone-400 tracking-wider">Medications:</span>
-                          <div className="space-y-0.5">
+                          <span className="text-[9px] uppercase font-bold text-stone-400 tracking-wider">Medications & Pricing:</span>
+                          <div className="space-y-1.5 mt-0.5">
                             {rx.prescribedItems.map((med: any, idx: number) => (
-                              <div key={idx} className="text-[11px] text-emerald-800 font-mono font-medium leading-none">
-                                • {med.name} x{med.quantity} {med.dosage ? `[${med.dosage}]` : ''}
+                              <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-stone-50 p-1.5 px-2 border border-stone-100 rounded-md text-[11px] text-emerald-900 font-mono">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+                                  <span className="font-bold text-stone-800">{med.name}</span>
+                                  <span className="text-stone-500 font-semibold">x{med.quantity}</span>
+                                  {med.dosage && <span className="text-stone-400 font-sans text-[10px]">[{med.dosage}]</span>}
+                                </div>
+                                <div className="flex items-center gap-1 ml-0 sm:ml-auto">
+                                  <span className="text-[10px] text-stone-400">Ksh</span>
+                                  <input
+                                    type="number"
+                                    value={med.price}
+                                    onChange={(e) => handleUpdatePrescribedItemPrice(rx.patientId, rx.recordId, idx, Number(e.target.value))}
+                                    disabled={rx.billingStatus === 'Dispensed'}
+                                    className="w-16 bg-white border border-stone-200 rounded p-0.5 px-1 font-bold text-center text-[10px] text-emerald-800 focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                                    placeholder="Price"
+                                  />
+                                  <span className="text-stone-400 text-[10px] font-semibold font-sans">= Ksh {(med.price * med.quantity).toLocaleString()}</span>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -956,6 +1240,11 @@ export function PharmacyView({
                         ) : (
                           <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-0.5 rounded-full shrink-0">
                             Dispensed & Cleared
+                          </span>
+                        )}
+                        {rx.isArchived && (
+                          <span className="text-[10px] font-bold text-stone-600 bg-stone-100 border border-stone-200 px-2 py-0.5 rounded-full shrink-0">
+                            Archived Log
                           </span>
                         )}
                         <button
@@ -1266,7 +1555,20 @@ export function PharmacyView({
                   </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label id="lbl-pharma-unit-price" className="block font-medium text-stone-500 mb-1">Unit Price (Ksh)</label>
+                    <input
+                      id="inp-pharma-unit-price"
+                      type="number"
+                      required
+                      min={0}
+                      value={pharmaPricePerUnit}
+                      onChange={(e) => setPharmaPricePerUnit(e.target.value === '' ? '' : Number(e.target.value))}
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden font-mono text-xs"
+                    />
+                  </div>
+
                   <div>
                     <label id="lbl-dispense-qty" className="block font-medium text-stone-500 mb-1">Dispensation Qty</label>
                     <input
@@ -1277,7 +1579,7 @@ export function PharmacyView({
                       max={activeStockItem ? activeStockItem.stockQuantity : 100}
                       value={dispenseQuantity}
                       onChange={(e) => setDispenseQuantity(Number(e.target.value))}
-                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden text-xs"
                     />
                   </div>
 
@@ -1532,7 +1834,20 @@ export function PharmacyView({
                   </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label id="lbl-nonpharma-unit-price" className="block font-medium text-stone-500 mb-1">Unit Price (Ksh)</label>
+                    <input
+                      id="inp-nonpharma-unit-price"
+                      type="number"
+                      required
+                      min={0}
+                      value={nonPharmaPricePerUnit}
+                      onChange={(e) => setNonPharmaPricePerUnit(e.target.value === '' ? '' : Number(e.target.value))}
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-indigo-500 outline-hidden font-mono text-xs"
+                    />
+                  </div>
+
                   <div>
                     <label id="lbl-dispense-nonpharma-qty" className="block font-medium text-stone-500 mb-1">Dispensation Qty</label>
                     <input
@@ -1543,7 +1858,7 @@ export function PharmacyView({
                       max={activeNonPharmaItem ? activeNonPharmaItem.stockQuantity : 100}
                       value={nonPharmaQuantity}
                       onChange={(e) => setNonPharmaQuantity(Number(e.target.value))}
-                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-indigo-500 outline-hidden"
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-indigo-500 outline-hidden text-xs"
                     />
                   </div>
 

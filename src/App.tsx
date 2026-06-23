@@ -57,7 +57,7 @@ import {
 } from './dbService';
 import { auth, googleProvider, setOAuthAccessToken, getOAuthAccessToken } from './firebase';
 import { signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
-import { WhitelistUser, Patient, LabTest, LabCatalogItem, MedicationDispense, PharmacyItem, DutyAllocation, LeaveRequest, Message, Appointment, MedicalRecord, Expense, AuditLog } from './types';
+import { WhitelistUser, Patient, LabTest, LabCatalogItem, MedicationDispense, PharmacyItem, DutyAllocation, LeaveRequest, Message, Appointment, MedicalRecord, Expense, AuditLog, PatientVitals } from './types';
 
 
 // Importing child modular workspaces
@@ -68,6 +68,7 @@ import { PharmacyView } from './components/PharmacyView';
 import { StaffDutiesLeaveView } from './components/StaffDutiesLeaveView';
 import { CommunicationCenter } from './components/CommunicationCenter';
 import { BoardReportView } from './components/BoardReportView';
+import { TriageView } from './components/TriageView';
 
 export default function App() {
   // Database States
@@ -236,6 +237,8 @@ export default function App() {
       setSessionEmail(normalized);
       // Auto routing according to role
       if (foundUser.role === 'Reception') setActiveTab('records');
+      else if (foundUser.role === 'Doctor') setActiveTab('records');
+      else if (foundUser.role === 'Triage') setActiveTab('triage');
       else if (foundUser.role === 'Lab') setActiveTab('lab');
       else if (foundUser.role === 'Pharmacy') setActiveTab('pharmacy');
       else setActiveTab('admin');
@@ -400,6 +403,20 @@ export default function App() {
     } catch (error) {
       console.error("Add inventory item failed", error);
       alert("Permission denied. Pharmacy executive role required.");
+    }
+  };
+
+  const handleUpdatePatientVitals = async (patientId: string, vitals: PatientVitals) => {
+    try {
+      const patient = patients.find((p) => p.id === patientId);
+      if (patient) {
+        const vitalsHistory = [vitals, ...(patient.vitalsHistory || [])];
+        await savePatient({ ...patient, vitals, vitalsHistory });
+        await logMutation('RECORD_VITALS', `Triage officer ${vitals.recordedBy} recorded physiological vitals for Patient: ${patient.name} (${patientId}). Temp: ${vitals.temperature}°C, BP: ${vitals.bpSystolic}/${vitals.bpDiastolic} mmHg`);
+      }
+    } catch (error) {
+      console.error("Update patient vitals failed", error);
+      alert("Permission denied or error saving vital signs.");
     }
   };
 
@@ -642,6 +659,21 @@ export default function App() {
                 </button>
               )}
 
+              {/* Triage Workspace */}
+              {(currentUser.role === 'Triage' || currentUser.role === 'Doctor' || currentUser.role === 'Admin') && (
+                <button
+                  id="tab-triage"
+                  onClick={() => setActiveTab('triage')}
+                  className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between transition-all ${
+                    activeTab === 'triage' ? 'bg-emerald-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Heart className="w-4 h-4 text-rose-500 animate-pulse" /> Triage Desk (Vitals)
+                  </span>
+                </button>
+              )}
+
               {/* Lab Workspace */}
               {(currentUser.role === 'Lab' || currentUser.role === 'Admin') && (
                 <button
@@ -745,6 +777,15 @@ export default function App() {
           {/* Core Content Area */}
           <main className="flex-1 p-6 md:p-8 overflow-y-auto pt-[115px] md:pt-[110px]">
             {/* Navigational Routing Panels */}
+            {activeTab === 'triage' && (currentUser.role === 'Triage' || currentUser.role === 'Doctor' || currentUser.role === 'Admin') && (
+              <TriageView
+                patients={patients}
+                userEmail={currentUser.email}
+                userName={currentUser.name}
+                onUpdatePatientVitals={handleUpdatePatientVitals}
+              />
+            )}
+
             {activeTab === 'records' && (currentUser.role === 'Reception' || currentUser.role === 'Doctor' || currentUser.role === 'Admin') && (
               <RecordsReceptionView
                 patients={patients}

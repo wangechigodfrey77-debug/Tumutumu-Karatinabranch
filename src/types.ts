@@ -3,12 +3,30 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type UserRole = 'Admin' | 'Reception' | 'Doctor' | 'Lab' | 'Pharmacy';
+export type UserRole = 'Admin' | 'Reception' | 'Doctor' | 'Lab' | 'Pharmacy' | 'Triage';
 
 export interface WhitelistUser {
   email: string;
   name: string;
   role: UserRole;
+}
+
+export interface PatientVitals {
+  id: string;
+  temperature: number; // in °C
+  bpSystolic: number;  // in mmHg
+  bpDiastolic: number; // in mmHg
+  pulse: number;       // in bpm
+  respRate?: number;   // breaths/min
+  spo2?: number;       // %
+  weight?: number;     // kg
+  height?: number;     // cm
+  bloodSugar?: number; // mmol/L
+  urgency: 'Emergent' | 'Urgent' | 'Normal' | 'Routine';
+  chiefComplaint: string;
+  recordedAt: string;
+  recordedBy: string;
+  recordedByEmail: string;
 }
 
 export interface MedicalRecord {
@@ -49,6 +67,8 @@ export interface Patient {
   walkInTag?: 'Lab Walk-In' | 'Pharmacy Walk-In' | 'Outpatient Procedure Walk-In';
   paymentMode?: 'Cash' | 'Insurance';
   insuranceCompany?: string;
+  vitals?: PatientVitals;
+  vitalsHistory?: PatientVitals[];
 }
 
 export interface LabCatalogItem {

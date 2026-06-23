@@ -39,7 +39,7 @@ export function PharmacyView({
 }: PharmacyViewProps) {
   const [dispensePatientId, setDispensePatientId] = useState<string>('');
   const [selectedStockId, setSelectedStockId] = useState<string>('');
-  const [dispenseQuantity, setDispenseQuantity] = useState<number>(1);
+  const [dispenseQuantity, setDispenseQuantity] = useState<number | ''>(1);
   const [dispensingOfficer, setDispensingOfficer] = useState<string>(userName || 'Susan Muthoni');
 
   // Walk-in Registration states
@@ -217,7 +217,7 @@ export function PharmacyView({
   // Non-Pharmaceutical dispense states
   const [nonPharmaPatientId, setNonPharmaPatientId] = useState<string>('');
   const [selectedNonPharmaId, setSelectedNonPharmaId] = useState<string>('');
-  const [nonPharmaQuantity, setNonPharmaQuantity] = useState<number>(1);
+  const [nonPharmaQuantity, setNonPharmaQuantity] = useState<number | ''>(1);
 
   // New stock item creation states
   const [newItemName, setNewItemName] = useState<string>('');
@@ -287,10 +287,10 @@ export function PharmacyView({
   }, [selectedNonPharmaId]);
 
   const pharmaUnitPrice = pharmaPricePerUnit !== '' ? Number(pharmaPricePerUnit) : (activeStockItem?.price ?? 0);
-  const computedTotalCost = activeStockItem ? pharmaUnitPrice * dispenseQuantity : 0;
+  const computedTotalCost = activeStockItem ? pharmaUnitPrice * Number(dispenseQuantity || 0) : 0;
 
   const nonPharmaUnitPrice = nonPharmaPricePerUnit !== '' ? Number(nonPharmaPricePerUnit) : (activeNonPharmaItem?.price ?? 0);
-  const computedNonPharmaCost = activeNonPharmaItem ? nonPharmaUnitPrice * nonPharmaQuantity : 0;
+  const computedNonPharmaCost = activeNonPharmaItem ? nonPharmaUnitPrice * Number(nonPharmaQuantity || 0) : 0;
 
   React.useEffect(() => {
     setPharmaTotalCost(computedTotalCost);
@@ -471,7 +471,13 @@ export function PharmacyView({
 
     if (!patient || !item) return;
 
-    if (item.stockQuantity < dispenseQuantity) {
+    const numericQty = Number(dispenseQuantity || 0);
+    if (numericQty <= 0) {
+      alert('Dispensation quantity must be greater than zero.');
+      return;
+    }
+
+    if (item.stockQuantity < numericQty) {
       alert(`Critical stock warnings: Insufficient inventory count for ${item.name}. Current stock is only ${item.stockQuantity} units.`);
       return;
     }
@@ -483,7 +489,7 @@ export function PharmacyView({
       patientName: patient.name,
       dispenseDate: pharmaDispenseDate,
       dispensedBy: dispensingOfficer,
-      quantity: dispenseQuantity,
+      quantity: numericQty,
       pricePerUnit: pharmaPricePerUnit !== '' ? Number(pharmaPricePerUnit) : item.price,
       totalCost: pharmaTotalCost !== '' ? Number(pharmaTotalCost) : computedTotalCost,
     };
@@ -494,7 +500,7 @@ export function PharmacyView({
     setDispenseQuantity(1);
     setPharmaTotalCost('');
     setPharmaPricePerUnit('');
-    alert(`Medication dispensed safely. Dispatched ${dispenseQuantity} units of ${item.name} to patient ${patient.name}.`);
+    alert(`Medication dispensed safely. Dispatched ${numericQty} units of ${item.name} to patient ${patient.name}.`);
   };
 
   const handleNonPharmaDispense = (e: React.FormEvent) => {
@@ -509,7 +515,13 @@ export function PharmacyView({
 
     if (!patient || !item) return;
 
-    if (item.stockQuantity < nonPharmaQuantity) {
+    const numericQty = Number(nonPharmaQuantity || 0);
+    if (numericQty <= 0) {
+      alert('Dispensation quantity must be greater than zero.');
+      return;
+    }
+
+    if (item.stockQuantity < numericQty) {
       alert(`Critical stock warnings: Insufficient inventory count for ${item.name}. Current stock is only ${item.stockQuantity} units.`);
       return;
     }
@@ -521,7 +533,7 @@ export function PharmacyView({
       patientName: patient.name,
       dispenseDate: nonPharmaDispenseDate,
       dispensedBy: dispensingOfficer,
-      quantity: nonPharmaQuantity,
+      quantity: numericQty,
       pricePerUnit: nonPharmaPricePerUnit !== '' ? Number(nonPharmaPricePerUnit) : item.price,
       totalCost: nonPharmaTotalCost !== '' ? Number(nonPharmaTotalCost) : computedNonPharmaCost,
     };
@@ -532,7 +544,7 @@ export function PharmacyView({
     setNonPharmaQuantity(1);
     setNonPharmaTotalCost('');
     setNonPharmaPricePerUnit('');
-    alert(`Non-pharmaceutical supplies dispensed safely. Dispatched ${nonPharmaQuantity} units of ${item.name} to patient ${patient.name}.`);
+    alert(`Non-pharmaceutical supplies dispensed safely. Dispatched ${numericQty} units of ${item.name} to patient ${patient.name}.`);
   };
 
   const handleRestock = (e: React.FormEvent) => {
@@ -1575,10 +1587,11 @@ export function PharmacyView({
                       id="inp-dispense-qty"
                       type="number"
                       required
-                      min={1}
+                      min={0.001}
+                      step="any"
                       max={activeStockItem ? activeStockItem.stockQuantity : 100}
                       value={dispenseQuantity}
-                      onChange={(e) => setDispenseQuantity(Number(e.target.value))}
+                      onChange={(e) => setDispenseQuantity(e.target.value === '' ? '' : Number(e.target.value))}
                       className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-emerald-500 outline-hidden text-xs"
                     />
                   </div>
@@ -1854,10 +1867,11 @@ export function PharmacyView({
                       id="inp-dispense-nonpharma-qty"
                       type="number"
                       required
-                      min={1}
+                      min={0.001}
+                      step="any"
                       max={activeNonPharmaItem ? activeNonPharmaItem.stockQuantity : 100}
                       value={nonPharmaQuantity}
-                      onChange={(e) => setNonPharmaQuantity(Number(e.target.value))}
+                      onChange={(e) => setNonPharmaQuantity(e.target.value === '' ? '' : Number(e.target.value))}
                       className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 focus:ring-1 focus:ring-indigo-500 outline-hidden text-xs"
                     />
                   </div>

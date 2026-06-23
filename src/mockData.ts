@@ -45,6 +45,7 @@ export const defaultWhitelist: WhitelistUser[] = [
   { email: 'gmaurice101@gmail.com', name: 'Dr. Maurice G. (Admin)', role: 'Admin' },
   { email: 'admin@tumutumu.org', name: 'Dr. Beatrice Wanjiku', role: 'Admin' },
   { email: 'reception@tumutumu.org', name: 'Mary Wangari (Records)', role: 'Reception' },
+  { email: 'triage@tumutumu.org', name: 'John Kamau (Triage)', role: 'Triage' },
   { email: 'doctor@tumutumu.org', name: 'Dr. James Kinyua', role: 'Doctor' },
   { email: 'lab@tumutumu.org', name: 'Peter Kagiri (Lab Tech)', role: 'Lab' },
   { email: 'pharmacy@tumutumu.org', name: 'Susan Muthoni (Pharmacist)', role: 'Pharmacy' }

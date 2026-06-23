@@ -1596,6 +1596,7 @@ export function AdminDashboard({
                 >
                   <option value="Doctor">Doctor (Clinical Officer / consultant)</option>
                   <option value="Reception">Reception & Records coordinator</option>
+                  <option value="Triage">Triage Nurse / Officer (Vitals & physiological details)</option>
                   <option value="Lab">Lab Technologist</option>
                   <option value="Pharmacy">Pharmacist / Dispatcher</option>
                   <option value="Admin">Administrator (Roster Coordinator / CFO)</option>

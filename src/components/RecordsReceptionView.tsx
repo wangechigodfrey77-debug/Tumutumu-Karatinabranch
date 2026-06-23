@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Search, Stethoscope, FileText, Calendar, DollarSign, History, ShieldAlert, Download } from 'lucide-react';
+import { UserPlus, Search, Stethoscope, FileText, Calendar, DollarSign, History, ShieldAlert, Download, Heart } from 'lucide-react';
 import { Patient, MedicalRecord, Appointment, UserRole, PharmacyItem } from '../types';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -1096,6 +1096,80 @@ export function RecordsReceptionView({
                     </span>
                   </div>
                 </div>
+
+                {/* Captured Vitals Signs from Triage Desk */}
+                {curSelectedPatient.vitals && (
+                  <div className="bg-rose-50/50 border border-rose-100 rounded-xl p-4.5 space-y-3 shadow-3xs">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-rose-800 flex items-center gap-1.5">
+                        <Heart className="w-4 h-4 text-rose-500 animate-pulse" /> Latest Triage Vitals Signs (Captured Today)
+                      </span>
+                      <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${
+                        curSelectedPatient.vitals.urgency === 'Emergent' ? 'bg-red-500 text-white animate-pulse' :
+                        curSelectedPatient.vitals.urgency === 'Urgent' ? 'bg-amber-500 text-white' :
+                        curSelectedPatient.vitals.urgency === 'Normal' ? 'bg-yellow-100 text-amber-800' :
+                        'bg-emerald-100 text-emerald-800'
+                      }`}>
+                        Triage: {curSelectedPatient.vitals.urgency}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white p-3 rounded-lg border border-rose-150/40 text-[11px] font-medium text-stone-700">
+                      <div>
+                        <span className="text-stone-400 block text-[9px] uppercase font-bold">Body Temperature</span>
+                        <strong className="text-stone-900 font-mono text-xs">{curSelectedPatient.vitals.temperature} °C</strong>
+                        {curSelectedPatient.vitals.temperature > 37.8 && <span className="text-[9px] text-red-500 block font-bold">Fever Spike</span>}
+                      </div>
+                      <div>
+                        <span className="text-stone-400 block text-[9px] uppercase font-bold">Blood Pressure</span>
+                        <strong className="text-stone-900 font-mono text-xs">{curSelectedPatient.vitals.bpSystolic}/{curSelectedPatient.vitals.bpDiastolic} mmHg</strong>
+                        {(curSelectedPatient.vitals.bpSystolic >= 140 || curSelectedPatient.vitals.bpDiastolic >= 90) && (
+                          <span className="text-[9px] text-amber-600 block font-bold">Hypertension</span>
+                        )}
+                      </div>
+                      <div>
+                        <span className="text-stone-400 block text-[9px] uppercase font-bold">Pulse Rate</span>
+                        <strong className="text-stone-900 font-mono text-xs">{curSelectedPatient.vitals.pulse} bpm</strong>
+                      </div>
+                      <div>
+                        <span className="text-stone-400 block text-[9px] uppercase font-bold">SpO2 (Oxygen)</span>
+                        <strong className="text-stone-900 font-mono text-xs">{curSelectedPatient.vitals.spo2 ? `${curSelectedPatient.vitals.spo2} %` : 'N/A'}</strong>
+                        {curSelectedPatient.vitals.spo2 && curSelectedPatient.vitals.spo2 < 93 && (
+                          <span className="text-[9px] text-red-600 font-bold block animate-pulse">Hypoxia Alert</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {(curSelectedPatient.vitals.weight || curSelectedPatient.vitals.height || curSelectedPatient.vitals.respRate || curSelectedPatient.vitals.bloodSugar) && (
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px] font-mono px-1 text-stone-500">
+                        {curSelectedPatient.vitals.weight && <div>Weight: <strong className="text-stone-700 font-bold">{curSelectedPatient.vitals.weight} kg</strong></div>}
+                        {curSelectedPatient.vitals.height && <div>Height: <strong className="text-stone-700 font-bold">{curSelectedPatient.vitals.height} cm</strong></div>}
+                        {curSelectedPatient.vitals.respRate && <div>Resp Rate: <strong className="text-stone-700 font-bold">{curSelectedPatient.vitals.respRate} /min</strong></div>}
+                        {curSelectedPatient.vitals.bloodSugar && <div>Blood Sugar: <strong className="text-stone-700 font-bold">{curSelectedPatient.vitals.bloodSugar} mmol/L</strong></div>}
+                      </div>
+                    )}
+
+                    <div className="bg-white/85 p-2.5 rounded-lg border border-stone-200 text-xs">
+                      <span className="text-[9px] uppercase font-bold text-stone-400 block mb-0.5">Chief Symptom Complaint</span>
+                      <p className="text-stone-800 font-medium italic">"{curSelectedPatient.vitals.chiefComplaint}"</p>
+                      <div className="flex justify-between items-center mt-2 pt-2 border-t border-stone-100">
+                        <span className="text-[9px] text-stone-400">Captured by Triage Officer {curSelectedPatient.vitals.recordedBy} at {new Date(curSelectedPatient.vitals.recordedAt).toLocaleTimeString()}</span>
+                        {(userRole === 'Doctor' || userRole === 'Admin') && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSymptoms(curSelectedPatient.vitals?.chiefComplaint || '');
+                              alert('Chief complaint copied to clinical symptoms text field!');
+                            }}
+                            className="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-250 rounded px-2 py-0.5 text-[10px] font-bold"
+                          >
+                            Copy to Symptom Form
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Secure Medical History Log */}
                 <div>

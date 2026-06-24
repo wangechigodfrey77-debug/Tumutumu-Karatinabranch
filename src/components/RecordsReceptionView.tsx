@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { UserPlus, Search, Stethoscope, FileText, Calendar, DollarSign, History, ShieldAlert, Download, Heart } from 'lucide-react';
-import { Patient, MedicalRecord, Appointment, UserRole, PharmacyItem } from '../types';
+import { Patient, MedicalRecord, Appointment, UserRole, PharmacyItem, LabTest, LabCatalogItem } from '../types';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -21,6 +21,10 @@ interface RecordsReceptionViewProps {
   onUpdateAppointmentBilling: (apptId: string, status: 'Paid' | 'Unpaid') => void;
   stock?: PharmacyItem[];
   onUpdatePatientHistory?: (patientId: string, history: MedicalRecord[]) => void;
+  labTests?: LabTest[];
+  labCatalog?: LabCatalogItem[];
+  onAddLabTest?: (test: LabTest) => void;
+  onUpdateLabTest?: (test: LabTest) => void;
 }
 
 export function RecordsReceptionView({
@@ -35,9 +39,15 @@ export function RecordsReceptionView({
   onUpdateAppointmentBilling,
   stock = [],
   onUpdatePatientHistory,
+  labTests = [],
+  labCatalog = [],
+  onAddLabTest,
+  onUpdateLabTest,
 }: RecordsReceptionViewProps) {
-  // Tabs: Register Patient, Manage Records, Appointments & Billing
-  const [activeSubTab, setActiveSubTab] = useState<'register' | 'history' | 'appointments'>('register');
+  // Tabs: Register Patient, Manage Records, Appointments & Billing, View Patient Card
+  const [activeSubTab, setActiveSubTab] = useState<'register' | 'history' | 'appointments' | 'card'>('register');
+  const [cardSearchQuery, setCardSearchQuery] = useState<string>('');
+  const [selectedCardPatient, setSelectedCardPatient] = useState<Patient | null>(null);
 
   // Search/Filters
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -202,6 +212,48 @@ export function RecordsReceptionView({
     });
   };
 
+  // Structured Laboratory Test Request Builder States
+  const [selectedLabTestName, setSelectedLabTestName] = useState<string>('');
+  const [activeLabTestsList, setActiveLabTestsList] = useState<{
+    testId: string;
+    testName: string;
+    fee: number;
+  }[]>([]);
+
+  const handleAddTestToOrder = () => {
+    if (!selectedLabTestName) {
+      alert("Please select a lab test panel from the catalog list!");
+      return;
+    }
+    const defaultMenu = [
+      { name: 'Urinalysis', fee: 300 },
+      { name: 'Malaria Rapid Diagnostic Test (RDT)', fee: 200 },
+      { name: 'Complete Blood Count (CBC)', fee: 800 },
+      { name: 'Liver Function Test (LFT)', fee: 1500 },
+      { name: 'Renal Function Test (RFT)', fee: 1400 },
+      { name: 'Blood Sugar (Fasting/Random)', fee: 200 },
+      { name: 'Widal Test (Typhoid)', fee: 500 },
+      { name: 'Stool Microscopy', fee: 300 },
+      { name: 'HIV Rapid Test', fee: 0 }
+    ];
+    const catalogList = labCatalog.length > 0 ? labCatalog : defaultMenu;
+    const found = catalogList.find(item => item.name === selectedLabTestName);
+    if (!found) return;
+
+    const newItem = {
+      testId: `LT-${Math.floor(Math.random() * 100000)}`,
+      testName: found.name,
+      fee: found.fee
+    };
+
+    setActiveLabTestsList(prev => [...prev, newItem]);
+    setSelectedLabTestName('');
+  };
+
+  const handleRemoveTestFromOrder = (index: number) => {
+    setActiveLabTestsList(prev => prev.filter((_, idx) => idx !== index));
+  };
+
   // New Appointment Form State
   const [apptPatientId, setApptPatientId] = useState<string>('');
   const [apptSearchTerm, setApptSearchTerm] = useState<string>('');
@@ -281,9 +333,10 @@ export function RecordsReceptionView({
     }
 
     const hasPrescriptions = activePrescriptionsList.length > 0;
-    const computedInvoiceAmount = hasPrescriptions 
-      ? activePrescriptionsList.reduce((sum, item) => sum + (item.quantity * item.price), 0)
-      : undefined;
+    const hasLabTests = activeLabTestsList.length > 0;
+    const rxTotal = activePrescriptionsList.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+    const labTotal = activeLabTestsList.reduce((sum, item) => sum + item.fee, 0);
+    const computedInvoiceAmount = (hasPrescriptions || hasLabTests) ? (rxTotal + labTotal) : undefined;
 
     const clinicalRecord: MedicalRecord = {
       id: `MR-${Math.floor(Math.random() * 10000)}`,
@@ -294,14 +347,34 @@ export function RecordsReceptionView({
       prescriptions: prescriptions.trim(),
       doctorName: userName,
       doctorEmail: userEmail,
-      ...(hasPrescriptions ? {
-        prescribedItems: activePrescriptionsList,
+      ...(hasPrescriptions ? { prescribedItems: activePrescriptionsList } : {}),
+      ...(hasLabTests ? { labTestsRequested: activeLabTestsList } : {}),
+      ...((hasPrescriptions || hasLabTests) ? {
         billingStatus: 'Unpaid' as const,
         invoiceAmount: computedInvoiceAmount
       } : {})
     };
 
     onAddMedicalRecord(curSelectedPatient.id, clinicalRecord);
+
+    // Dispatch requested lab tests to Lab Officer desk
+    if (hasLabTests && onAddLabTest && curSelectedPatient) {
+      activeLabTestsList.forEach(lt => {
+        onAddLabTest({
+          id: lt.testId,
+          testName: lt.testName,
+          patientName: curSelectedPatient.name,
+          patientId: curSelectedPatient.id,
+          testDate: new Date().toISOString().split('T')[0],
+          performedBy: 'Pending Lab Officer',
+          performedByEmail: '',
+          result: 'Pending Analysis (Awaiting Payment at Cashier)',
+          fee: lt.fee,
+          billingStatus: 'Unpaid',
+          recordId: clinicalRecord.id
+        });
+      });
+    }
 
     // Refresh display
     const updatedParts = patients.find((p) => p.id === curSelectedPatient.id);
@@ -320,8 +393,10 @@ export function RecordsReceptionView({
     setSelectedMedicationId('');
     setPrescribeQty(1);
     setPrescribeDosage('');
-    alert(hasPrescriptions 
-      ? `Clinical history reported successfully! A pharmacy billing invoice of Ksh ${computedInvoiceAmount?.toLocaleString()} has been queued under prescriptions.`
+    setActiveLabTestsList([]);
+    setSelectedLabTestName('');
+    alert((hasPrescriptions || hasLabTests)
+      ? `Clinical consult recorded! A combined cashier invoice of Ksh ${computedInvoiceAmount?.toLocaleString()} (Rx: Ksh ${rxTotal}, Labs: Ksh ${labTotal}) has been queued under Appointments & Billing.`
       : 'Medical record added successfully to safe EHR file.'
     );
   };
@@ -1364,6 +1439,75 @@ export function RecordsReceptionView({
                             )}
 
                           </div>
+
+                          {/* Structured Laboratory Test Request Builder */}
+                          <div className="mt-3 bg-indigo-50/50 border border-indigo-100 p-3 rounded-lg space-y-2">
+                            <span className="text-[10px] uppercase tracking-wider font-semibold text-indigo-800 block flex items-center gap-1">
+                              <Stethoscope className="w-3 h-3 text-indigo-600" /> Order Laboratory Diagnostic Panels
+                            </span>
+                            <div className="flex gap-2 items-end">
+                              <div className="flex-1">
+                                <label className="block text-[9px] font-medium text-stone-500">Select Lab Test (Catalog Menu)</label>
+                                <select
+                                  id="select-lab-test-order"
+                                  value={selectedLabTestName}
+                                  onChange={(e) => setSelectedLabTestName(e.target.value)}
+                                  className="w-full bg-white border border-stone-200 rounded-md p-1.5 text-[11px] outline-hidden"
+                                >
+                                  <option value="">-- Choose Lab Test --</option>
+                                  {(labCatalog.length > 0 ? labCatalog : [
+                                    { name: 'Urinalysis', fee: 300 },
+                                    { name: 'Malaria Rapid Diagnostic Test (RDT)', fee: 200 },
+                                    { name: 'Complete Blood Count (CBC)', fee: 800 },
+                                    { name: 'Liver Function Test (LFT)', fee: 1500 },
+                                    { name: 'Renal Function Test (RFT)', fee: 1400 },
+                                    { name: 'Blood Sugar (Fasting/Random)', fee: 200 },
+                                    { name: 'Widal Test (Typhoid)', fee: 500 },
+                                    { name: 'Stool Microscopy', fee: 300 },
+                                    { name: 'HIV Rapid Test', fee: 0 }
+                                  ]).map((item, i) => (
+                                    <option key={i} value={item.name}>
+                                      {item.name} (Ksh {item.fee.toLocaleString()})
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              <button
+                                type="button"
+                                id="btn-add-lab-test-order"
+                                onClick={handleAddTestToOrder}
+                                className="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] px-3 py-1.5 rounded-md font-medium shrink-0 border border-indigo-500"
+                              >
+                                Add Lab Test
+                              </button>
+                            </div>
+
+                            {activeLabTestsList.length > 0 && (
+                              <div className="mt-2 border-t border-indigo-100 pt-2 space-y-1">
+                                <span className="text-[9px] font-medium text-indigo-400 block">Ordered Lab Panel List:</span>
+                                <div className="space-y-1 max-h-[100px] overflow-y-auto">
+                                  {activeLabTestsList.map((item, index) => (
+                                    <div key={index} className="flex justify-between items-center text-[10px] bg-white p-1.5 rounded border border-indigo-100 font-mono">
+                                      <span className="truncate text-indigo-950 font-semibold">{item.testName}</span>
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-indigo-600 font-bold">Ksh {item.fee.toLocaleString()}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleRemoveTestFromOrder(index)}
+                                          className="text-stone-400 hover:text-rose-600 font-sans px-1"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="text-right text-[10px] font-semibold text-indigo-900 pr-1">
+                                  Lab Fees Total: Ksh {activeLabTestsList.reduce((sum, item) => sum + item.fee, 0).toLocaleString()}
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
                         <div>
                           <label id="lbl-notes" className="block text-[11px] font-medium text-stone-500 mb-1">Management & Advice Notes</label>
@@ -1741,11 +1885,11 @@ export function RecordsReceptionView({
             </div>
           </div>
 
-          {/* Pharmacy Prescription Invoices Desk */}
+          {/* Pharmacy & Lab Invoices Desk */}
           <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm lg:col-span-2 space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-              <h3 className="text-sm font-semibold text-stone-800">Pharmacy Prescription Invoices Desk</h3>
-              <span className="text-[10px] text-stone-400 font-mono">Active clinical prescriptions awaiting billing</span>
+              <h3 className="text-sm font-semibold text-stone-800">Clinical Prescriptions & Lab Invoices Desk</h3>
+              <span className="text-[10px] text-stone-400 font-mono">Active clinical orders awaiting billing checkout</span>
             </div>
 
             <div className="overflow-x-auto">
@@ -1754,7 +1898,7 @@ export function RecordsReceptionView({
                   <tr className="border-b border-stone-200 text-stone-500 font-medium">
                     <th className="py-2.5">Date</th>
                     <th className="py-2.5">Patient Details</th>
-                    <th className="py-2.5">Medications Prescribed</th>
+                    <th className="py-2.5">Items Ordered</th>
                     <th className="py-2.5">Total Bill</th>
                     <th className="py-2.5">Invoicing Action</th>
                   </tr>
@@ -1763,7 +1907,7 @@ export function RecordsReceptionView({
                   {(() => {
                     const invoices = patients.flatMap(patient => {
                       return (patient.medicalHistory || [])
-                        .filter(record => record.prescribedItems && record.prescribedItems.length > 0)
+                        .filter(record => (record.prescribedItems && record.prescribedItems.length > 0) || (record.labTestsRequested && record.labTestsRequested.length > 0))
                         .map(record => ({
                           patientId: patient.id,
                           patientName: patient.name,
@@ -1771,6 +1915,7 @@ export function RecordsReceptionView({
                           recordId: record.id,
                           date: record.date,
                           prescribedItems: record.prescribedItems || [],
+                          labTestsRequested: record.labTestsRequested || [],
                           billingStatus: record.billingStatus || 'Unpaid',
                           invoiceAmount: record.invoiceAmount || 0,
                           doctorName: record.doctorName,
@@ -1782,7 +1927,7 @@ export function RecordsReceptionView({
                     if (invoices.length === 0) {
                       return (
                         <tr>
-                          <td colSpan={5} className="py-8 text-center text-stone-400">No pharmacy prescription invoices found.</td>
+                          <td colSpan={5} className="py-8 text-center text-stone-400">No clinical prescription or lab invoices found.</td>
                         </tr>
                       );
                     }
@@ -1803,8 +1948,13 @@ export function RecordsReceptionView({
                         <td className="py-2.5">
                           <div className="space-y-0.5">
                             {inv.prescribedItems.map((item, idx) => (
-                              <div key={idx} className="text-[10px] text-stone-600 font-mono">
-                                • {item.name} x{item.quantity} (Ksh {item.price}/u)
+                              <div key={`rx-${idx}`} className="text-[10px] text-stone-600 font-mono">
+                                • [Rx] {item.name} x{item.quantity} (Ksh {item.price}/u)
+                              </div>
+                            ))}
+                            {inv.labTestsRequested?.map((item, idx) => (
+                              <div key={`lab-${idx}`} className="text-[10px] text-indigo-700 font-mono font-semibold">
+                                • [Lab] {item.testName} (Ksh {item.fee})
                               </div>
                             ))}
                           </div>
@@ -1828,7 +1978,14 @@ export function RecordsReceptionView({
                                         return record;
                                       });
                                       onUpdatePatientHistory(inv.patientId, updatedHistory);
-                                      alert("Payment reported successfully! Prescription is now ready for dispensing at the pharmacy.");
+                                      if (onUpdateLabTest && labTests) {
+                                        labTests.forEach(lt => {
+                                          if (lt.recordId === inv.recordId && lt.billingStatus === 'Unpaid') {
+                                            onUpdateLabTest({ ...lt, billingStatus: 'Paid' });
+                                          }
+                                        });
+                                      }
+                                      alert("Payment registered! Rx ready for pharmacy dispensing and Lab orders cleared for analysis.");
                                     }
                                   }
                                 }}
@@ -1916,6 +2073,183 @@ export function RecordsReceptionView({
                 </tbody>
               </table>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. VIEW PATIENT CARD SCREEN */}
+      {activeSubTab === 'card' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
+          {/* Left Column: Patient Search List */}
+          <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm lg:col-span-1 space-y-4">
+            <h3 className="text-sm font-semibold text-stone-800 flex items-center gap-2">
+              <Search className="w-4 h-4 text-emerald-600" />
+              Patient Lookup Directory
+            </h3>
+            <input
+              type="text"
+              placeholder="Search Name or OP Number..."
+              value={cardSearchQuery}
+              onChange={(e) => setCardSearchQuery(e.target.value)}
+              className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2.5 text-xs outline-hidden focus:ring-1 focus:ring-emerald-500 font-mono"
+            />
+            <div className="space-y-2 max-h-[550px] overflow-y-auto pr-1">
+              {patients
+                .filter(p => {
+                  const q = cardSearchQuery.toLowerCase().trim();
+                  if (!q) return true;
+                  return p.name.toLowerCase().includes(q) ||
+                         p.id.toLowerCase().includes(q) ||
+                         (p.opNumber || '').toLowerCase().includes(q) ||
+                         p.phone.includes(q);
+                })
+                .sort((a, b) => (b.registeredAt || '').localeCompare(a.registeredAt || ''))
+                .map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedCardPatient(p)}
+                    className={`w-full text-left p-3 rounded-lg border text-xs transition-all ${
+                      selectedCardPatient?.id === p.id ? 'border-emerald-600 bg-emerald-50/60 shadow-2xs' : 'border-stone-200 hover:bg-stone-50 bg-white'
+                    }`}
+                  >
+                    <p className="font-bold text-stone-900">{p.name}</p>
+                    <p className="text-[10px] text-stone-500 font-mono mt-0.5">
+                      {p.opNumber || `OP-${p.id}`} • {p.gender} • {p.age} {p.ageUnit === 'Months' ? 'm' : 'y'}
+                    </p>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+
+          {/* Right Column: Complete Patient Dossier Card */}
+          <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm lg:col-span-2">
+            {!selectedCardPatient ? (
+              <div className="h-full flex flex-col items-center justify-center text-stone-400 text-center py-24">
+                <Stethoscope className="w-12 h-12 text-stone-200 mb-3 animate-bounce" />
+                <p className="text-xs">Search and select a patient from the directory to review their comprehensive clinical history, prescriptions, and real-time laboratory diagnostic reports.</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {/* Dossier Header */}
+                <div className="border-b border-stone-100 pb-4 flex justify-between items-start bg-slate-900 text-white p-5 rounded-xl shadow-md">
+                  <div>
+                    <h3 className="text-lg font-bold text-emerald-400 flex items-center gap-2">
+                      {selectedCardPatient.name}
+                    </h3>
+                    <p className="text-[11px] font-mono text-slate-300 mt-1">
+                      OP Number: {selectedCardPatient.opNumber || `OP-${selectedCardPatient.id}`} • Ref ID: {selectedCardPatient.id}
+                    </p>
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      {selectedCardPatient.gender} • {selectedCardPatient.age} {selectedCardPatient.ageUnit === 'Months' ? 'months' : 'years'} • Phone: {selectedCardPatient.phone}
+                    </p>
+                    <p className="text-[10px] text-emerald-300 font-semibold mt-2">
+                      Coverage: {selectedCardPatient.paymentMode || 'Cash'} {selectedCardPatient.insuranceCompany ? `(${selectedCardPatient.insuranceCompany})` : ''}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase block">
+                      Active EMR Record
+                    </span>
+                    <span className="text-[9px] text-slate-400 font-mono mt-2 block">
+                      Reg: {new Date(selectedCardPatient.registeredAt || Date.now()).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Section 1: Previous Diagnoses & Clinical History */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider font-mono border-b border-stone-100 pb-1.5 flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-emerald-600" />
+                    Previous Consultations & Diagnoses ({selectedCardPatient.medicalHistory?.length || 0})
+                  </h4>
+                  {(!selectedCardPatient.medicalHistory || selectedCardPatient.medicalHistory.length === 0) ? (
+                    <p className="text-xs text-stone-400 italic py-2">No previous consultation notes cataloged.</p>
+                  ) : (
+                    <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1">
+                      {selectedCardPatient.medicalHistory.map((rec, idx) => (
+                        <div key={idx} className="bg-stone-50 border border-stone-200/80 rounded-lg p-3 space-y-1.5 text-xs">
+                          <div className="flex justify-between items-center text-[10px] font-mono text-stone-500 border-b border-stone-200/50 pb-1">
+                            <span>Date: <strong className="text-stone-800">{rec.date}</strong></span>
+                            <span>Doctor: <strong className="text-stone-800">{rec.doctorName || 'Attending Physician'}</strong></span>
+                          </div>
+                          <div><strong className="text-stone-600">Symptoms:</strong> {rec.symptoms}</div>
+                          <div><strong className="text-emerald-800">Diagnosis:</strong> {rec.diagnoses}</div>
+                          {rec.notes && <div><strong className="text-stone-600">Notes/Advice:</strong> {rec.notes}</div>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Section 2: Previous Prescriptions */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider font-mono border-b border-stone-100 pb-1.5 flex items-center gap-1.5">
+                    <Stethoscope className="w-4 h-4 text-teal-600" />
+                    Previous Medications & Prescriptions
+                  </h4>
+                  {(() => {
+                    const allRx = (selectedCardPatient.medicalHistory || []).filter(rec => rec.prescribedItems && rec.prescribedItems.length > 0);
+                    if (allRx.length === 0) {
+                      return <p className="text-xs text-stone-400 italic py-2">No dispensed or queued prescriptions found.</p>;
+                    }
+                    return (
+                      <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
+                        {allRx.map((rec, i) => (
+                          <div key={i} className="bg-teal-50/40 border border-teal-100 rounded-lg p-2.5 text-xs space-y-1 font-mono">
+                            <div className="text-[9px] text-teal-800 font-bold">Ordered on {rec.date} by {rec.doctorName}:</div>
+                            {rec.prescribedItems?.map((drg, di) => (
+                              <div key={di} className="text-[10px] text-stone-700 pl-2">
+                                • {drg.name} (Qty: {drg.quantity}) {drg.dosage ? `- ${drg.dosage}` : ''}
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Section 3: Previous Lab Test Results */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider font-mono border-b border-stone-100 pb-1.5 flex items-center gap-1.5">
+                    <History className="w-4 h-4 text-indigo-600" />
+                    Previous Laboratory Diagnostics & Results
+                  </h4>
+                  {(() => {
+                    const patientLabs = labTests.filter(lt => lt.patientId === selectedCardPatient.id || lt.patientName.toLowerCase() === selectedCardPatient.name.toLowerCase());
+                    if (patientLabs.length === 0) {
+                      return <p className="text-xs text-stone-400 italic py-2">No laboratory diagnostic panels requested or performed.</p>;
+                    }
+                    return (
+                      <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
+                        {patientLabs.map((lt, li) => (
+                          <div key={li} className="bg-indigo-50/40 border border-indigo-100 rounded-lg p-3 space-y-1.5 text-xs">
+                            <div className="flex justify-between items-center font-mono text-[10px]">
+                              <span className="font-bold text-indigo-950">{lt.testName}</span>
+                              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                                lt.billingStatus === 'Completed' ? 'bg-emerald-100 text-emerald-800' :
+                                lt.billingStatus === 'Paid' ? 'bg-blue-100 text-blue-800' :
+                                'bg-amber-100 text-amber-800'
+                              }`}>
+                                {lt.billingStatus || 'Unpaid'}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-stone-500 font-mono">
+                              Date: {lt.testDate} • Officer: {lt.performedBy} • Fee: Ksh {lt.fee}
+                            </div>
+                            <div className="bg-white border border-indigo-100/80 p-2 rounded text-[11px] font-mono text-stone-800 shadow-2xs">
+                              <strong className="text-indigo-700 block text-[9px] uppercase">Results / Analysis:</strong>
+                              {lt.result}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

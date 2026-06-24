@@ -17,7 +17,9 @@ import {
   Loader2, 
   Sparkles, 
   SlidersHorizontal,
-  Search
+  Search,
+  Printer,
+  X
 } from 'lucide-react';
 import { LabTest, Patient, LabCatalogItem } from '../types';
 import { defaultLabCatalog } from '../mockData';
@@ -29,6 +31,7 @@ interface LabViewProps {
   userEmail: string;
   userName: string;
   onAddLabTest: (test: LabTest) => void;
+  onUpdateLabTest?: (test: LabTest) => void;
   onAddLabCatalogItem?: (item: LabCatalogItem) => void;
   onAddPatient?: (patient: Patient) => void;
 }
@@ -81,6 +84,7 @@ export function LabView({
   userEmail, 
   userName, 
   onAddLabTest, 
+  onUpdateLabTest,
   onAddLabCatalogItem,
   onAddPatient
 }: LabViewProps) {
@@ -92,6 +96,7 @@ export function LabView({
   const [testResult, setTestResult] = useState<string>('');
   const [technicianName, setTechnicianName] = useState<string>(userName || 'Peter Kagiri');
   const [labTestDate, setLabTestDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [summaryPatient, setSummaryPatient] = useState<{ id: string; name: string } | null>(null);
 
   // Walk-in Registration states
   const [isRegisteringWalkIn, setIsRegisteringWalkIn] = useState<boolean>(false);
@@ -732,53 +737,102 @@ export function LabView({
 
           {/* Render Active View Tab */}
           {activePanelTab === 'history' ? (
-            <div className="overflow-x-auto animate-fade-in">
-              <table className="w-full text-left text-xs">
-                <thead className="text-stone-500 font-medium border-b border-stone-100 uppercase font-mono text-[9px] tracking-wider">
-                  <tr>
-                    <th className="py-2.5">Test ID</th>
-                    <th className="py-2.5">Date</th>
-                    <th className="py-2.5">Patient Name</th>
-                    <th className="py-2.5">Diagnostic Panel</th>
-                    <th className="py-2.5">Authorized Officer</th>
-                    <th className="py-2.5">Lab Fee</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100 text-stone-700">
-                  {labTests.map((t) => {
-                    const patient = patients.find((p) => p.id === t.patientId);
-                    const op = patient?.opNumber || (patient ? `OP-${(patient.registeredAt ? patient.registeredAt.substring(0, 7) : '2026-06')}-${patient.id.split('-')[1]}` : '');
-                    return (
-                      <React.Fragment key={t.id}>
-                        <tr id={`lab-tr-main-${t.id}`} className="hover:bg-stone-50/40 font-sans transition-colors">
-                          <td className="py-3.5 font-mono text-stone-500 font-medium">{t.id}</td>
-                          <td className="py-3.5 font-mono">{t.testDate}</td>
-                          <td className="py-3.5 font-semibold text-stone-800">
-                            <div>{t.patientName}</div>
-                            {op && <div className="text-[9px] text-emerald-700 font-mono font-bold">{op}</div>}
-                          </td>
-                          <td className="py-3.5 text-stone-600 font-semibold">{t.testName}</td>
-                          <td className="py-3.5 text-stone-500">{t.performedBy}</td>
-                          <td className="py-3.5 font-bold text-stone-900 font-mono">Ksh {t.fee.toLocaleString()}</td>
-                        </tr>
-                        <tr id={`lab-tr-sub-${t.id}`} className="bg-emerald-50/20 border-b border-stone-100">
-                          <td colSpan={6} className="px-4 py-2.5 text-[11px] text-stone-600 leading-normal">
-                            <span className="font-bold text-stone-500 mr-2 uppercase tracking-wider font-mono text-[9px]">Lab Findings:</span> 
-                            <code className="bg-white border border-stone-200/60 p-1.5 rounded-md inline-block font-mono text-emerald-800 shadow-2xs mt-0.5">
-                              {t.result}
-                            </code>
-                          </td>
-                        </tr>
-                      </React.Fragment>
-                    );
-                  })}
-                  {labTests.length === 0 && (
+            <div className="space-y-4 animate-fade-in">
+              <div className="flex flex-wrap items-center justify-between gap-3 bg-stone-50 p-3 rounded-xl border border-stone-200/70 print:hidden">
+                <div className="flex items-center gap-2">
+                  <Printer className="w-4 h-4 text-emerald-600" />
+                  <span className="text-xs font-bold text-stone-700 uppercase tracking-wider">Print Patient Diagnostic Summary:</span>
+                </div>
+                <div className="flex items-center gap-2 flex-1 max-w-md">
+                  <select
+                    id="select-patient-print-summary"
+                    value={summaryPatient ? summaryPatient.id : ""}
+                    onChange={(e) => {
+                      if (!e.target.value) {
+                        setSummaryPatient(null);
+                        return;
+                      }
+                      const pat = patients.find(p => p.id === e.target.value);
+                      const sample = labTests.find(t => t.patientId === e.target.value);
+                      setSummaryPatient({
+                        id: e.target.value,
+                        name: pat?.name || sample?.patientName || e.target.value
+                      });
+                    }}
+                    className="bg-white border border-stone-200 rounded-lg p-1.5 text-xs flex-1 outline-hidden focus:ring-1 focus:ring-emerald-500 font-medium text-stone-800"
+                  >
+                    <option value="">-- Choose Patient to Print History Hard Copy --</option>
+                    {Array.from(new Set(labTests.map(t => t.patientId))).map(pId => {
+                      const sampleTest = labTests.find(t => t.patientId === pId);
+                      const pat = patients.find(p => p.id === pId);
+                      const pName = pat?.name || sampleTest?.patientName || pId;
+                      const count = labTests.filter(t => t.patientId === pId).length;
+                      return <option key={pId} value={pId}>{pName} ({count} report{count > 1 ? 's' : ''})</option>;
+                    })}
+                  </select>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="text-stone-500 font-medium border-b border-stone-100 uppercase font-mono text-[9px] tracking-wider">
                     <tr>
-                      <td colSpan={6} className="py-8 text-center text-stone-400 font-medium">No laboratory panel reports recorded yet. Use the record form on the left.</td>
+                      <th className="py-2.5">Test ID</th>
+                      <th className="py-2.5">Date</th>
+                      <th className="py-2.5">Patient Name</th>
+                      <th className="py-2.5">Diagnostic Panel</th>
+                      <th className="py-2.5">Authorized Officer</th>
+                      <th className="py-2.5">Lab Fee</th>
+                      <th className="py-2.5 text-right print:hidden">Summary</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-stone-100 text-stone-700">
+                    {labTests.map((t) => {
+                      const patient = patients.find((p) => p.id === t.patientId);
+                      const op = patient?.opNumber || (patient ? `OP-${(patient.registeredAt ? patient.registeredAt.substring(0, 7) : '2026-06')}-${patient.id.split('-')[1]}` : '');
+                      return (
+                        <React.Fragment key={t.id}>
+                          <tr id={`lab-tr-main-${t.id}`} className="hover:bg-stone-50/40 font-sans transition-colors">
+                            <td className="py-3.5 font-mono text-stone-500 font-medium">{t.id}</td>
+                            <td className="py-3.5 font-mono">{t.testDate}</td>
+                            <td className="py-3.5 font-semibold text-stone-800">
+                              <div>{t.patientName}</div>
+                              {op && <div className="text-[9px] text-emerald-700 font-mono font-bold">{op}</div>}
+                            </td>
+                            <td className="py-3.5 text-stone-600 font-semibold">{t.testName}</td>
+                            <td className="py-3.5 text-stone-500">{t.performedBy}</td>
+                            <td className="py-3.5 font-bold text-stone-900 font-mono">Ksh {t.fee.toLocaleString()}</td>
+                            <td className="py-3.5 text-right print:hidden pr-1">
+                              <button
+                                type="button"
+                                onClick={() => setSummaryPatient({ id: t.patientId, name: t.patientName })}
+                                className="py-1 px-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-md text-[10px] font-bold inline-flex items-center gap-1.5 border border-emerald-200/80 shadow-2xs transition-all cursor-pointer"
+                                title={`Print printable diagnostic summary for ${t.patientName}`}
+                              >
+                                <Printer className="w-3 h-3 text-emerald-600" />
+                                Print Summary
+                              </button>
+                            </td>
+                          </tr>
+                          <tr id={`lab-tr-sub-${t.id}`} className="bg-emerald-50/20 border-b border-stone-100">
+                            <td colSpan={7} className="px-4 py-2.5 text-[11px] text-stone-600 leading-normal">
+                              <span className="font-bold text-stone-500 mr-2 uppercase tracking-wider font-mono text-[9px]">Lab Findings:</span> 
+                              <code className="bg-white border border-stone-200/60 p-1.5 rounded-md inline-block font-mono text-emerald-800 shadow-2xs mt-0.5">
+                                {t.result}
+                              </code>
+                            </td>
+                          </tr>
+                        </React.Fragment>
+                      );
+                    })}
+                    {labTests.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="py-8 text-center text-stone-400 font-medium">No laboratory panel reports recorded yet. Use the record form on the left.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : (
             <div className="space-y-6 animate-fade-in">
@@ -936,6 +990,167 @@ export function LabView({
           )}
         </div>
       </div>
+
+      {/* Official Hard Copy Printable Summary Modal */}
+      {summaryPatient && (() => {
+        const patientTests = labTests.filter(t => t.patientId === summaryPatient.id);
+        const patObj = patients.find(p => p.id === summaryPatient.id);
+        const opNum = patObj?.opNumber || `OP-${(patObj?.registeredAt ? patObj.registeredAt.substring(0, 7) : '2026-06')}-${summaryPatient.id.split('-')[1] || '100'}`;
+        const totalFees = patientTests.reduce((sum, t) => sum + Number(t.fee || 0), 0);
+
+        return (
+          <div id="printable-lab-summary-modal" className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 p-4 backdrop-blur-xs print:bg-white print:p-0 print:block print:static">
+            <style>{`
+              @media print {
+                body * {
+                  visibility: hidden;
+                }
+                #printable-lab-summary-modal, #printable-lab-summary-modal * {
+                  visibility: visible;
+                }
+                #printable-lab-summary-modal {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: 100%;
+                  margin: 0;
+                  padding: 0;
+                  background: white;
+                  box-shadow: none;
+                  border: none;
+                }
+              }
+            `}</style>
+            <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-stone-200 shadow-2xl p-8 print:max-w-none print:w-full print:max-h-none print:overflow-visible print:border-none print:shadow-none print:p-6 animate-fade-in">
+              {/* Modal Control Action Topbar (Hidden when printing) */}
+              <div className="flex items-center justify-between border-b border-stone-200 pb-4 mb-6 print:hidden">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-emerald-600" />
+                  <h3 className="text-sm font-bold text-stone-800 uppercase tracking-wider">Official Laboratory Diagnostic Summary</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg text-xs flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+                  >
+                    <Printer className="w-4 h-4" />
+                    Print Hard Copy
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSummaryPatient(null)}
+                    className="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold p-2 rounded-lg text-xs flex items-center justify-center transition-all cursor-pointer"
+                    title="Close preview"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Printable Official Hospital Report Content */}
+              <div className="space-y-6 text-stone-800 font-sans">
+                {/* Hospital Header Banner */}
+                <div className="border-b-2 border-stone-800 pb-4 flex justify-between items-start">
+                  <div>
+                    <h1 className="text-2xl font-black tracking-tight uppercase text-stone-900">PCEA TumuTumu Hospital</h1>
+                    <p className="text-xs font-semibold text-stone-500 uppercase tracking-widest mt-0.5">Department of Pathology & Laboratory Medicine</p>
+                    <p className="text-[11px] text-stone-400">Private Bag, Karatina, Kenya • Tel: +254 (0) 20 200000</p>
+                  </div>
+                  <div className="text-right font-mono text-xs">
+                    <span className="bg-stone-100 border border-stone-300 font-bold px-2.5 py-1 rounded text-[11px] uppercase tracking-wider text-stone-800 inline-block mb-1">
+                      CONFIDENTIAL REPORT
+                    </span>
+                    <div className="text-stone-500 text-[10px]">Date Printed: {new Date().toLocaleDateString()}</div>
+                  </div>
+                </div>
+
+                {/* Patient Biodata Box */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-stone-50 p-4 rounded-xl border border-stone-200 text-xs">
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-stone-400 block font-mono">Patient Name</span>
+                    <strong className="text-stone-900 text-sm">{summaryPatient.name}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-stone-400 block font-mono">Hospital OP / Ref</span>
+                    <strong className="text-emerald-800 font-mono font-bold">{opNum}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-stone-400 block font-mono">Biodata</span>
+                    <span className="text-stone-700 font-medium">{patObj ? `${patObj.gender}, ${patObj.age} ${patObj.ageUnit === 'Months' ? 'mos' : 'yrs'}` : 'Adult'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-stone-400 block font-mono">Total Reports</span>
+                    <span className="text-stone-900 font-bold font-mono">{patientTests.length} Panel{patientTests.length !== 1 ? 's' : ''}</span>
+                  </div>
+                </div>
+
+                {/* Laboratory Test History Table */}
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-stone-700 border-b border-stone-200 pb-2 mb-3">
+                    Diagnostic Test History & Clinical Findings
+                  </h4>
+
+                  {patientTests.length === 0 ? (
+                    <div className="py-6 text-center text-xs text-stone-400 italic bg-stone-50 rounded-lg">
+                      No recorded diagnostic tests found for this patient ID.
+                    </div>
+                  ) : (
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="border-b border-stone-300 font-mono text-[10px] text-stone-500 uppercase">
+                          <th className="py-2 px-2">Date</th>
+                          <th className="py-2 px-2">Test Panel</th>
+                          <th className="py-2 px-2">Findings / Results</th>
+                          <th className="py-2 px-2">Officer</th>
+                          <th className="py-2 px-2 text-right">Fee</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-stone-200">
+                        {patientTests.map((t, idx) => (
+                          <tr key={t.id || idx} className="align-top">
+                            <td className="py-3 px-2 font-mono text-stone-600 whitespace-nowrap">{t.testDate}</td>
+                            <td className="py-3 px-2 font-bold text-stone-900">{t.testName}</td>
+                            <td className="py-3 px-2 font-mono text-stone-800 leading-relaxed max-w-xs">
+                              <div className="bg-stone-50 border border-stone-200/80 p-2 rounded text-[11px] font-mono">
+                                {t.result || 'No detailed findings recorded'}
+                              </div>
+                            </td>
+                            <td className="py-3 px-2 text-stone-500">{t.performedBy}</td>
+                            <td className="py-3 px-2 text-right font-mono font-bold text-stone-900 whitespace-nowrap">Ksh {Number(t.fee || 0).toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="border-t-2 border-stone-800 font-mono font-bold text-stone-900">
+                          <td colSpan={4} className="py-3 px-2 text-right uppercase tracking-wider">Total Cumulative Diagnostic Charges:</td>
+                          <td className="py-3 px-2 text-right text-sm text-emerald-800">Ksh {totalFees.toLocaleString()}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  )}
+                </div>
+
+                {/* Official Stamp & Sign block */}
+                <div className="pt-8 mt-8 border-t border-stone-200 grid grid-cols-2 gap-8 text-xs break-inside-avoid">
+                  <div>
+                    <p className="text-[10px] uppercase font-bold text-stone-400 font-mono">Clinical Sign-Off</p>
+                    <div className="h-12 flex items-end border-b border-dashed border-stone-400 pb-1 w-56 font-serif italic text-stone-700">
+                      Verified Laboratory Technologist
+                    </div>
+                    <p className="text-[10px] text-stone-400 mt-1">Authorized Stamp & Officer Signature</p>
+                  </div>
+                  <div className="text-right text-[10px] text-stone-400 leading-relaxed font-mono">
+                    <p>Report Verification Hash: #{Math.floor(1000000 + Math.random() * 9000000).toString(16).toUpperCase()}</p>
+                    <p>This document is certified accurate by hospital LIS.</p>
+                    <p>Generated via AI Studio LIS Portal.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

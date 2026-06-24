@@ -45,6 +45,11 @@ export interface MedicalRecord {
     price: number;
     dosage?: string;
   }[];
+  labTestsRequested?: {
+    testId: string;
+    testName: string;
+    fee: number;
+  }[];
   billingStatus?: 'Unpaid' | 'Paid' | 'Dispensed';
   invoiceAmount?: number;
   isArchived?: boolean;
@@ -87,6 +92,8 @@ export interface LabTest {
   performedByEmail: string;
   result: string;
   fee: number;
+  billingStatus?: 'Unpaid' | 'Paid' | 'Completed' | 'Dispensed';
+  recordId?: string;
 }
 
 export interface MedicationDispense {

@@ -357,6 +357,16 @@ export default function App() {
     }
   };
 
+  const handleUpdateLabTest = async (test: LabTest) => {
+    try {
+      await saveLabTest(test);
+      await logMutation('UPDATE_LAB_TEST', `Updated lab test [${test.testName}] status/results for Patient: ${test.patientName} (${test.patientId}). Status: ${test.billingStatus}`);
+    } catch (error) {
+      console.error("Lab test update failed", error);
+      alert("Permission denied or error saving lab test.");
+    }
+  };
+
   const handleAddLabCatalogItem = async (item: LabCatalogItem) => {
     try {
       await saveLabCatalogItem(item);
@@ -799,6 +809,10 @@ export default function App() {
                 onUpdateAppointmentBilling={handleUpdateApptBilling}
                 stock={stock}
                 onUpdatePatientHistory={handleUpdatePatientHistory}
+                labTests={labTests}
+                labCatalog={labCatalog}
+                onAddLabTest={handleAddLabTest}
+                onUpdateLabTest={handleUpdateLabTest}
               />
             )}
 
@@ -810,6 +824,7 @@ export default function App() {
                 userEmail={currentUser.email}
                 userName={currentUser.name}
                 onAddLabTest={handleAddLabTest}
+                onUpdateLabTest={handleUpdateLabTest}
                 onAddLabCatalogItem={handleAddLabCatalogItem}
                 onAddPatient={handleAddPatient}
               />

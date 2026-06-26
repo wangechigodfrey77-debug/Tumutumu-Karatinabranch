@@ -200,7 +200,7 @@ export function PharmacyView({
         });
 
         // Recompute the total invoice amount
-        const computedInvoiceAmount = updatedItems.reduce((sum, item) => sum + (item.quantity * (item.price * 1.33)), 0);
+        const computedInvoiceAmount = updatedItems.reduce((sum, item) => sum + (item.quantity * (Number(item.price) * 1.33)), 0);
 
         return {
           ...record,
@@ -1562,7 +1562,7 @@ export function PharmacyView({
                     </option>
                     {dropdownPharmaItems.map((item) => (
                       <option key={item.id} value={item.id} disabled={item.stockQuantity <= 0}>
-                        {item.name} ({item.stockQuantity} Left) - Ksh {(item.price * 1.33).toLocaleString()}/unit
+                        {item.name} ({item.stockQuantity} Left) - Ksh {(Number(item.price) * 1.33).toLocaleString()}/unit
                       </option>
                     ))}
                   </select>
@@ -1842,7 +1842,7 @@ export function PharmacyView({
                     </option>
                     {dropdownNonPharmaItems.map((item) => (
                       <option key={item.id} value={item.id} disabled={item.stockQuantity <= 0}>
-                        {item.name} ({item.stockQuantity} Left) - Ksh {(item.price * 1.33).toLocaleString()}/unit
+                        {item.name} ({item.stockQuantity} Left) - Ksh {(Number(item.price) * 1.33).toLocaleString()}/unit
                       </option>
                     ))}
                   </select>

@@ -141,8 +141,8 @@ export function LabView({
     }
   };
 
-  // Tab state: 'history' (Ledger) vs 'catalog' (Manage/Import catalog)
-  const [activePanelTab, setActivePanelTab] = useState<'history' | 'catalog'>('history');
+  // Tab state: 'history' (Ledger) vs 'catalog' (Manage/Import catalog) vs 'orders' (Doctor Orders)
+  const [activePanelTab, setActivePanelTab] = useState<'history' | 'catalog' | 'orders'>('history');
 
   // Manual catalog addition form state
   const [newCatalogName, setNewCatalogName] = useState<string>('');
@@ -171,6 +171,17 @@ export function LabView({
   const filteredManageCatalog = activeCatalog.filter(item => 
     item.name.toLowerCase().includes(manageSearchQuery.toLowerCase())
   );
+
+  const pendingDoctorOrders = patients.flatMap(p => 
+    p.medicalHistory.flatMap(m => 
+      (m.labTestsRequested || []).map(l => ({
+        ...l,
+        patientId: p.id,
+        patientName: p.name,
+        recordId: m.id
+      }))
+    )
+  ).filter(order => !labTests.some(t => t.recordId === order.recordId && t.testName === order.testName));
 
   // Sync test fee when default first option changes or option selected
   React.useEffect(() => {
@@ -717,6 +728,18 @@ export function LabView({
                 Clinical Diagnostics Ledger ({labTests.length})
               </button>
               <button
+                id="subtab-lab-orders"
+                type="button"
+                onClick={() => setActivePanelTab('orders')}
+                className={`py-1.5 px-3 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  activePanelTab === 'orders'
+                    ? 'bg-emerald-50 text-emerald-700 font-bold border border-emerald-100/70'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                Pending Doctor Orders ({pendingDoctorOrders.length})
+              </button>
+              <button
                 id="subtab-lab-catalog"
                 type="button"
                 onClick={() => setActivePanelTab('catalog')}
@@ -738,6 +761,7 @@ export function LabView({
           {/* Render Active View Tab */}
           {activePanelTab === 'history' ? (
             <div className="space-y-4 animate-fade-in">
+              {/* ... history content */}
               <div className="flex flex-wrap items-center justify-between gap-3 bg-stone-50 p-3 rounded-xl border border-stone-200/70 print:hidden">
                 <div className="flex items-center gap-2">
                   <Printer className="w-4 h-4 text-emerald-600" />
@@ -828,6 +852,34 @@ export function LabView({
                     {labTests.length === 0 && (
                       <tr>
                         <td colSpan={7} className="py-8 text-center text-stone-400 font-medium">No laboratory panel reports recorded yet. Use the record form on the left.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : activePanelTab === 'orders' ? (
+            <div className="space-y-4 animate-fade-in">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="text-stone-500 font-medium border-b border-stone-100 uppercase font-mono text-[9px] tracking-wider">
+                    <tr>
+                      <th className="py-2.5">Patient Name</th>
+                      <th className="py-2.5">Diagnostic Panel</th>
+                      <th className="py-2.5">Lab Fee</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-stone-100 text-stone-700">
+                    {pendingDoctorOrders.map((order, index) => (
+                      <tr key={index} className="hover:bg-stone-50/40 transition-colors">
+                        <td className="py-3.5 font-semibold text-stone-800">{order.patientName}</td>
+                        <td className="py-3.5 text-stone-600 font-semibold">{order.testName}</td>
+                        <td className="py-3.5 font-bold text-stone-900 font-mono">Ksh {order.fee.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                    {pendingDoctorOrders.length === 0 && (
+                      <tr>
+                        <td colSpan={3} className="py-8 text-center text-stone-400 font-medium">No pending lab orders from doctors.</td>
                       </tr>
                     )}
                   </tbody>

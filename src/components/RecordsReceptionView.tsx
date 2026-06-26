@@ -336,7 +336,7 @@ export function RecordsReceptionView({
 
     const hasPrescriptions = activePrescriptionsList.length > 0;
     const hasLabTests = activeLabTestsList.length > 0;
-    const rxTotal = activePrescriptionsList.reduce((sum, item) => sum + (item.quantity * (item.price * 1.33)), 0);
+    const rxTotal = activePrescriptionsList.reduce((sum, item) => sum + (item.quantity * (Number(item.price) * 1.33)), 0);
     const labTotal = activeLabTestsList.reduce((sum, item) => sum + item.fee, 0);
     const computedInvoiceAmount = (hasPrescriptions || hasLabTests) ? (rxTotal + labTotal) : undefined;
 
@@ -1368,7 +1368,7 @@ export function RecordsReceptionView({
                                   <option value="">-- Choose Stock Drug --</option>
                                   {stock.map(item => (
                                     <option key={item.id} value={item.id} disabled={item.stockQuantity <= 0}>
-                                      {item.name} (Qty: {item.stockQuantity} Left) - Ksh {(item.price * 1.33).toLocaleString()}/unit
+                                      {item.name} (Qty: {item.stockQuantity} Left) - Ksh {(Number(item.price) * 1.33).toLocaleString()}/unit
                                     </option>
                                   ))}
                                 </select>
@@ -1422,7 +1422,7 @@ export function RecordsReceptionView({
                                     <div key={index} className="flex justify-between items-center text-[10px] bg-white p-1.5 rounded border border-stone-100 font-mono">
                                       <span className="truncate text-stone-700 font-semibold">{item.name} x{item.quantity} {item.dosage ? `(${item.dosage})` : ''}</span>
                                       <div className="flex items-center gap-2">
-                                        <span className="text-stone-500 font-bold">Ksh {(item.quantity * (item.price * 1.33)).toLocaleString()}</span>
+                                        <span className="text-stone-500 font-bold">Ksh {(item.quantity * (Number(item.price) * 1.33)).toLocaleString()}</span>
                                         <button
                                           type="button"
                                           onClick={() => handleRemoveDrugFromPrescription(index)}
@@ -1435,7 +1435,7 @@ export function RecordsReceptionView({
                                   ))}
                                 </div>
                                 <div className="text-right text-[10px] font-semibold text-emerald-800 pr-1">
-                                  Invoiced Total: Ksh {activePrescriptionsList.reduce((sum, item) => sum + (item.quantity * (item.price * 1.33)), 0).toLocaleString()}
+                                  Invoiced Total: Ksh {activePrescriptionsList.reduce((sum, item) => sum + (item.quantity * (Number(item.price) * 1.33)), 0).toLocaleString()}
                                 </div>
                               </div>
                             )}
@@ -1951,7 +1951,7 @@ export function RecordsReceptionView({
                           <div className="space-y-0.5">
                             {inv.prescribedItems.map((item, idx) => (
                               <div key={`rx-${idx}`} className="text-[10px] text-stone-600 font-mono">
-                                • [Rx] {item.name} x{item.quantity} (Ksh {(item.price * 1.33).toLocaleString()}/u)
+                                • [Rx] {item.name} x{item.quantity} (Ksh {(Number(item.price) * 1.33).toLocaleString()}/u)
                               </div>
                             ))}
                             {inv.labTestsRequested?.map((item, idx) => (
@@ -2040,8 +2040,8 @@ export function RecordsReceptionView({
                                   idx + 1,
                                   item.name,
                                   item.quantity,
-                                  `Ksh ${(item.price * 1.33).toLocaleString()}`,
-                                  `Ksh ${(item.quantity * (item.price * 1.33)).toLocaleString()}`
+                                  `Ksh ${(Number(item.price) * 1.33).toLocaleString()}`,
+                                  `Ksh ${(item.quantity * (Number(item.price) * 1.33)).toLocaleString()}`
                                 ]);
                                 
                                 autoTable(doc, {

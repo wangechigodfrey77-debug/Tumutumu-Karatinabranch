@@ -43,6 +43,7 @@ import {
   saveWhitelistUser,
   removeWhitelistUser,
   savePatient,
+  deletePatient,
   saveAppointment,
   saveLabTest,
   saveLabCatalogItem,
@@ -288,6 +289,16 @@ export default function App() {
   };
 
   // Master Mutations persisting in real-time straight to Firestore
+  const handleDeletePatient = async (patientId: string) => {
+    try {
+      await deletePatient(patientId);
+      await logMutation('DELETE_PATIENT', `Purged patient record: ${patientId}`);
+    } catch (error) {
+      console.error("Delete patient failed", error);
+      alert("Permission denied or error purging patient.");
+    }
+  };
+
   const handleAddPatient = async (pat: Patient) => {
     try {
       await savePatient(pat);
@@ -813,6 +824,7 @@ export default function App() {
                 labCatalog={labCatalog}
                 onAddLabTest={handleAddLabTest}
                 onUpdateLabTest={handleUpdateLabTest}
+                onDeletePatient={handleDeletePatient}
               />
             )}
 
@@ -888,6 +900,7 @@ export default function App() {
                 onUpdateLeaveStatus={handleUpdateLeaveStatus}
                 onAddExpense={handleAddExpense}
                 onRemoveExpense={handleRemoveExpense}
+                onDeletePatient={handleDeletePatient}
                 currentUserEmail={currentUser.email}
               />
             )}

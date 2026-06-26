@@ -28,6 +28,7 @@ interface AdminDashboardProps {
   onUpdateLeaveStatus: (leaveId: string, status: 'Approved' | 'Rejected') => void;
   onAddExpense: (expense: Expense) => void;
   onRemoveExpense: (expenseId: string) => void;
+  onDeletePatient?: (patientId: string) => void;
   currentUserEmail: string;
 }
 
@@ -49,6 +50,7 @@ export function AdminDashboard({
   onUpdateLeaveStatus,
   onAddExpense,
   onRemoveExpense,
+  onDeletePatient,
   currentUserEmail,
 }: AdminDashboardProps) {
   const [activeAdminSub, setActiveAdminSub] = useState<'rosters' | 'whitelist' | 'leaves' | 'finances' | 'sheets' | 'audit'>('finances');

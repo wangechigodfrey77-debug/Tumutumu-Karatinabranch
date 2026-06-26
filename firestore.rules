@@ -108,7 +108,13 @@ service cloud.firestore {
              (data.age is int || data.age is float) && data.age >= 0 && data.age <= 150 &&
              data.gender is string && (data.gender == 'Male' || data.gender == 'Female' || data.gender == 'Other') &&
              data.phone is string && data.phone.size() <= 32 &&
-             data.category is string && (data.category == 'General Consultation' || data.category == 'Consultant Clinic') &&
+             data.category is string && (
+               data.category == 'General Consultation' || 
+               data.category == 'Consultant Clinic' ||
+               data.category == 'Walk-in Lab' ||
+               data.category == 'Walk-in Pharmacy' ||
+               data.category == 'Outpatient Procedure'
+             ) &&
              data.registeredAt is string &&
              data.registeredBy is string &&
              data.medicalHistory is list && data.medicalHistory.size() <= 500 &&

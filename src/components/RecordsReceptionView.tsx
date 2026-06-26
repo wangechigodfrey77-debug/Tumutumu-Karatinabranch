@@ -25,6 +25,7 @@ interface RecordsReceptionViewProps {
   labCatalog?: LabCatalogItem[];
   onAddLabTest?: (test: LabTest) => void;
   onUpdateLabTest?: (test: LabTest) => void;
+  onDeletePatient?: (patientId: string) => void;
 }
 
 export function RecordsReceptionView({
@@ -43,6 +44,7 @@ export function RecordsReceptionView({
   labCatalog = [],
   onAddLabTest,
   onUpdateLabTest,
+  onDeletePatient,
 }: RecordsReceptionViewProps) {
   // Tabs: Register Patient, Manage Records, Appointments & Billing, View Patient Card
   const [activeSubTab, setActiveSubTab] = useState<'register' | 'history' | 'appointments' | 'card'>('register');
@@ -1366,7 +1368,7 @@ export function RecordsReceptionView({
                                   <option value="">-- Choose Stock Drug --</option>
                                   {stock.map(item => (
                                     <option key={item.id} value={item.id} disabled={item.stockQuantity <= 0}>
-                                      {item.name} (Qty: {item.stockQuantity} Left) - Ksh {item.price}/unit
+                                      {item.name} (Qty: {item.stockQuantity} Left) - Ksh {(item.price * 1.33).toLocaleString()}/unit
                                     </option>
                                   ))}
                                 </select>
@@ -1949,7 +1951,7 @@ export function RecordsReceptionView({
                           <div className="space-y-0.5">
                             {inv.prescribedItems.map((item, idx) => (
                               <div key={`rx-${idx}`} className="text-[10px] text-stone-600 font-mono">
-                                • [Rx] {item.name} x{item.quantity} (Ksh {item.price}/u)
+                                • [Rx] {item.name} x{item.quantity} (Ksh {(item.price * 1.33).toLocaleString()}/u)
                               </div>
                             ))}
                             {inv.labTestsRequested?.map((item, idx) => (
@@ -2038,7 +2040,7 @@ export function RecordsReceptionView({
                                   idx + 1,
                                   item.name,
                                   item.quantity,
-                                  `Ksh ${item.price.toLocaleString()}`,
+                                  `Ksh ${(item.price * 1.33).toLocaleString()}`,
                                   `Ksh ${(item.quantity * (item.price * 1.33)).toLocaleString()}`
                                 ]);
                                 
@@ -2154,6 +2156,20 @@ export function RecordsReceptionView({
                     <span className="text-[9px] text-slate-400 font-mono mt-2 block">
                       Reg: {new Date(selectedCardPatient.registeredAt || Date.now()).toLocaleDateString()}
                     </span>
+                    {userRole === 'Admin' && onDeletePatient && (
+                      <button
+                        onClick={() => {
+                          if (confirm(`Are you sure you want to permanently delete patient ${selectedCardPatient.name}?`)) {
+                            onDeletePatient(selectedCardPatient.id);
+                            setSelectedCardPatient(null);
+                          }
+                        }}
+                        className="bg-red-900/50 hover:bg-red-800 text-white text-[10px] px-3 py-1.5 rounded-md flex items-center gap-1 transition mt-2 w-full justify-center"
+                      >
+                        <ShieldAlert className="w-3 h-3" />
+                        Purge Record
+                      </button>
+                    )}
                   </div>
                 </div>
 

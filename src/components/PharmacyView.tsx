@@ -200,7 +200,7 @@ export function PharmacyView({
         });
 
         // Recompute the total invoice amount
-        const computedInvoiceAmount = updatedItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+        const computedInvoiceAmount = updatedItems.reduce((sum, item) => sum + (item.quantity * (item.price * 1.33)), 0);
 
         return {
           ...record,
@@ -235,6 +235,7 @@ export function PharmacyView({
   // Stock selection state for quick restock & threshold alerts
   const [restockStockId, setRestockStockId] = useState<string>('');
   const [restockQty, setRestockQty] = useState<number>(0);
+  const [restockSearchQuery, setRestockSearchQuery] = useState<string>('');
   const [thresholdVal, setThresholdVal] = useState<number>(15);
 
   // Filter views states
@@ -1561,7 +1562,7 @@ export function PharmacyView({
                     </option>
                     {dropdownPharmaItems.map((item) => (
                       <option key={item.id} value={item.id} disabled={item.stockQuantity <= 0}>
-                        {item.name} ({item.stockQuantity} Left) - Ksh {item.price}/unit
+                        {item.name} ({item.stockQuantity} Left) - Ksh {(item.price * 1.33).toLocaleString()}/unit
                       </option>
                     ))}
                   </select>
@@ -1841,7 +1842,7 @@ export function PharmacyView({
                     </option>
                     {dropdownNonPharmaItems.map((item) => (
                       <option key={item.id} value={item.id} disabled={item.stockQuantity <= 0}>
-                        {item.name} ({item.stockQuantity} Left) - Ksh {item.price}/unit
+                        {item.name} ({item.stockQuantity} Left) - Ksh {(item.price * 1.33).toLocaleString()}/unit
                       </option>
                     ))}
                   </select>
@@ -2163,7 +2164,14 @@ export function PharmacyView({
               </h4>
               <form onSubmit={handleRestock} className="space-y-3 text-xs font-sans">
                 <div>
-                  <label className="block text-[10px] font-semibold text-stone-400 uppercase mb-1">Select Catalog Item</label>
+                  <label className="block text-[10px] font-semibold text-stone-400 uppercase mb-1">Search Catalog</label>
+                  <input
+                    type="text"
+                    placeholder="Search for medication..."
+                    value={restockSearchQuery}
+                    onChange={(e) => setRestockSearchQuery(e.target.value)}
+                    className="w-full bg-white border border-stone-200 rounded p-1.5 focus:ring-1 focus:ring-emerald-500 mb-2"
+                  />
                   <select
                     id="select-restock-med"
                     required
@@ -2172,7 +2180,7 @@ export function PharmacyView({
                     className="w-full bg-white border border-stone-200 rounded p-1.5 focus:ring-1 focus:ring-emerald-500"
                   >
                     <option value="">-- Choose Stock Item --</option>
-                    {stock.map((item) => (
+                    {stock.filter(item => item.name.toLowerCase().includes(restockSearchQuery.toLowerCase())).map((item) => (
                       <option key={item.id} value={item.id}>
                         [{item.category}] {item.name} ({item.stockQuantity} Left, Threshold: {item.minThreshold ?? 15})
                       </option>

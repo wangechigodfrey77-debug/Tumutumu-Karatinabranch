@@ -134,17 +134,15 @@ export default function App() {
         console.warn("Storage cleanup warning: ", err);
       }
 
-      const initiated = sessionStorage.getItem('hosp_session_initiated');
-      if (initiated !== 'active') {
-        try {
-          await signOut(auth);
-        } catch (e) {
-          console.warn("Initial clean sign-out completed or skipped: ", e);
-        }
-        setCurrentUser(null);
-        setSessionEmail('');
-        sessionStorage.setItem('hosp_session_initiated', 'active');
+      // Always force sign out on reload to ensure fresh login from landing page
+      try {
+        await signOut(auth);
+      } catch (e) {
+        console.warn("Sign-out on reload: ", e);
       }
+      setCurrentUser(null);
+      setSessionEmail('');
+      sessionStorage.setItem('hosp_session_initiated', 'active');
     };
     initSession();
   }, []);

@@ -334,7 +334,7 @@ export function RecordsReceptionView({
 
     const hasPrescriptions = activePrescriptionsList.length > 0;
     const hasLabTests = activeLabTestsList.length > 0;
-    const rxTotal = activePrescriptionsList.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+    const rxTotal = activePrescriptionsList.reduce((sum, item) => sum + (item.quantity * (item.price * 1.33)), 0);
     const labTotal = activeLabTestsList.reduce((sum, item) => sum + item.fee, 0);
     const computedInvoiceAmount = (hasPrescriptions || hasLabTests) ? (rxTotal + labTotal) : undefined;
 
@@ -1420,7 +1420,7 @@ export function RecordsReceptionView({
                                     <div key={index} className="flex justify-between items-center text-[10px] bg-white p-1.5 rounded border border-stone-100 font-mono">
                                       <span className="truncate text-stone-700 font-semibold">{item.name} x{item.quantity} {item.dosage ? `(${item.dosage})` : ''}</span>
                                       <div className="flex items-center gap-2">
-                                        <span className="text-stone-500 font-bold">Ksh {(item.quantity * item.price).toLocaleString()}</span>
+                                        <span className="text-stone-500 font-bold">Ksh {(item.quantity * (item.price * 1.33)).toLocaleString()}</span>
                                         <button
                                           type="button"
                                           onClick={() => handleRemoveDrugFromPrescription(index)}
@@ -1433,7 +1433,7 @@ export function RecordsReceptionView({
                                   ))}
                                 </div>
                                 <div className="text-right text-[10px] font-semibold text-emerald-800 pr-1">
-                                  Invoiced Total: Ksh {activePrescriptionsList.reduce((sum, item) => sum + (item.quantity * item.price), 0).toLocaleString()}
+                                  Invoiced Total: Ksh {activePrescriptionsList.reduce((sum, item) => sum + (item.quantity * (item.price * 1.33)), 0).toLocaleString()}
                                 </div>
                               </div>
                             )}
@@ -2039,7 +2039,7 @@ export function RecordsReceptionView({
                                   item.name,
                                   item.quantity,
                                   `Ksh ${item.price.toLocaleString()}`,
-                                  `Ksh ${(item.quantity * item.price).toLocaleString()}`
+                                  `Ksh ${(item.quantity * (item.price * 1.33)).toLocaleString()}`
                                 ]);
                                 
                                 autoTable(doc, {

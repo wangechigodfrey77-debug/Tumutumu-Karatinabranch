@@ -809,7 +809,7 @@ export default function App() {
               <RecordsReceptionView
                 patients={patients}
                 appointments={appointments}
-                userRole={currentUser.role === 'Admin' ? 'Doctor' : currentUser.role}
+                userRole={currentUser.role}
                 userEmail={currentUser.email}
                 userName={currentUser.name}
                 onAddPatient={handleAddPatient}

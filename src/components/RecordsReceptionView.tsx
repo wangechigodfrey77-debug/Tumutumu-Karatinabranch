@@ -48,6 +48,14 @@ export function RecordsReceptionView({
 }: RecordsReceptionViewProps) {
   // Tabs: Register Patient, Manage Records, Appointments & Billing, View Patient Card
   const [activeSubTab, setActiveSubTab] = useState<'register' | 'history' | 'appointments' | 'card'>('register');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => setToastMessage(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
   const [cardSearchQuery, setCardSearchQuery] = useState<string>('');
   const [selectedCardPatient, setSelectedCardPatient] = useState<Patient | null>(null);
 
@@ -320,7 +328,7 @@ export function RecordsReceptionView({
     setNewInsuranceCompany('');
     setIsWalkIn(false);
     setWalkInTag(undefined);
-    alert(`Patient ${newPatient.name} standard registration compiled! Assigned Patient ID: ${patientId} & OP-Number: ${newPatient.opNumber}. A triage billing invoice of Ksh ${finalBillingAmount} has been generated under Appointments.`);
+    setToastMessage(`Patient ${newPatient.name} registered! Revenue increased by Ksh ${finalBillingAmount.toLocaleString()}.`);
   };
 
   const handleAddMedicalHistory = (e: React.FormEvent) => {
@@ -600,8 +608,73 @@ export function RecordsReceptionView({
       return dateTimeB.localeCompare(dateTimeA);
     });
 
+  // Compute Revenue over different intervals (Daily, Weekly, Monthly)
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todayAppointments = appointments.filter((a) => a.date === todayStr);
+  const totalCollectedToday = todayAppointments.reduce((sum, a) => sum + (a.billingStatus === 'Paid' ? a.billingAmount : 0), 0);
+
+  const handleDownloadReport = () => {
+    const doc = new jsPDF();
+    doc.text(`Daily Registration Report - ${todayStr}`, 14, 15);
+
+    // Grouping
+    const groups = patients
+      .filter(p => p.registeredAt.startsWith(todayStr))
+      .reduce((acc, p) => {
+        const mode = p.paymentMode || 'Cash';
+        const cat = p.category || 'General Consultation';
+        const key = `${mode} - ${cat}`;
+        if (!acc[key]) acc[key] = { count: 0, amount: 0 };
+        acc[key].count++;
+        // Need to find the appointment for this patient to get the amount
+        const appt = appointments.find(a => a.patientId === p.id && a.date === todayStr);
+        if (appt && appt.billingStatus === 'Paid') acc[key].amount += appt.billingAmount;
+        return acc;
+      }, {} as Record<string, { count: number; amount: number }>);
+
+    const tableData = Object.entries(groups).map(([key, data]) => [key, data.count, data.amount.toLocaleString()]);
+    
+    autoTable(doc, {
+      head: [['Group', 'Count', 'Amount Collected']],
+      body: tableData,
+      startY: 25,
+    });
+
+    doc.save(`Registration_Report_${todayStr}.pdf`);
+  };
+
+  const isReception = userRole === 'Reception' || userRole === 'Admin';
+
   return (
     <div id="reception-module" className="space-y-6">
+      {toastMessage && (
+        <div className="fixed bottom-4 right-4 bg-emerald-600 text-white px-4 py-2 rounded-lg shadow-lg text-xs font-semibold animate-fade-in z-50">
+          {toastMessage}
+        </div>
+      )}
+      {/* Dashboard Header */}
+      {isReception && (
+        <div className="bg-white p-4 rounded-xl border border-stone-200 shadow-sm flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-semibold text-stone-800">Registration Desk Daily Summary</h2>
+            <p className="text-xs text-stone-500">Total revenue collected from registration today.</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <span className="block text-xl font-bold text-emerald-800">Ksh {totalCollectedToday.toLocaleString()}</span>
+              <span className="text-[10px] text-stone-400 font-semibold uppercase">Total Collected Today</span>
+            </div>
+            <button
+              onClick={handleDownloadReport}
+              className="flex items-center gap-2 bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-semibold hover:bg-emerald-700 transition-all"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Download Daily Report
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Sub Tabs */}
       <div className="bg-white border border-stone-200 rounded-xl p-1 flex gap-1">
         <button

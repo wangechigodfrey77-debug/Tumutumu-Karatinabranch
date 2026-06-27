@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { ShieldAlert, Users, CalendarPlus, CheckSquare, Trash, BarChart3, TrendingUp, Sparkles, Building, Layers, Landmark, Calendar, Plus, X, FileSpreadsheet, History, Download } from 'lucide-react';
 import { Patient, LabTest, MedicationDispense, DutyAllocation, LeaveRequest, WhitelistUser, UserRole, Expense, PharmacyItem, AuditLog, Appointment } from '../types';
+import { RevenueChart } from './RevenueChart';
 import { GoogleSheetsView } from './GoogleSheetsView';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -948,15 +949,24 @@ export function AdminDashboard({
 
             {/* Dashboard Graphs & Pie Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Pie Chart & Cashflow Breakdown Component */}
+              {/* Registration Revenue Breakdown */}
               <div className="bg-white p-5 rounded-xl border border-stone-200 lg:col-span-1 space-y-4 shadow-xs">
+                <h3 className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <BarChart3 className="w-4 h-4 text-emerald-600" />
+                  Revenue by Registration Category
+                </h3>
+                <RevenueChart appointments={filteredAppts} patients={patients} />
+              </div>
+              
+              {/* Pie Chart & Cashflow Breakdown Component */}
+              <div className="bg-white p-5 rounded-xl border border-stone-200 lg:col-span-2 space-y-4 shadow-xs">
                 <h3 className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
                   <Landmark className="w-4 h-4 text-amber-600" />
                   Branch Outflows Ledger Spends
                 </h3>
 
                 {totalExpenses === 0 ? (
-                  <div className="h-44 flex flex-col items-center justify-center border border-dashed border-stone-200 rounded-xl bg-stone-50/60 p-4 text-center">
+                  <div className="h-44 flex flex-col items-center justify-center border border-dashed border-stone-200 rounded-lg bg-stone-50/60 p-4 text-center">
                     <span className="text-stone-400 text-xs">No active expenses recorded on ledger.</span>
                   </div>
                 ) : (

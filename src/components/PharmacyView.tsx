@@ -200,7 +200,7 @@ export function PharmacyView({
         });
 
         // Recompute the total invoice amount
-        const computedInvoiceAmount = updatedItems.reduce((sum, item) => sum + (item.quantity * (Number(item.price) * 1.33)), 0);
+        const computedInvoiceAmount = updatedItems.reduce((sum, item) => sum + (item.quantity * Math.round(Number(item.price) * 1.33)), 0);
 
         return {
           ...record,
@@ -288,7 +288,7 @@ export function PharmacyView({
   }, [selectedNonPharmaId]);
 
   const pharmaUnitPrice = pharmaPricePerUnit !== '' ? Number(pharmaPricePerUnit) : (activeStockItem?.price ?? 0);
-  const computedTotalCost = activeStockItem ? pharmaUnitPrice * Number(dispenseQuantity || 0) : 0;
+  const computedTotalCost = activeStockItem ? Math.round(pharmaUnitPrice * 1.33) * Number(dispenseQuantity || 0) : 0;
 
   const nonPharmaUnitPrice = nonPharmaPricePerUnit !== '' ? Number(nonPharmaPricePerUnit) : (activeNonPharmaItem?.price ?? 0);
   const computedNonPharmaCost = activeNonPharmaItem ? nonPharmaUnitPrice * Number(nonPharmaQuantity || 0) : 0;
@@ -1562,7 +1562,7 @@ export function PharmacyView({
                     </option>
                     {dropdownPharmaItems.map((item) => (
                       <option key={item.id} value={item.id} disabled={item.stockQuantity <= 0}>
-                        {item.name} ({item.stockQuantity} Left) - Ksh {(Number(item.price) * 1.33).toLocaleString()}/unit
+                        {item.name} ({item.stockQuantity} Left) - Ksh {Math.round(Number(item.price) * 1.33).toLocaleString()}/unit
                       </option>
                     ))}
                   </select>
@@ -1842,7 +1842,7 @@ export function PharmacyView({
                     </option>
                     {dropdownNonPharmaItems.map((item) => (
                       <option key={item.id} value={item.id} disabled={item.stockQuantity <= 0}>
-                        {item.name} ({item.stockQuantity} Left) - Ksh {(Number(item.price) * 1.33).toLocaleString()}/unit
+                        {item.name} ({item.stockQuantity} Left) - Ksh {Math.round(Number(item.price) * 1.33).toLocaleString()}/unit
                       </option>
                     ))}
                   </select>

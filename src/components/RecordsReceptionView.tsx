@@ -738,11 +738,12 @@ export function RecordsReceptionView({
                   <input
                     id="reg-patient-age"
                     type="number"
+                    step="0.1"
                     required
                     min={0}
                     max={120}
                     value={newAge}
-                    onChange={(e) => setNewAge(Number(e.target.value))}
+                    onChange={(e) => setNewAge(e.target.value === '' ? 0 : parseFloat(e.target.value))}
                     className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-mono"
                   />
                 </div>

@@ -1417,11 +1417,12 @@ export function PharmacyView({
                           <label className="block text-[10px] font-semibold text-stone-500 mb-1">Age (Years)</label>
                           <input
                             type="number"
+                            step="0.1"
                             required
                             min={0}
                             max={150}
                             value={walkInAge}
-                            onChange={(e) => setWalkInAge(Number(e.target.value))}
+                            onChange={(e) => setWalkInAge(e.target.value === '' ? 0 : parseFloat(e.target.value))}
                             className="w-full bg-white border border-stone-200 rounded-md p-1.5 focus:ring-1 focus:ring-emerald-500 outline-hidden text-xs"
                           />
                         </div>
@@ -2271,10 +2272,11 @@ export function PharmacyView({
                     <input
                       id="inp-new-med-price"
                       type="number"
+                      step="0.01"
                       required
                       placeholder="Price"
                       value={newItemPrice}
-                      onChange={(e) => setNewItemPrice(Number(e.target.value))}
+                      onChange={(e) => setNewItemPrice(e.target.value === '' ? 0 : parseFloat(e.target.value))}
                       className="w-full bg-white border border-stone-200 rounded p-1.5 focus:ring-1 focus:ring-emerald-500"
                     />
                   </div>

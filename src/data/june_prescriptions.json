@@ -1,0 +1,1122 @@
+[
+  {
+    "patientId": "IP011727/26",
+    "patientName": "Agnes Muringo Mbatia",
+    "medicationName": "Cartimove Tabs",
+    "dispensedBy": "jecinta",
+    "quantity": 10.00,
+    "pricePerUnit": 70.00,
+    "totalCost": 700.00,
+    "dispenseDate": "2026-06-01"
+  },
+  {
+    "patientId": "IP011727/26",
+    "patientName": "Agnes Muringo Mbatia",
+    "medicationName": "Cefuroxime Injection 750mg",
+    "dispensedBy": "jecinta",
+    "quantity": 6.00,
+    "pricePerUnit": 320.00,
+    "totalCost": 1920.00,
+    "dispenseDate": "2026-06-01"
+  },
+  {
+    "patientId": "IP011727/26",
+    "patientName": "Agnes Muringo Mbatia",
+    "medicationName": "Cough Exp (Ascoril) (100ml)",
+    "dispensedBy": "jecinta",
+    "quantity": 1.00,
+    "pricePerUnit": 325.00,
+    "totalCost": 325.00,
+    "dispenseDate": "2026-06-01"
+  },
+  {
+    "patientId": "IP011727/26",
+    "patientName": "Agnes Muringo Mbatia",
+    "medicationName": "Esomeprazole 40mg Tablets Tablet",
+    "dispensedBy": "jecinta",
+    "quantity": 10.00,
+    "pricePerUnit": 30.00,
+    "totalCost": 300.00,
+    "dispenseDate": "2026-06-01"
+  },
+  {
+    "patientId": "IP011727/26",
+    "patientName": "Agnes Muringo Mbatia",
+    "medicationName": "Lonoflam(Lornoscam And Paracetamol 325 Mgs)",
+    "dispensedBy": "jecinta",
+    "quantity": 10.00,
+    "pricePerUnit": 57.00,
+    "totalCost": 570.00,
+    "dispenseDate": "2026-06-01"
+  },
+  {
+    "patientId": "IP011727/26",
+    "patientName": "Agnes Muringo Mbatia",
+    "medicationName": "Paracetamol Infusion 1gm",
+    "dispensedBy": "jecinta",
+    "quantity": 3.00,
+    "pricePerUnit": 350.00,
+    "totalCost": 1050.00,
+    "dispenseDate": "2026-06-01"
+  },
+  {
+    "patientId": "IP011730/26",
+    "patientName": "John Kabugu Gachara",
+    "medicationName": "Ceftriaxone Injection 1gm",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 85.00,
+    "totalCost": 85.00,
+    "dispenseDate": "2026-06-02"
+  },
+  {
+    "patientId": "IP011730/26",
+    "patientName": "John Kabugu Gachara",
+    "medicationName": "Hydrocortisone Sodium Succ. Inj 100mg",
+    "dispensedBy": "ngari",
+    "quantity": 2.00,
+    "pricePerUnit": 49.00,
+    "totalCost": 98.00,
+    "dispenseDate": "2026-06-02"
+  },
+  {
+    "patientId": "IP011730/26",
+    "patientName": "John Kabugu Gachara",
+    "medicationName": "I.V.Cannular Size 22",
+    "dispensedBy": "ngari",
+    "quantity": 2.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 100.00,
+    "dispenseDate": "2026-06-02"
+  },
+  {
+    "patientId": "IP011730/26",
+    "patientName": "John Kabugu Gachara",
+    "medicationName": "I.V.Giving Sets",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 221.00,
+    "totalCost": 221.00,
+    "dispenseDate": "2026-06-02"
+  },
+  {
+    "patientId": "IP011730/26",
+    "patientName": "John Kabugu Gachara",
+    "medicationName": "Needles G23 Each",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 10.00,
+    "totalCost": 10.00,
+    "dispenseDate": "2026-06-02"
+  },
+  {
+    "patientId": "IP011730/26",
+    "patientName": "John Kabugu Gachara",
+    "medicationName": "Normalsaline 0.9%/500mls",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 180.00,
+    "totalCost": 180.00,
+    "dispenseDate": "2026-06-02"
+  },
+  {
+    "patientId": "IP011730/26",
+    "patientName": "John Kabugu Gachara",
+    "medicationName": "Paracetamol Infusion 1gm",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 350.00,
+    "totalCost": 350.00,
+    "dispenseDate": "2026-06-02"
+  },
+  {
+    "patientId": "IP011730/26",
+    "patientName": "John Kabugu Gachara",
+    "medicationName": "Syringe 10ml",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 13.00,
+    "totalCost": 13.00,
+    "dispenseDate": "2026-06-02"
+  },
+  {
+    "patientId": "IP011730/26",
+    "patientName": "John Kabugu Gachara",
+    "medicationName": "Oxygen Tubing Adults",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 120.00,
+    "totalCost": 120.00,
+    "dispenseDate": "2026-06-02"
+  },
+  {
+    "patientId": "IP011731/26",
+    "patientName": "Agnes Wanjiru Wangombe",
+    "medicationName": "I.V.Cannular Size 22",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 50.00,
+    "dispenseDate": "2026-06-03"
+  },
+  {
+    "patientId": "IP011731/26",
+    "patientName": "Agnes Wanjiru Wangombe",
+    "medicationName": "I.V.Giving Sets",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 221.00,
+    "totalCost": 221.00,
+    "dispenseDate": "2026-06-03"
+  },
+  {
+    "patientId": "IP011731/26",
+    "patientName": "Agnes Wanjiru Wangombe",
+    "medicationName": "Paracetamol Infusion 1gm",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 350.00,
+    "totalCost": 350.00,
+    "dispenseDate": "2026-06-03"
+  },
+  {
+    "patientId": "OP001471/23",
+    "patientName": "Purity Gathoni Gikandi",
+    "medicationName": "Esomeprazole 40mg Tablets Tablet",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 30.00,
+    "totalCost": 30.00,
+    "dispenseDate": "2026-06-04"
+  },
+  {
+    "patientId": "OP001471/23",
+    "patientName": "Purity Gathoni Gikandi",
+    "medicationName": "I.V.Cannular Size 22",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 50.00,
+    "dispenseDate": "2026-06-04"
+  },
+  {
+    "patientId": "OP001471/23",
+    "patientName": "Purity Gathoni Gikandi",
+    "medicationName": "I.V.Giving Sets",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 221.00,
+    "totalCost": 221.00,
+    "dispenseDate": "2026-06-04"
+  },
+  {
+    "patientId": "OP001471/23",
+    "patientName": "Purity Gathoni Gikandi",
+    "medicationName": "Metoclopramide Hcl Injection 10mg/2ml",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 30.00,
+    "totalCost": 30.00,
+    "dispenseDate": "2026-06-04"
+  },
+  {
+    "patientId": "OP001471/23",
+    "patientName": "Purity Gathoni Gikandi",
+    "medicationName": "Paracetamol Infusion 1gm",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 350.00,
+    "totalCost": 350.00,
+    "dispenseDate": "2026-06-04"
+  },
+  {
+    "patientId": "OP001471/23",
+    "patientName": "Purity Gathoni Gikandi",
+    "medicationName": "Syringe 5ml",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 7.00,
+    "totalCost": 7.00,
+    "dispenseDate": "2026-06-04"
+  },
+  {
+    "patientId": "OP001471/23",
+    "patientName": "Purity Gathoni Gikandi",
+    "medicationName": "Antacid (Viscid Gel",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 797.00,
+    "totalCost": 797.00,
+    "dispenseDate": "2026-06-04"
+  },
+  {
+    "patientId": "OP001471/23",
+    "patientName": "Purity Gathoni Gikandi",
+    "medicationName": "Cefuroxime 500mgtablets",
+    "dispensedBy": "ngari",
+    "quantity": 10.00,
+    "pricePerUnit": 70.00,
+    "totalCost": 700.00,
+    "dispenseDate": "2026-06-04"
+  },
+  {
+    "patientId": "OP001471/23",
+    "patientName": "Purity Gathoni Gikandi",
+    "medicationName": "Domperidone 10mg",
+    "dispensedBy": "ngari",
+    "quantity": 15.00,
+    "pricePerUnit": 5.00,
+    "totalCost": 75.00,
+    "dispenseDate": "2026-06-04"
+  },
+  {
+    "patientId": "OP001471/23",
+    "patientName": "Purity Gathoni Gikandi",
+    "medicationName": "Esomeprazole 40mg Tablets Tablet",
+    "dispensedBy": "ngari",
+    "quantity": 7.00,
+    "pricePerUnit": 30.00,
+    "totalCost": 210.00,
+    "dispenseDate": "2026-06-04"
+  },
+  {
+    "patientId": "OP001471/23",
+    "patientName": "Purity Gathoni Gikandi",
+    "medicationName": "Paracetamol Tabs 500mg",
+    "dispensedBy": "ngari",
+    "quantity": 30.00,
+    "pricePerUnit": 2.00,
+    "totalCost": 60.00,
+    "dispenseDate": "2026-06-04"
+  },
+  {
+    "patientId": "IP011731/26",
+    "patientName": "Agnes Wanjiru Wangombe",
+    "medicationName": "Needles G23 Each",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 10.00,
+    "totalCost": 10.00,
+    "dispenseDate": "2026-06-05"
+  },
+  {
+    "patientId": "IP011731/26",
+    "patientName": "Agnes Wanjiru Wangombe",
+    "medicationName": "Syringe 5ml",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 7.00,
+    "totalCost": 7.00,
+    "dispenseDate": "2026-06-05"
+  },
+  {
+    "patientId": "IP011731/26",
+    "patientName": "Agnes Wanjiru Wangombe",
+    "medicationName": "Tramadol Inj. 100mg",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 56.00,
+    "totalCost": 56.00,
+    "dispenseDate": "2026-06-05"
+  },
+  {
+    "patientId": "OP002771/26",
+    "patientName": "Grace Wangari Mwangi",
+    "medicationName": "Amlodipine 10 Mg",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 8.00,
+    "totalCost": 8.00,
+    "dispenseDate": "2026-06-06"
+  },
+  {
+    "patientId": "OP002771/26",
+    "patientName": "Grace Wangari Mwangi",
+    "medicationName": "I.V.Cannular Size 22",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 50.00,
+    "dispenseDate": "2026-06-06"
+  },
+  {
+    "patientId": "OP002771/26",
+    "patientName": "Grace Wangari Mwangi",
+    "medicationName": "I.V.Giving Sets",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 221.00,
+    "totalCost": 221.00,
+    "dispenseDate": "2026-06-06"
+  },
+  {
+    "patientId": "OP002771/26",
+    "patientName": "Grace Wangari Mwangi",
+    "medicationName": "Paracetamol Infusion 1gm",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 350.00,
+    "totalCost": 350.00,
+    "dispenseDate": "2026-06-06"
+  },
+  {
+    "patientId": "IP011729/26",
+    "patientName": "Gladys Wanjiru Ngumi",
+    "medicationName": "Cefuroxime Injection 750mg",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 320.00,
+    "totalCost": 320.00,
+    "dispenseDate": "2026-06-07"
+  },
+  {
+    "patientId": "IP011729/26",
+    "patientName": "Gladys Wanjiru Ngumi",
+    "medicationName": "I.V.Cannular Size 22",
+    "dispensedBy": "ngari",
+    "quantity": 2.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 100.00,
+    "dispenseDate": "2026-06-07"
+  },
+  {
+    "patientId": "IP011729/26",
+    "patientName": "Gladys Wanjiru Ngumi",
+    "medicationName": "I.V.Giving Sets",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 221.00,
+    "totalCost": 221.00,
+    "dispenseDate": "2026-06-07"
+  },
+  {
+    "patientId": "IP011729/26",
+    "patientName": "Gladys Wanjiru Ngumi",
+    "medicationName": "Oxygen Mask- Adult",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 225.00,
+    "totalCost": 225.00,
+    "dispenseDate": "2026-06-07"
+  },
+  {
+    "patientId": "IP011729/26",
+    "patientName": "Gladys Wanjiru Ngumi",
+    "medicationName": "Paracetamol Infusion 1gm",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 350.00,
+    "totalCost": 350.00,
+    "dispenseDate": "2026-06-07"
+  },
+  {
+    "patientId": "IP011729/26",
+    "patientName": "Gladys Wanjiru Ngumi",
+    "medicationName": "Syringe 10ml",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 13.00,
+    "totalCost": 13.00,
+    "dispenseDate": "2026-06-07"
+  },
+  {
+    "patientId": "OP019405/25",
+    "patientName": "David Gikingo Njora",
+    "medicationName": "Dexamethasone Sodium Phos. Injection 4mg/Ml",
+    "dispensedBy": "ngari",
+    "quantity": 2.00,
+    "pricePerUnit": 15.00,
+    "totalCost": 30.00,
+    "dispenseDate": "2026-06-08"
+  },
+  {
+    "patientId": "OP019405/25",
+    "patientName": "David Gikingo Njora",
+    "medicationName": "Esomeprazole 40mg Tablets Tablet",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 30.00,
+    "totalCost": 30.00,
+    "dispenseDate": "2026-06-08"
+  },
+  {
+    "patientId": "OP019405/25",
+    "patientName": "David Gikingo Njora",
+    "medicationName": "I.V.Cannular Size 22",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 50.00,
+    "dispenseDate": "2026-06-08"
+  },
+  {
+    "patientId": "OP019405/25",
+    "patientName": "David Gikingo Njora",
+    "medicationName": "I.V.Giving Sets",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 221.00,
+    "totalCost": 221.00,
+    "dispenseDate": "2026-06-08"
+  },
+  {
+    "patientId": "OP019405/25",
+    "patientName": "David Gikingo Njora",
+    "medicationName": "Nebulizer Mask Adult",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 137.00,
+    "totalCost": 137.00,
+    "dispenseDate": "2026-06-08"
+  },
+  {
+    "patientId": "OP019405/25",
+    "patientName": "David Gikingo Njora",
+    "medicationName": "Needles G23 Each",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 10.00,
+    "totalCost": 10.00,
+    "dispenseDate": "2026-06-08"
+  },
+  {
+    "patientId": "OP019405/25",
+    "patientName": "David Gikingo Njora",
+    "medicationName": "Paracetamol Infusion 1gm",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 350.00,
+    "totalCost": 350.00,
+    "dispenseDate": "2026-06-08"
+  },
+  {
+    "patientId": "OP019405/25",
+    "patientName": "David Gikingo Njora",
+    "medicationName": "Salbutamol Nebulizer 2.5mg/2.5ml(Vial)",
+    "dispensedBy": "ngari",
+    "quantity": 2.00,
+    "pricePerUnit": 300.00,
+    "totalCost": 600.00,
+    "dispenseDate": "2026-06-08"
+  },
+  {
+    "patientId": "OP019405/25",
+    "patientName": "David Gikingo Njora",
+    "medicationName": "Syringe 10ml",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 13.00,
+    "totalCost": 13.00,
+    "dispenseDate": "2026-06-08"
+  },
+  {
+    "patientId": "OP00054274",
+    "patientName": "Jane Wanjiru Maina",
+    "medicationName": "Dexamethasone Sodium Phos. Injection 4mg/Ml",
+    "dispensedBy": "ngari",
+    "quantity": 2.00,
+    "pricePerUnit": 15.00,
+    "totalCost": 30.00,
+    "dispenseDate": "2026-06-09"
+  },
+  {
+    "patientId": "OP00054274",
+    "patientName": "Jane Wanjiru Maina",
+    "medicationName": "Nebulizer Mask Adult",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 137.00,
+    "totalCost": 137.00,
+    "dispenseDate": "2026-06-09"
+  },
+  {
+    "patientId": "OP00054274",
+    "patientName": "Jane Wanjiru Maina",
+    "medicationName": "Needles G21 Each",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 11.00,
+    "totalCost": 11.00,
+    "dispenseDate": "2026-06-09"
+  },
+  {
+    "patientId": "OP00054274",
+    "patientName": "Jane Wanjiru Maina",
+    "medicationName": "Salbutamol Nebulizer 2.5mg/2.5ml(Vial)",
+    "dispensedBy": "ngari",
+    "quantity": 2.00,
+    "pricePerUnit": 300.00,
+    "totalCost": 600.00,
+    "dispenseDate": "2026-06-09"
+  },
+  {
+    "patientId": "OP00054274",
+    "patientName": "Jane Wanjiru Maina",
+    "medicationName": "Syringe 5ml",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 7.00,
+    "totalCost": 7.00,
+    "dispenseDate": "2026-06-09"
+  },
+  {
+    "patientId": "OP002771/26",
+    "patientName": "Grace Wangari Mwangi",
+    "medicationName": "Frusemide Injection 20mg/Ml",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 50.00,
+    "dispenseDate": "2026-06-10"
+  },
+  {
+    "patientId": "OP002771/26",
+    "patientName": "Grace Wangari Mwangi",
+    "medicationName": "Human Albumin Solution 20% Bottle",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 15550.00,
+    "totalCost": 15550.00,
+    "dispenseDate": "2026-06-10"
+  },
+  {
+    "patientId": "IP011733/26",
+    "patientName": "Jane Wanjiru Maina",
+    "medicationName": "Cefuroxime Injection 750mg",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 320.00,
+    "totalCost": 320.00,
+    "dispenseDate": "2026-06-11"
+  },
+  {
+    "patientId": "IP011733/26",
+    "patientName": "Jane Wanjiru Maina",
+    "medicationName": "Syringe 10ml",
+    "dispensedBy": "ngari",
+    "quantity": 1.00,
+    "pricePerUnit": 13.00,
+    "totalCost": 13.00,
+    "dispenseDate": "2026-06-11"
+  },
+  {
+    "patientId": "IP011722/26",
+    "patientName": "Mary Cayer Muthoni Wairimu",
+    "medicationName": "Feeding Tubes Size 18",
+    "dispensedBy": "dkendi",
+    "quantity": 1.00,
+    "pricePerUnit": 100.00,
+    "totalCost": 100.00,
+    "dispenseDate": "2026-06-12"
+  },
+  {
+    "patientId": "OP002772/26",
+    "patientName": "Nancy Njoki Muriuki",
+    "medicationName": "Amoxycillin 500mg Clavanic Acid 125mg (Clavulin)",
+    "dispensedBy": "ntinyari",
+    "quantity": 10.00,
+    "pricePerUnit": 35.00,
+    "totalCost": 350.00,
+    "dispenseDate": "2026-06-13"
+  },
+  {
+    "patientId": "IP011672/26",
+    "patientName": "Lucy Wamutira Karimi",
+    "medicationName": "Gloves Rubber(Pair)",
+    "dispensedBy": "perpetua",
+    "quantity": 50.00,
+    "pricePerUnit": 15.00,
+    "totalCost": 750.00,
+    "dispenseDate": "2026-06-14"
+  },
+  {
+    "patientId": "IP011668/26",
+    "patientName": "Francis Githinji Irungu",
+    "medicationName": "Gloves Rubber(Pair)",
+    "dispensedBy": "perpetua",
+    "quantity": 50.00,
+    "pricePerUnit": 15.00,
+    "totalCost": 750.00,
+    "dispenseDate": "2026-06-15"
+  },
+  {
+    "patientId": "IP011012/26",
+    "patientName": "Hannah Wanza Musau",
+    "medicationName": "Gloves Rubber(Pair)",
+    "dispensedBy": "perpetua",
+    "quantity": 50.00,
+    "pricePerUnit": 15.00,
+    "totalCost": 750.00,
+    "dispenseDate": "2026-06-16"
+  },
+  {
+    "patientId": "IP011360/26",
+    "patientName": "Dorothy Mbiyaiyu",
+    "medicationName": "Ibuprofen Tablets 400mg",
+    "dispensedBy": "mulongo",
+    "quantity": 15.00,
+    "pricePerUnit": 3.00,
+    "totalCost": 45.00,
+    "dispenseDate": "2026-06-17"
+  },
+  {
+    "patientId": "OP002773/26",
+    "patientName": "Joseph Nderitu Ngatia",
+    "medicationName": "Albendazole 400mg",
+    "dispensedBy": "ntinyari",
+    "quantity": 1.00,
+    "pricePerUnit": 45.00,
+    "totalCost": 45.00,
+    "dispenseDate": "2026-06-18"
+  },
+  {
+    "patientId": "OP002773/26",
+    "patientName": "Joseph Nderitu Ngatia",
+    "medicationName": "Metronidazole Tabs 400 Mg",
+    "dispensedBy": "ntinyari",
+    "quantity": 15.00,
+    "pricePerUnit": 5.00,
+    "totalCost": 75.00,
+    "dispenseDate": "2026-06-18"
+  },
+  {
+    "patientId": "OP002773/26",
+    "patientName": "Joseph Nderitu Ngatia",
+    "medicationName": "Omeprazole Caps 20mg",
+    "dispensedBy": "ntinyari",
+    "quantity": 28.00,
+    "pricePerUnit": 2.00,
+    "totalCost": 56.00,
+    "dispenseDate": "2026-06-18"
+  },
+  {
+    "patientId": "OP002773/26",
+    "patientName": "Joseph Nderitu Ngatia",
+    "medicationName": "Paracetamol Tabs 500mg",
+    "dispensedBy": "ntinyari",
+    "quantity": 30.00,
+    "pricePerUnit": 2.00,
+    "totalCost": 60.00,
+    "dispenseDate": "2026-06-18"
+  },
+  {
+    "patientId": "OP018847/25",
+    "patientName": "Flonica Ongayo Ongay'O",
+    "medicationName": "Cefuroxime 500mgtablets",
+    "dispensedBy": "ekabura",
+    "quantity": 10.00,
+    "pricePerUnit": 70.00,
+    "totalCost": 700.00,
+    "dispenseDate": "2026-06-19"
+  },
+  {
+    "patientId": "OP018847/25",
+    "patientName": "Flonica Ongayo Ongay'O",
+    "medicationName": "Cetrizine Dihydrochloride Tabs 10mg",
+    "dispensedBy": "ekabura",
+    "quantity": 5.00,
+    "pricePerUnit": 5.00,
+    "totalCost": 25.00,
+    "dispenseDate": "2026-06-19"
+  },
+  {
+    "patientId": "OP018847/25",
+    "patientName": "Flonica Ongayo Ongay'O",
+    "medicationName": "Paracetamol Tabs 500mg",
+    "dispensedBy": "ekabura",
+    "quantity": 18.00,
+    "pricePerUnit": 2.00,
+    "totalCost": 36.00,
+    "dispenseDate": "2026-06-19"
+  },
+  {
+    "patientId": "OP00258065",
+    "patientName": "Maina Wanjiru Grace",
+    "medicationName": "Cefuroxime 500mgtablets",
+    "dispensedBy": "ekabura",
+    "quantity": 10.00,
+    "pricePerUnit": 70.00,
+    "totalCost": 700.00,
+    "dispenseDate": "2026-06-20"
+  },
+  {
+    "patientId": "OP00258065",
+    "patientName": "Maina Wanjiru Grace",
+    "medicationName": "Clotrimazole Cream 1 20gms",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 50.00,
+    "dispenseDate": "2026-06-20"
+  },
+  {
+    "patientId": "OP00258065",
+    "patientName": "Maina Wanjiru Grace",
+    "medicationName": "Clotrimazole Virginal Pessaries 200mg (Pack Of 3)",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 100.00,
+    "totalCost": 100.00,
+    "dispenseDate": "2026-06-20"
+  },
+  {
+    "patientId": "OP00258065",
+    "patientName": "Maina Wanjiru Grace",
+    "medicationName": "Hyoscine N-Butylbromide Tabs10mg",
+    "dispensedBy": "ekabura",
+    "quantity": 15.00,
+    "pricePerUnit": 6.00,
+    "totalCost": 90.00,
+    "dispenseDate": "2026-06-20"
+  },
+  {
+    "patientId": "OP002775/26",
+    "patientName": "Ashley Nyambura Mwangi",
+    "medicationName": "Cefuroxime 500mgtablets",
+    "dispensedBy": "ntinyari",
+    "quantity": 10.00,
+    "pricePerUnit": 70.00,
+    "totalCost": 700.00,
+    "dispenseDate": "2026-06-21"
+  },
+  {
+    "patientId": "OP002775/26",
+    "patientName": "Ashley Nyambura Mwangi",
+    "medicationName": "Dexamethasone Tabs 0.5mg",
+    "dispensedBy": "ntinyari",
+    "quantity": 10.00,
+    "pricePerUnit": 2.00,
+    "totalCost": 20.00,
+    "dispenseDate": "2026-06-21"
+  },
+  {
+    "patientId": "IP011734/26",
+    "patientName": "Beatrice Wanjugu Kamundia",
+    "medicationName": "Esomeprazole 40mg Nexpro Injection",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 366.00,
+    "totalCost": 366.00,
+    "dispenseDate": "2026-06-22"
+  },
+  {
+    "patientId": "IP011734/26",
+    "patientName": "Beatrice Wanjugu Kamundia",
+    "medicationName": "I.V.Cannular Size 22",
+    "dispensedBy": "ekabura",
+    "quantity": 3.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 150.00,
+    "dispenseDate": "2026-06-22"
+  },
+  {
+    "patientId": "IP011734/26",
+    "patientName": "Beatrice Wanjugu Kamundia",
+    "medicationName": "Metoclopramide Hcl Injection 10mg/2ml",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 30.00,
+    "totalCost": 30.00,
+    "dispenseDate": "2026-06-22"
+  },
+  {
+    "patientId": "IP011734/26",
+    "patientName": "Beatrice Wanjugu Kamundia",
+    "medicationName": "Needles G21 Each",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 11.00,
+    "totalCost": 11.00,
+    "dispenseDate": "2026-06-22"
+  },
+  {
+    "patientId": "IP011734/26",
+    "patientName": "Beatrice Wanjugu Kamundia",
+    "medicationName": "Syringe 10ml",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 13.00,
+    "totalCost": 13.00,
+    "dispenseDate": "2026-06-22"
+  },
+  {
+    "patientId": "IP005195/24",
+    "patientName": "Peterson Mbugua Kangara",
+    "medicationName": "I.V.Cannular Size 20",
+    "dispensedBy": "mohammed",
+    "quantity": 2.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 100.00,
+    "dispenseDate": "2026-06-23"
+  },
+  {
+    "patientId": "IP011699/26",
+    "patientName": "Joseph Komu Kihara",
+    "medicationName": "I.V.Cannular Size 20",
+    "dispensedBy": "mohammed",
+    "quantity": 2.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 100.00,
+    "dispenseDate": "2026-06-23"
+  },
+  {
+    "patientId": "IP011700/26",
+    "patientName": "Paul Ndarathi Kimondo",
+    "medicationName": "I.V.Cannular Size 20",
+    "dispensedBy": "mohammed",
+    "quantity": 2.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 100.00,
+    "dispenseDate": "2026-06-23"
+  },
+  {
+    "patientId": "IP011729/26",
+    "patientName": "Gladys Wanjiru Ngumi",
+    "medicationName": "I.V.Cannular Size 18",
+    "dispensedBy": "marto",
+    "quantity": 2.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 100.00,
+    "dispenseDate": "2026-06-24"
+  },
+  {
+    "patientId": "IP011729/26",
+    "patientName": "Gladys Wanjiru Ngumi",
+    "medicationName": "I.V.Giving Sets",
+    "dispensedBy": "marto",
+    "quantity": 1.00,
+    "pricePerUnit": 221.00,
+    "totalCost": 221.00,
+    "dispenseDate": "2026-06-24"
+  },
+  {
+    "patientId": "IP011729/26",
+    "patientName": "Gladys Wanjiru Ngumi",
+    "medicationName": "Normalsaline 0.9%/500mls",
+    "dispensedBy": "marto",
+    "quantity": 6.00,
+    "pricePerUnit": 180.00,
+    "totalCost": 1080.00,
+    "dispenseDate": "2026-06-24"
+  },
+  {
+    "patientId": "IP011729/26",
+    "patientName": "Gladys Wanjiru Ngumi",
+    "medicationName": "Frusemide Injection 20mg/Ml",
+    "dispensedBy": "marto",
+    "quantity": 10.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 500.00,
+    "dispenseDate": "2026-06-24"
+  },
+  {
+    "patientId": "IP011617/26",
+    "patientName": "Macharia Ngetha Kahiga",
+    "medicationName": "Chlopromazine Hcl Tabs 25mg",
+    "dispensedBy": "mohammed",
+    "quantity": 10.00,
+    "pricePerUnit": 5.00,
+    "totalCost": 50.00,
+    "dispenseDate": "2026-06-25"
+  },
+  {
+    "patientId": "OP018574/25",
+    "patientName": "Wilson Njau Maingi",
+    "medicationName": "Amlodipine 10 Mg",
+    "dispensedBy": "ekabura",
+    "quantity": 30.00,
+    "pricePerUnit": 8.00,
+    "totalCost": 240.00,
+    "dispenseDate": "2026-06-26"
+  },
+  {
+    "patientId": "OP018574/25",
+    "patientName": "Wilson Njau Maingi",
+    "medicationName": "Atovastatin 20mg",
+    "dispensedBy": "ekabura",
+    "quantity": 60.00,
+    "pricePerUnit": 8.00,
+    "totalCost": 480.00,
+    "dispenseDate": "2026-06-26"
+  },
+  {
+    "patientId": "OP018574/25",
+    "patientName": "Wilson Njau Maingi",
+    "medicationName": "Foley Catheter Size16 2way",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 80.00,
+    "totalCost": 80.00,
+    "dispenseDate": "2026-06-26"
+  },
+  {
+    "patientId": "OP018574/25",
+    "patientName": "Wilson Njau Maingi",
+    "medicationName": "Needles G21 Each",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 11.00,
+    "totalCost": 11.00,
+    "dispenseDate": "2026-06-26"
+  },
+  {
+    "patientId": "OP018574/25",
+    "patientName": "Wilson Njau Maingi",
+    "medicationName": "Syringe 10ml",
+    "dispensedBy": "ekabura",
+    "quantity": 3.00,
+    "pricePerUnit": 13.00,
+    "totalCost": 39.00,
+    "dispenseDate": "2026-06-26"
+  },
+  {
+    "patientId": "OP018574/25",
+    "patientName": "Wilson Njau Maingi",
+    "medicationName": "Urine Bag Adult",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 62.00,
+    "totalCost": 62.00,
+    "dispenseDate": "2026-06-26"
+  },
+  {
+    "patientId": "OP018574/25",
+    "patientName": "Wilson Njau Maingi",
+    "medicationName": "Water For Injection",
+    "dispensedBy": "ekabura",
+    "quantity": 3.00,
+    "pricePerUnit": 20.00,
+    "totalCost": 60.00,
+    "dispenseDate": "2026-06-26"
+  },
+  {
+    "patientId": "OP00201359",
+    "patientName": "Ngera Wangari Beatrice",
+    "medicationName": "Aclosara-Mr",
+    "dispensedBy": "ntinyari",
+    "quantity": 10.00,
+    "pricePerUnit": 45.00,
+    "totalCost": 450.00,
+    "dispenseDate": "2026-06-27"
+  },
+  {
+    "patientId": "OP00201359",
+    "patientName": "Ngera Wangari Beatrice",
+    "medicationName": "Amoxicilin 500mg",
+    "dispensedBy": "ntinyari",
+    "quantity": 15.00,
+    "pricePerUnit": 7.00,
+    "totalCost": 105.00,
+    "dispenseDate": "2026-06-27"
+  },
+  {
+    "patientId": "OP00201359",
+    "patientName": "Ngera Wangari Beatrice",
+    "medicationName": "Hyoscine N-Butylbromide Tabs10mg",
+    "dispensedBy": "ntinyari",
+    "quantity": 15.00,
+    "pricePerUnit": 6.00,
+    "totalCost": 90.00,
+    "dispenseDate": "2026-06-27"
+  },
+  {
+    "patientId": "OP00259782",
+    "patientName": "Wandeto Mumbi Mitchell",
+    "medicationName": "Cefuroxime 500mgtablets",
+    "dispensedBy": "ekabura",
+    "quantity": 10.00,
+    "pricePerUnit": 70.00,
+    "totalCost": 700.00,
+    "dispenseDate": "2026-06-28"
+  },
+  {
+    "patientId": "OP00259782",
+    "patientName": "Wandeto Mumbi Mitchell",
+    "medicationName": "Ibuprofen Tablets 400mg",
+    "dispensedBy": "ekabura",
+    "quantity": 9.00,
+    "pricePerUnit": 3.00,
+    "totalCost": 27.00,
+    "dispenseDate": "2026-06-28"
+  },
+  {
+    "patientId": "OP00259782",
+    "patientName": "Wandeto Mumbi Mitchell",
+    "medicationName": "Montelukast And Levocetrizine Tabs 10/5mg( Meftal Plus) Tablet",
+    "dispensedBy": "ekabura",
+    "quantity": 10.00,
+    "pricePerUnit": 75.00,
+    "totalCost": 750.00,
+    "dispenseDate": "2026-06-28"
+  },
+  {
+    "patientId": "OP018574/25",
+    "patientName": "Wilson Njau Maingi",
+    "medicationName": "Prostaflo-F(Tamsulosin Hydrochloride Sr+Finasteride Caps)",
+    "dispensedBy": "ekabura",
+    "quantity": 30.00,
+    "pricePerUnit": 61.00,
+    "totalCost": 1830.00,
+    "dispenseDate": "2026-06-29"
+  },
+  {
+    "patientId": "OP000303/26",
+    "patientName": "Jedidah Wangui Muiga",
+    "medicationName": "Cartimove Tabs",
+    "dispensedBy": "ekabura",
+    "quantity": 30.00,
+    "pricePerUnit": 70.00,
+    "totalCost": 2100.00,
+    "dispenseDate": "2026-06-30"
+  },
+  {
+    "patientId": "OP000303/26",
+    "patientName": "Jedidah Wangui Muiga",
+    "medicationName": "Diclofenac Inj 75mg Iv",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 50.00,
+    "totalCost": 50.00,
+    "dispenseDate": "2026-06-30"
+  },
+  {
+    "patientId": "OP000303/26",
+    "patientName": "Jedidah Wangui Muiga",
+    "medicationName": "Meloxicam 7.5mg",
+    "dispensedBy": "ekabura",
+    "quantity": 20.00,
+    "pricePerUnit": 5.00,
+    "totalCost": 100.00,
+    "dispenseDate": "2026-06-30"
+  },
+  {
+    "patientId": "OP000303/26",
+    "patientName": "Jedidah Wangui Muiga",
+    "medicationName": "Needles G21 Each",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 11.00,
+    "totalCost": 11.00,
+    "dispenseDate": "2026-06-30"
+  },
+  {
+    "patientId": "OP000303/26",
+    "patientName": "Jedidah Wangui Muiga",
+    "medicationName": "Pyridoxine Tabs 50mg",
+    "dispensedBy": "ekabura",
+    "quantity": 30.00,
+    "pricePerUnit": 5.00,
+    "totalCost": 150.00,
+    "dispenseDate": "2026-06-30"
+  },
+  {
+    "patientId": "OP000303/26",
+    "patientName": "Jedidah Wangui Muiga",
+    "medicationName": "Syringe 5ml",
+    "dispensedBy": "ekabura",
+    "quantity": 1.00,
+    "pricePerUnit": 7.00,
+    "totalCost": 7.00,
+    "dispenseDate": "2026-06-30"
+  }
+]

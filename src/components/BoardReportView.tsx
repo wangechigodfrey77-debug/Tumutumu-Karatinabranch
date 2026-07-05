@@ -78,6 +78,7 @@ export function BoardReportView({
 }: BoardReportViewProps) {
   const [activeSubTab, setActiveSubTab] = useState<'analytics' | 'ai_report'>('analytics');
   const [scale, setScale] = useState<'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'>('daily');
+  const [departmentFilter, setDepartmentFilter] = useState<'All' | 'Triage' | 'Lab' | 'Pharmacy'>('All');
   const [activeReportKey, setActiveReportKey] = useState<string>('');
   const [reportScope, setReportScope] = useState<'all-time' | 'period'>('period');
 
@@ -253,7 +254,52 @@ export function BoardReportView({
   };
 
   const allReports = periodKeys.map((k) => compilePeriodReport(k, scale));
+  
+  const getFilteredReport = (report: PeriodReport): PeriodReport => {
+    if (departmentFilter === 'All') return report;
+    
+    if (departmentFilter === 'Lab') {
+      return {
+        ...report,
+        patientsCount: 0,
+        pharmacyCount: 0,
+        receptionRevenue: 0,
+        consultantRevenue: 0,
+        pharmacyRevenue: 0,
+        totalRevenue: report.labRevenue,
+        grossProfit: report.labRevenue,
+        netProfit: report.labRevenue - (report.expenses * (report.totalRevenue > 0 ? report.labRevenue / report.totalRevenue : 0))
+      };
+    }
+    if (departmentFilter === 'Pharmacy') {
+      return {
+        ...report,
+        patientsCount: 0,
+        labTestsCount: 0,
+        receptionRevenue: 0,
+        consultantRevenue: 0,
+        labRevenue: 0,
+        totalRevenue: report.pharmacyRevenue,
+        grossProfit: report.pharmacyRevenue,
+        netProfit: report.pharmacyRevenue - (report.expenses * (report.totalRevenue > 0 ? report.pharmacyRevenue / report.totalRevenue : 0))
+      };
+    }
+    // Triage/General
+    return {
+        ...report,
+        labTestsCount: 0,
+        pharmacyCount: 0,
+        labRevenue: 0,
+        pharmacyRevenue: 0,
+        totalRevenue: report.receptionRevenue + report.consultantRevenue,
+        grossProfit: report.receptionRevenue + report.consultantRevenue,
+        netProfit: (report.receptionRevenue + report.consultantRevenue) - (report.expenses * (report.totalRevenue > 0 ? (report.receptionRevenue + report.consultantRevenue) / report.totalRevenue : 0))
+    };
+  };
+
+  const filteredAllReports = allReports.map(getFilteredReport);
   const activeReport = activeKey ? compilePeriodReport(activeKey, scale) : null;
+  const filteredActiveReport = activeReport ? getFilteredReport(activeReport) : null;
 
   // -------------------------------------------------------------
   // CONSULTANT CLINICS ANALYTICS
@@ -2111,6 +2157,24 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
               ))}
             </div>
 
+            {/* Department Filter Toggle */}
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-stone-100">
+              <span className="text-xs font-bold text-stone-500 uppercase mr-2">Filter Dept:</span>
+              {(['All', 'Triage', 'Lab', 'Pharmacy'] as const).map((dept) => (
+                <button
+                  key={dept}
+                  onClick={() => setDepartmentFilter(dept)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border cursor-pointer ${
+                    departmentFilter === dept
+                      ? 'bg-stone-800 text-white border-transparent shadow-xs'
+                      : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                  }`}
+                >
+                  {dept}
+                </button>
+              ))}
+            </div>
+
             {/* Time period filter dropdown for active scale values */}
             {periodKeys.length > 0 && (
               <div className="border-t border-stone-100 pt-4 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
@@ -2138,7 +2202,7 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
           </div>
 
           {/* KPI Dashboard Breakdown for Active Key */}
-          {activeReport ? (
+          {filteredActiveReport ? (
             <div className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                 {/* Card 1: Patients */}
@@ -2147,7 +2211,7 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
                     <span className="text-[11px] text-stone-500 font-semibold uppercase tracking-wider">Patients Attended</span>
                     <Users2 className="w-4 h-4 text-emerald-500" />
                   </div>
-                  <span className="text-xl font-bold text-stone-900 block mt-2">{activeReport.patientsCount}</span>
+                  <span className="text-xl font-bold text-stone-900 block mt-2">{filteredActiveReport.patientsCount}</span>
                   <span className="text-[10px] text-stone-400 block mt-1">
                     Karatina registries in <strong>{activeKey}</strong>
                   </span>
@@ -2159,9 +2223,9 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
                     <span className="text-[11px] text-stone-500 font-semibold uppercase tracking-wider">Lab Tests Done</span>
                     <BarChart3 className="w-4 h-4 text-cyan-500" />
                   </div>
-                  <span className="text-xl font-bold text-cyan-950 block mt-2">{activeReport.labTestsCount} Tests</span>
+                  <span className="text-xl font-bold text-cyan-950 block mt-2">{filteredActiveReport.labTestsCount} Tests</span>
                   <span className="text-[10px] text-emerald-600 block mt-1 font-bold">
-                    Ksh {activeReport.labRevenue.toLocaleString()} billing
+                    Ksh {filteredActiveReport.labRevenue.toLocaleString()} billing
                   </span>
                 </div>
 
@@ -2171,9 +2235,9 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
                     <span className="text-[11px] text-stone-500 font-semibold uppercase tracking-wider">Pharmacy Served</span>
                     <PieChart className="w-4 h-4 text-purple-500" />
                   </div>
-                  <span className="text-xl font-bold text-purple-950 block mt-2">{activeReport.pharmacyCount} Clients</span>
+                  <span className="text-xl font-bold text-purple-950 block mt-2">{filteredActiveReport.pharmacyCount} Clients</span>
                   <span className="text-[10px] text-emerald-600 block mt-1 font-bold">
-                    Ksh {activeReport.pharmacyRevenue.toLocaleString()} billing
+                    Ksh {filteredActiveReport.pharmacyRevenue.toLocaleString()} billing
                   </span>
                 </div>
 
@@ -2183,7 +2247,7 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
                     <span className="text-[11px] text-stone-500 font-semibold uppercase tracking-wider">Gross Profit</span>
                     <TrendingUp className="w-4 h-4 text-emerald-600" />
                   </div>
-                  <span className="text-xl font-bold text-emerald-700 block mt-2">Ksh {activeReport.totalRevenue.toLocaleString()}</span>
+                  <span className="text-xl font-bold text-emerald-700 block mt-2">Ksh {filteredActiveReport.totalRevenue.toLocaleString()}</span>
                   <span className="text-[10px] text-stone-400 block mt-1 font-mono">
                     Total gross revenue yield
                   </span>
@@ -2195,7 +2259,7 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
                     <span className="text-[11px] text-stone-500 font-semibold uppercase tracking-wider">Total Expenses</span>
                     <TrendingDown className="w-4 h-4 text-rose-500" />
                   </div>
-                  <span className="text-xl font-bold text-rose-700 block mt-2">Ksh {activeReport.expenses.toLocaleString()}</span>
+                  <span className="text-xl font-bold text-rose-700 block mt-2">Ksh {filteredActiveReport.expenses.toLocaleString()}</span>
                   <span className="text-[10px] text-stone-400 block mt-1 font-mono">
                     Utility & rotated staff costs
                   </span>
@@ -2203,16 +2267,16 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
 
                 {/* Card 6: Net Operating Profit */}
                 <div id="kpi-satellite-netprofit" className={`p-4 rounded-xl border shadow-2xs hover:shadow-xs transition-all ${
-                  activeReport.netProfit >= 0 ? 'bg-emerald-50/20 border-emerald-150' : 'bg-rose-50/20 border-rose-150'
+                  filteredActiveReport.netProfit >= 0 ? 'bg-emerald-50/20 border-emerald-150' : 'bg-rose-50/20 border-rose-150'
                 }`}>
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] text-stone-500 font-semibold uppercase tracking-wider font-bold">Net Profit</span>
                     <DollarSign className="w-4 h-4 text-indigo-650" />
                   </div>
                   <span className={`text-xl font-bold block mt-2 ${
-                    activeReport.netProfit >= 0 ? 'text-indigo-800' : 'text-rose-800'
+                    filteredActiveReport.netProfit >= 0 ? 'text-indigo-800' : 'text-rose-800'
                   }`}>
-                    Ksh {activeReport.netProfit.toLocaleString()}
+                    Ksh {filteredActiveReport.netProfit.toLocaleString()}
                   </span>
                   <span className="text-[10px] text-stone-400 block mt-1 font-mono">
                     Retained earnings surplus
@@ -2342,7 +2406,7 @@ The branch is staffed by **${staffCount} active rotated clinical professionals**
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100 text-stone-700">
-                  {allReports.map((r) => (
+                  {filteredAllReports.map((r) => (
                     <tr
                       key={r.periodKey}
                       className={`hover:bg-stone-50 transition-colors ${

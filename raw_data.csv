@@ -1,0 +1,114 @@
+Pharmacy Drug Prescriptions,,,,"Period : Jun 1, 2026 - Jun 30, 2026",,,
+Patient No,Patient_Name,Pr. No,Description,Prescribin g Doc.,Qty,Unit Price,Amount
+IP011727/26,Agnes Muringo Mbatia,1330665,Cartimove Tabs -,jecinta,10.00,70.00,700.00
+IP011727/26,Agnes Muringo Mbatia,1330665,"Cefuroxime Injection 750mg
+-",jecinta,6.00,320.00,"1,920.00"
+IP011727/26,Agnes Muringo Mbatia,1330665,Cough  Exp (Ascoril) (100ml) 1.0,jecinta,1.00,325.00,325.00
+IP011727/26,Agnes Muringo Mbatia,1330665,Esomeprazole 40mg Tablets Tablet,jecinta,10.00,30.00,300.00
+IP011727/26,Agnes Muringo Mbatia,1330665,Lonoflam(Lornoscam And Paracetamol 325 Mgs) -,jecinta,10.00,57.00,570.00
+IP011727/26,Agnes Muringo Mbatia,1330665,Paracetamol Infusion 1gm 1.0,jecinta,3.00,350.00,"1,050.00"
+IP011730/26,John Kabugu Gachara,1330673,Ceftriaxone Injection 1gm 1.0,ngari,1.00,85.00,85.00
+IP011730/26,John Kabugu Gachara,1330673,Hydrocortisone Sodium Succ. Inj 100mg 1.0,ngari,2.00,49.00,98.00
+IP011730/26,John Kabugu Gachara,1330673,I.V.Cannular Size 22 1.0,ngari,2.00,50.00,100.00
+IP011730/26,John Kabugu Gachara,1330673,I.V.Giving Sets 10.0,ngari,1.00,221.00,221.00
+IP011730/26,John Kabugu Gachara,1330673,Needles  G23 Each 1.0,ngari,1.00,10.00,10.00
+IP011730/26,John Kabugu Gachara,1330673,Normalsaline 0.9%/500mls 1.0,ngari,1.00,180.00,180.00
+IP011730/26,John Kabugu Gachara,1330673,Paracetamol Infusion 1gm 1.0,ngari,1.00,350.00,350.00
+IP011730/26,John Kabugu Gachara,1330673,Syringe 10ml 1.0,ngari,1.00,13.00,13.00
+IP011730/26,John Kabugu Gachara,1330686,Oxygen Tubing Adults 1,ngari,1.00,120.00,120.00
+IP011731/26,Agnes Wanjiru Wangombe,1330689,I.V.Cannular Size 22 1.0,ngari,1.00,50.00,50.00
+IP011731/26,Agnes Wanjiru Wangombe,1330689,I.V.Giving Sets 10.0,ngari,1.00,221.00,221.00
+IP011731/26,Agnes Wanjiru Wangombe,1330689,Paracetamol Infusion 1gm 1.0,ngari,1.00,350.00,350.00
+OP001471/23,Purity Gathoni Gikandi,1330693,Esomeprazole 40mg Tablets Tablet,ngari,1.00,30.00,30.00
+OP001471/23,Purity Gathoni Gikandi,1330693,I.V.Cannular Size 22 1.0,ngari,1.00,50.00,50.00
+OP001471/23,Purity Gathoni Gikandi,1330693,I.V.Giving Sets 10.0,ngari,1.00,221.00,221.00
+OP001471/23,Purity Gathoni Gikandi,1330693,Metoclopramide Hcl Injection 10mg/2ml 1.0,ngari,1.00,30.00,30.00
+OP001471/23,Purity Gathoni Gikandi,1330693,Paracetamol Infusion 1gm 1.0,ngari,1.00,350.00,350.00
+OP001471/23,Purity Gathoni Gikandi,1330693,Syringe 5ml 1.0,ngari,1.00,7.00,7.00
+OP001471/23,Purity Gathoni Gikandi,1330697,Antacid (Viscid Gel -,ngari,1.00,797.00,797.00
+OP001471/23,Purity Gathoni Gikandi,1330697,Cefuroxime 500mgtablets 1.0,ngari,10.00,70.00,700.00
+OP001471/23,Purity Gathoni Gikandi,1330697,Domperidone 10mg -,ngari,15.00,5.00,75.00
+OP001471/23,Purity Gathoni Gikandi,1330697,Esomeprazole 40mg Tablets Tablet,ngari,7.00,30.00,210.00
+OP001471/23,Purity Gathoni Gikandi,1330697,Paracetamol Tabs 500mg 1.0,ngari,30.00,2.00,60.00
+IP011731/26,Agnes Wanjiru Wangombe,1330710,Needles  G23 Each 1.0,ngari,1.00,10.00,10.00
+IP011731/26,Agnes Wanjiru Wangombe,1330710,Syringe 5ml 1.0,ngari,1.00,7.00,7.00
+IP011731/26,Agnes Wanjiru Wangombe,1330710,Tramadol Inj. 100mg -,ngari,1.00,56.00,56.00
+OP002771/26,Grace Wangari Mwangi,1330711,Amlodipine 10 Mg 28.0,ngari,1.00,8.00,8.00
+OP002771/26,Grace Wangari Mwangi,1330711,I.V.Cannular Size 22 1.0,ngari,1.00,50.00,50.00
+OP002771/26,Grace Wangari Mwangi,1330711,I.V.Giving Sets 10.0,ngari,1.00,221.00,221.00
+OP002771/26,Grace Wangari Mwangi,1330711,Paracetamol Infusion 1gm 1.0,ngari,1.00,350.00,350.00
+IP011729/26,Gladys Wanjiru Ngumi,1330712,"Cefuroxime Injection 750mg
+-",ngari,1.00,320.00,320.00
+IP011729/26,Gladys Wanjiru Ngumi,1330712,I.V.Cannular Size 22 1.0,ngari,2.00,50.00,100.00
+IP011729/26,Gladys Wanjiru Ngumi,1330712,I.V.Giving Sets 10.0,ngari,1.00,221.00,221.00
+IP011729/26,Gladys Wanjiru Ngumi,1330712,Oxygen Mask- Adult -,ngari,1.00,225.00,225.00
+IP011729/26,Gladys Wanjiru Ngumi,1330712,Paracetamol Infusion 1gm 1.0,ngari,1.00,350.00,350.00
+IP011729/26,Gladys Wanjiru Ngumi,1330712,Syringe 10ml 1.0,ngari,1.00,13.00,13.00
+OP019405/25,David Gikingo Njora,1330726,Dexamethasone Sodium Phos. Injection 4mg/Ml 1.0,ngari,2.00,15.00,30.00
+OP019405/25,David Gikingo Njora,1330726,Esomeprazole 40mg Tablets Tablet,ngari,1.00,30.00,30.00
+OP019405/25,David Gikingo Njora,1330726,I.V.Cannular Size 22 1.0,ngari,1.00,50.00,50.00
+OP019405/25,David Gikingo Njora,1330726,I.V.Giving Sets 10.0,ngari,1.00,221.00,221.00
+OP019405/25,David Gikingo Njora,1330726,Nebulizer Mask Adult -,ngari,1.00,137.00,137.00
+OP019405/25,David Gikingo Njora,1330726,Needles  G23 Each 1.0,ngari,1.00,10.00,10.00
+OP019405/25,David Gikingo Njora,1330726,Paracetamol Infusion 1gm 1.0,ngari,1.00,350.00,350.00
+OP019405/25,David Gikingo Njora,1330726,Salbutamol Nebulizer 2.5mg/2.5ml(Vial) 1.0,ngari,2.00,300.00,600.00
+OP019405/25,David Gikingo Njora,1330726,Syringe 10ml 1.0,ngari,1.00,13.00,13.00
+OP00054274,Jane Wanjiru Maina,1330731,Dexamethasone Sodium Phos. Injection 4mg/Ml 1.0,ngari,2.00,15.00,30.00
+OP00054274,Jane Wanjiru Maina,1330731,Nebulizer Mask Adult -,ngari,1.00,137.00,137.00
+OP00054274,Jane Wanjiru Maina,1330731,Needles G21 Each 1.0,ngari,1.00,11.00,11.00
+OP00054274,Jane Wanjiru Maina,1330731,Salbutamol Nebulizer 2.5mg/2.5ml(Vial) 1.0,ngari,2.00,300.00,600.00
+OP00054274,Jane Wanjiru Maina,1330731,Syringe 5ml 1.0,ngari,1.00,7.00,7.00
+OP002771/26,Grace Wangari Mwangi,1330734,"Frusemide Injection 20mg/Ml
+-",ngari,1.00,50.00,50.00
+OP002771/26,Grace Wangari Mwangi,1330736,Human Albumin Solution 20% Bottle,ngari,1.00,"15,550.00","15,550.00"
+IP011733/26,Jane Wanjiru Maina,1330750,"Cefuroxime Injection 750mg
+-",ngari,1.00,320.00,320.00
+IP011733/26,Jane Wanjiru Maina,1330750,Syringe 10ml 1.0,ngari,1.00,13.00,13.00
+IP011722/26,Mary Cayer Muthoni Wairimu,1330762,Feeding Tubes Size 18 1.0,dkendi,1.00,100.00,100.00
+OP002772/26,Nancy Njoki Muriuki,1330844,Amoxycillin  500mg Clavanic Acid 125mg (Clavulin) 1.0,ntinyari,10.00,35.00,350.00
+IP011672/26,Lucy Wamutira Karimi,1330851,Gloves Rubber(Pair) 1.0,perpetua,50.00,15.00,750.00
+IP011668/26,Francis Githinji  Irungu,1330852,Gloves Rubber(Pair) 1.0,perpetua,50.00,15.00,750.00
+IP011012/26,Hannah Wanza Musau,1330853,Gloves Rubber(Pair) 1.0,perpetua,50.00,15.00,750.00
+IP011360/26,Dorothy  Mbiyaiyu,1330887,Ibuprofen Tablets 400mg -,mulongo,15.00,3.00,45.00
+OP002773/26,Joseph Nderitu Ngatia,1330894,Albendazole 400mg -,ntinyari,1.00,45.00,45.00
+OP002773/26,Joseph Nderitu Ngatia,1330894,Metronidazole Tabs 400 Mg 1.0,ntinyari,15.00,5.00,75.00
+OP002773/26,Joseph Nderitu Ngatia,1330894,Omeprazole  Caps 20mg 1.0,ntinyari,28.00,2.00,56.00
+OP002773/26,Joseph Nderitu Ngatia,1330894,Paracetamol Tabs 500mg 1.0,ntinyari,30.00,2.00,60.00
+OP018847/25,Flonica Ongayo Ongay'O,1330922,Cefuroxime 500mgtablets 1.0,ekabura,10.00,70.00,700.00
+OP018847/25,Flonica Ongayo Ongay'O,1330922,Cetrizine Dihydrochloride Tabs 10mg -,ekabura,5.00,5.00,25.00
+OP018847/25,Flonica Ongayo Ongay'O,1330922,Paracetamol Tabs 500mg 1.0,ekabura,18.00,2.00,36.00
+OP00258065,Maina Wanjiru Grace,1330926,Cefuroxime 500mgtablets 1.0,ekabura,10.00,70.00,700.00
+OP00258065,Maina Wanjiru Grace,1330926,Clotrimazole Cream 1 20gms -,ekabura,1.00,50.00,50.00
+OP00258065,Maina Wanjiru Grace,1330926,Clotrimazole Virginal Pessaries 200mg (Pack Of 3) 1.0,ekabura,1.00,100.00,100.00
+OP00258065,Maina Wanjiru Grace,1330926,Hyoscine N-Butylbromide Tabs10mg -,ekabura,15.00,6.00,90.00
+OP002775/26,Ashley Nyambura Mwangi,1330927,Cefuroxime 500mgtablets 1.0,ntinyari,10.00,70.00,700.00
+OP002775/26,Ashley Nyambura Mwangi,1330927,"Dexamethasone Tabs
+.0.5mg -",ntinyari,10.00,2.00,20.00
+IP011734/26,Beatrice Wanjugu Kamundia,1330946,Esomeprazole 40mg Nexpro Injection 1.0,ekabura,1.00,366.00,366.00
+IP011734/26,Beatrice Wanjugu Kamundia,1330946,I.V.Cannular Size 22 1.0,ekabura,3.00,50.00,150.00
+IP011734/26,Beatrice Wanjugu Kamundia,1330946,Metoclopramide Hcl Injection 10mg/2ml 1.0,ekabura,1.00,30.00,30.00
+IP011734/26,Beatrice Wanjugu Kamundia,1330946,Needles G21 Each 1.0,ekabura,1.00,11.00,11.00
+IP011734/26,Beatrice Wanjugu Kamundia,1330946,Syringe 10ml 1.0,ekabura,1.00,13.00,13.00
+IP005195/24,Peterson Mbugua  Kangara,1330954,I.V.Cannular Size 20 -,mohammed,2.00,50.00,100.00
+IP011699/26,Joseph Komu Kihara,1330956,I.V.Cannular Size 20 -,mohammed,2.00,50.00,100.00
+IP011700/26,Paul Ndarathi Kimondo,1330959,I.V.Cannular Size 20 -,mohammed,2.00,50.00,100.00
+IP011729/26,Gladys Wanjiru Ngumi,1330970,I.V.Cannular Size 18 -,marto,2.00,50.00,100.00
+IP011729/26,Gladys Wanjiru Ngumi,1330970,I.V.Giving Sets 10.0,marto,1.00,221.00,221.00
+IP011729/26,Gladys Wanjiru Ngumi,1330970,Normalsaline 0.9%/500mls 1.0,marto,6.00,180.00,"1,080.00"
+IP011729/26,Gladys Wanjiru Ngumi,1330972,"Frusemide Injection 20mg/Ml
+-",marto,10.00,50.00,500.00
+IP011617/26,Macharia Ngetha  Kahiga,1330996,Chlopromazine Hcl Tabs 25mg -,mohammed,10.00,5.00,50.00
+OP018574/25,Wilson Njau Maingi,1331024,Amlodipine 10 Mg 28.0,ekabura,30.00,8.00,240.00
+OP018574/25,Wilson Njau Maingi,1331024,Atovastatin 20mg -,ekabura,60.00,8.00,480.00
+OP018574/25,Wilson Njau Maingi,1331024,Foley Catheter Size16 2way 10.0,ekabura,1.00,80.00,80.00
+OP018574/25,Wilson Njau Maingi,1331024,Needles G21 Each 1.0,ekabura,1.00,11.00,11.00
+OP018574/25,Wilson Njau Maingi,1331024,Syringe 10ml 1.0,ekabura,3.00,13.00,39.00
+OP018574/25,Wilson Njau Maingi,1331024,Urine Bag Adult 1.0,ekabura,1.00,62.00,62.00
+OP018574/25,Wilson Njau Maingi,1331024,Water For Injection 1.0,ekabura,3.00,20.00,60.00
+OP00201359,Ngera Wangari Beatrice,1331027,Aclosara-Mr -,ntinyari,10.00,45.00,450.00
+OP00201359,Ngera Wangari Beatrice,1331027,Amoxicilin  500mg -,ntinyari,15.00,7.00,105.00
+OP00201359,Ngera Wangari Beatrice,1331034,Hyoscine N-Butylbromide Tabs10mg -,ntinyari,15.00,6.00,90.00
+OP00259782,Wandeto Mumbi Mitchell,1331035,Cefuroxime 500mgtablets 1.0,ekabura,10.00,70.00,700.00
+OP00259782,Wandeto Mumbi Mitchell,1331035,Ibuprofen Tablets 400mg -,ekabura,9.00,3.00,27.00
+OP00259782,Wandeto Mumbi Mitchell,1331035,Montelukast And Levocetrizine Tabs 10/5mg( Meftal Plus) Tablet,ekabura,10.00,75.00,750.00
+OP018574/25,Wilson Njau Maingi,1331038,Prostaflo-F(Tamsulosin Hydrochloride Sr+Finasteride Caps) 1.0,ekabura,30.00,61.00,"1,830.00"

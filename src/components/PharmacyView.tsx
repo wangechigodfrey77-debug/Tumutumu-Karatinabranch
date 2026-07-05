@@ -232,6 +232,11 @@ export function PharmacyView({
   const [uploadFeedback, setUploadFeedback] = useState<{ success: boolean; message: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [isParsingDispenses, setIsParsingDispenses] = useState<boolean>(false);
+  const [isDraggingDispenses, setIsDraggingDispenses] = useState<boolean>(false);
+  const [dispenseUploadFeedback, setDispenseUploadFeedback] = useState<{ success: boolean; message: string } | null>(null);
+  const dispenseFileInputRef = useRef<HTMLInputElement>(null);
+
   // Stock selection state for quick restock & threshold alerts
   const [restockStockId, setRestockStockId] = useState<string>('');
   const [restockQty, setRestockQty] = useState<number>(0);
@@ -772,6 +777,118 @@ export function PharmacyView({
     setNewItemQty(100);
     setNewItemThreshold(15);
     alert(`Successfully registered new item: ${newItem.name} (Threshold: ${newItemThreshold} units)`);
+  };
+
+  const handleDispenseDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggingDispenses(true);
+  };
+
+  const handleDispenseDragLeave = () => {
+    setIsDraggingDispenses(false);
+  };
+
+  const handleDispenseDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggingDispenses(false);
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      await processDispenseFileUpload(files[0]);
+    }
+  };
+
+  const handleDispenseFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      await processDispenseFileUpload(files[0]);
+    }
+  };
+
+  const processDispenseFileUpload = async (file: File) => {
+    setDispenseUploadFeedback(null);
+    const reader = new FileReader();
+
+    if (file.name.endsWith('.csv')) {
+      setIsParsingDispenses(true);
+      reader.onload = (e) => {
+        try {
+          const rawText = e.target?.result as string;
+          const parsedRows = parseCSVData(rawText);
+
+          if (parsedRows.length === 0) {
+            setDispenseUploadFeedback({ success: false, message: 'Vacant or incorrectly formatted CSV.' });
+            setIsParsingDispenses(false);
+            return;
+          }
+
+          let addedCount = 0;
+          parsedRows.forEach((row, idx) => {
+            const findKey = (keywords: string[], excludeWords: string[] = []) => {
+              return Object.keys(row).find(k => {
+                const lk = k.toLowerCase();
+                const hasMatch = keywords.some(kw => lk.includes(kw));
+                const hasExclusion = excludeWords.some(ew => lk.includes(ew));
+                return hasMatch && !hasExclusion;
+              });
+            };
+
+            const medNameKey = findKey(['medication', 'item', 'product', 'drug']);
+            const patNameKey = findKey(['patient name', 'patient', 'name'], ['medication', 'item', 'product', 'drug']);
+            const patIdKey = findKey(['patient id', 'id', 'op number', 'ref', 'opno']);
+            const qtyKey = findKey(['qty', 'quantity', 'amount']);
+            const priceKey = findKey(['price', 'unit cost', 'cost']);
+            const dateKey = findKey(['date', 'time']);
+            const byKey = findKey(['dispensed by', 'pharmacist', 'officer']);
+
+            const foundMedName = medNameKey ? row[medNameKey] : undefined;
+            const foundPatName = patNameKey ? row[patNameKey] : 'Unknown Patient';
+            const foundPatId = patIdKey ? row[patIdKey] : `PT-CSV-${Math.floor(1000 + Math.random() * 9000)}`;
+            const foundQty = qtyKey ? parseFloat(row[qtyKey].replace(/[^0-9.]/g, '')) : 1;
+            const foundPrice = priceKey ? parseFloat(row[priceKey].replace(/[^0-9.]/g, '')) : 0;
+            let foundDate = dateKey ? row[dateKey] : new Date().toISOString().split('T')[0];
+            const foundBy = byKey ? row[byKey] : dispensingOfficer;
+            
+            // Format date correctly if it doesn't match standard YYYY-MM-DD
+            if (foundDate && !foundDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              try {
+                  foundDate = new Date(foundDate).toISOString().split('T')[0];
+              } catch (e) {
+                  foundDate = new Date().toISOString().split('T')[0];
+              }
+            }
+
+            if (foundMedName && foundMedName.trim() && !isNaN(foundQty) && foundQty > 0) {
+              const newDispense: MedicationDispense = {
+                id: `DSP-CSV-${Date.now()}-${idx}-${Math.floor(Math.random() * 1000)}`,
+                medicationName: foundMedName.trim(),
+                patientName: foundPatName.trim(),
+                patientId: foundPatId.trim(),
+                dispenseDate: foundDate.trim(),
+                dispensedBy: foundBy.trim(),
+                quantity: foundQty,
+                pricePerUnit: isNaN(foundPrice) ? 0 : foundPrice,
+                totalCost: (isNaN(foundPrice) ? 0 : foundPrice) * foundQty,
+              };
+
+              onDispenseMedication(newDispense);
+              addedCount++;
+            }
+          });
+
+          setDispenseUploadFeedback({ 
+            success: true, 
+            message: `Extracted and saved ${addedCount} dispensing records from CSV successfully.` 
+          });
+        } catch (err: any) {
+          setDispenseUploadFeedback({ success: false, message: `CSV upload error: ${err.message}` });
+        } finally {
+          setIsParsingDispenses(false);
+        }
+      };
+      reader.readAsText(file);
+    } else {
+      setDispenseUploadFeedback({ success: false, message: 'Invalid file format. Select a .csv spreadsheet.' });
+    }
   };
 
   // Helper to resolve whether a record is a pharmaceutical or non-pharmaceutical item
@@ -2335,6 +2452,64 @@ export function PharmacyView({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Bulk Dispense Records Loader */}
+      <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm leading-relaxed space-y-4">
+        <h3 className="text-sm font-semibold text-stone-800 flex items-center gap-2">
+          <FileSpreadsheet className="w-4.5 h-4.5 text-indigo-600" />
+          Bulk Dispense Records Loader
+        </h3>
+        <p className="text-[11px] text-stone-500">
+          Upload a CSV file containing dispensing records. The system will automatically validate and save them as individual dispense entries.
+        </p>
+
+        <div
+          id="dropzone-dispense"
+          onDragOver={handleDispenseDragOver}
+          onDragLeave={handleDispenseDragLeave}
+          onDrop={handleDispenseDrop}
+          onClick={() => dispenseFileInputRef.current?.click()}
+          className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
+            isDraggingDispenses
+              ? 'border-indigo-500 bg-indigo-50/40'
+              : 'border-stone-200 bg-stone-50/50 hover:bg-stone-50'
+          }`}
+        >
+          <input
+            id="input-file-dispense"
+            type="file"
+            ref={dispenseFileInputRef}
+            onChange={handleDispenseFileChange}
+            accept=".csv"
+            className="hidden"
+          />
+          {isParsingDispenses ? (
+            <div className="animate-pulse space-y-2">
+              <Loader2 className="w-8 h-8 text-indigo-600 animate-spin mx-auto" />
+              <div className="text-xs font-semibold text-indigo-800">Parsing dispensing records...</div>
+            </div>
+          ) : (
+            <>
+              <Upload className="w-8 h-8 text-stone-400 mb-2" />
+              <div className="text-sm font-medium text-stone-700">
+                Drag & drop your CSV file here, or <span className="text-indigo-600 underline font-bold">browse</span>
+              </div>
+              <p className="text-xs text-stone-400 mt-1">Expected columns: Medication Name, Patient Name, Quantity, Date, etc.</p>
+            </>
+          )}
+        </div>
+
+        {dispenseUploadFeedback && (
+          <div className={`p-3 rounded-lg text-xs font-medium flex items-center gap-2 border ${
+            dispenseUploadFeedback.success
+              ? 'bg-emerald-50 text-emerald-800 border-emerald-100'
+              : 'bg-red-50 text-red-800 border-red-100'
+          }`}>
+            {dispenseUploadFeedback.success ? <Check className="w-4 h-4 text-emerald-700 shrink-0" /> : <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />}
+            <span>{dispenseUploadFeedback.message}</span>
+          </div>
+        )}
       </div>
 
       {/* Dispensation History & Patient Period Ledger Section */}

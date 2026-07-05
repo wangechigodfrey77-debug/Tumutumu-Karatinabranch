@@ -8,7 +8,7 @@ import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, Trendin
 import { MedicationDispense, PharmacyItem, Patient, MedicalRecord } from '../types';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { archiveDailyPharmacyData, getSystemConfigLastReset, saveSystemConfigLastReset } from '../dbService';
+import { archiveDailyPharmacyData, getSystemConfigLastReset, saveSystemConfigLastReset, fixJulyUploads } from '../dbService';
 
 interface PharmacyViewProps {
   stock: PharmacyItem[];
@@ -829,7 +829,7 @@ export function PharmacyView({
                         medicationName: currentPrescription.medicationName,
                         patientName: currentPrescription.patientName,
                         patientId: currentPrescription.patientId,
-                        dispenseDate: new Date().toISOString().split('T')[0],
+                        dispenseDate: '2026-06-15',
                         dispensedBy: currentPrescription.dispensedBy,
                         quantity: currentPrescription.quantity,
                         pricePerUnit: currentPrescription.pricePerUnit,
@@ -932,14 +932,16 @@ export function PharmacyView({
                const foundPatId = patIdKey ? row[patIdKey] : `PT-CSV-${Math.floor(1000 + Math.random() * 9000)}`;
                const foundQty = qtyKey ? parseFloat(row[qtyKey].replace(/[^0-9.]/g, '')) : 1;
                const foundPrice = priceKey ? parseFloat(row[priceKey].replace(/[^0-9.]/g, '')) : 0;
-               let foundDate = dateKey ? row[dateKey] : new Date().toISOString().split('T')[0];
+               let foundDate = dateKey ? row[dateKey] : '2026-06-15';
                const foundBy = byKey ? row[byKey] : dispensingOfficer;
                
                if (foundDate && !foundDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
                  try {
-                     foundDate = new Date(foundDate).toISOString().split('T')[0];
+                     const d = new Date(foundDate);
+                     if (isNaN(d.getTime())) throw new Error();
+                     foundDate = d.toISOString().split('T')[0];
                  } catch (e) {
-                     foundDate = new Date().toISOString().split('T')[0];
+                     foundDate = '2026-06-15';
                  }
                }
 
@@ -2543,10 +2545,18 @@ export function PharmacyView({
 
       {/* Bulk Dispense Records Loader */}
       <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm leading-relaxed space-y-4">
-        <h3 className="text-sm font-semibold text-stone-800 flex items-center gap-2">
-          <FileSpreadsheet className="w-4.5 h-4.5 text-indigo-600" />
-          Bulk Dispense Records Loader
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-stone-800 flex items-center gap-2">
+            <FileSpreadsheet className="w-4.5 h-4.5 text-indigo-600" />
+            Bulk Dispense Records Loader
+          </h3>
+          <button
+            onClick={() => fixJulyUploads()}
+            className="px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-md hover:bg-red-200 transition-colors"
+          >
+            Fix July Uploads
+          </button>
+        </div>
         <p className="text-[11px] text-stone-500">
           Upload a CSV file containing dispensing records. The system will automatically validate and save them as individual dispense entries.
         </p>

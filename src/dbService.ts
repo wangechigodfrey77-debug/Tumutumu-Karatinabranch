@@ -1127,3 +1127,25 @@ export async function saveSystemConfigLastReset(dateStr: string) {
   }
 }
 
+
+export async function fixJulyUploads() {
+  const colRef = collection(db, 'medicationDispenses');
+  const snap = await getDocs(colRef);
+  const batch = writeBatch(db);
+  let count = 0;
+  snap.forEach((d) => {
+    const data = d.data();
+    if (data.dispenseDate && data.dispenseDate.startsWith('2026-07')) {
+      if (d.id.includes('DSP-TXT-') || d.id.includes('DSP-CSV-')) {
+        batch.update(d.ref, { dispenseDate: '2026-06-15' });
+        count++;
+      }
+    }
+  });
+  if (count > 0) {
+    await batch.commit();
+    alert(`Fixed ${count} records from July to June.`);
+  } else {
+    alert("No records needed updating.");
+  }
+}

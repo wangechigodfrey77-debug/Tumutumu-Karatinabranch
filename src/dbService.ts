@@ -1131,21 +1131,37 @@ export async function saveSystemConfigLastReset(dateStr: string) {
 export async function fixJulyUploads() {
   const colRef = collection(db, 'medicationDispenses');
   const snap = await getDocs(colRef);
-  const batch = writeBatch(db);
   let count = 0;
+  
+  // We process in chunks of 500 to stay within batch limits
+  let batches = [];
+  let currentBatch = writeBatch(db);
+  let opsInCurrentBatch = 0;
+
   snap.forEach((d) => {
-    const data = d.data();
-    if (data.dispenseDate && data.dispenseDate.startsWith('2026-07')) {
-      if (d.id.includes('DSP-TXT-') || d.id.includes('DSP-CSV-')) {
-        batch.update(d.ref, { dispenseDate: '2026-06-15' });
-        count++;
+    if (d.id.includes('DSP-TXT-')) {
+      currentBatch.delete(d.ref);
+      opsInCurrentBatch++;
+      count++;
+      
+      if (opsInCurrentBatch === 500) {
+          batches.push(currentBatch);
+          currentBatch = writeBatch(db);
+          opsInCurrentBatch = 0;
       }
     }
   });
+
+  if (opsInCurrentBatch > 0) {
+      batches.push(currentBatch);
+  }
+
   if (count > 0) {
-    await batch.commit();
-    alert(`Fixed ${count} records from July to June.`);
+    for (let b of batches) {
+        await b.commit();
+    }
+    alert(`Wiped ${count} incorrectly parsed TXT upload records. You can now re-upload the file!`);
   } else {
-    alert("No records needed updating.");
+    alert("No bad TXT records found. You can upload the file.");
   }
 }

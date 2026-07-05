@@ -817,88 +817,69 @@ export function PharmacyView({
 
           if (file.name.endsWith('.txt')) {
              // OCR specific format parsing
-             const startPattern = /^(OP\d+\/\d+|OP\d+|WK\d+|- -|- -[A-Za-z\s]+|-|WK\d+\s+[-A-Za-z\s]+)\s+([A-Za-z\s,.\'-]+?)\s+(\d+)\s+(.+)$/;
-             const endPattern = /(.*?)\s+(-?\d+\.\d+)\s+(-?\d{1,3}(?:,\d{3})*\.\d+)\s+(-?\d{1,3}(?:,\d{3})*\.\d+)$/;
+             const endPattern = /\s+(-?\d+\.\d+)\s+(-?\d{1,3}(?:,\d{3})*\.\d+)\s+(-?\d{1,3}(?:,\d{3})*\.\d+)$/;
              const lines = rawText.split('\n');
-             let currentPrescription: any = null;
-             
-             const saveCurrent = () => {
-                 if (currentPrescription) {
-                     const newDispense: MedicationDispense = {
-                        id: `DSP-TXT-${Date.now()}-${addedCount}-${Math.floor(Math.random() * 1000)}`,
-                        medicationName: currentPrescription.medicationName,
-                        patientName: currentPrescription.patientName,
-                        patientId: currentPrescription.patientId,
-                        dispenseDate: '2026-06-15',
-                        dispensedBy: currentPrescription.dispensedBy,
-                        quantity: currentPrescription.quantity,
-                        pricePerUnit: currentPrescription.pricePerUnit,
-                        totalCost: currentPrescription.totalCost,
-                     };
-                     onDispenseMedication(newDispense);
-                     addedCount++;
-                 }
-             };
+             let pendingText = "";
 
              for (let i = 0; i < lines.length; i++) {
                  let line = lines[i].trim().replace(/^"|"$/g, '').trim();
                  if (!line) continue;
                  if (line.match(/^(Prescriptions|P\.C\.E\.A|Pharmacy|Patient No|g Doc\.|Total||Printed|==)/)) continue;
 
-                 let endMatch = line.match(endPattern);
-                 if (endMatch) {
-                     let frontPart = endMatch[1];
-                     let qty = endMatch[2];
-                     let price = endMatch[3];
-                     let amount = endMatch[4];
-                     
-                     let startMatch = frontPart.match(startPattern);
-                     if (startMatch) {
-                         saveCurrent();
-                         let descAndDoc = startMatch[4].trim();
-                         let docMatch = descAndDoc.match(/(.+)\s+([a-zA-Z._-]+)$/);
-                         let medicationName = descAndDoc;
-                         let dispensedBy = dispensingOfficer;
-                         if (docMatch) {
-                             medicationName = docMatch[1].trim();
-                             dispensedBy = docMatch[2].trim();
-                         }
+                 pendingText += (pendingText ? " " : "") + line;
 
-                         currentPrescription = {
-                             patientId: startMatch[1].trim(),
-                             patientName: startMatch[2].trim() || 'Unknown Patient',
-                             medicationName: medicationName,
-                             dispensedBy: dispensedBy,
-                             quantity: parseFloat(qty),
-                             pricePerUnit: parseFloat(price.replace(/,/g, '')),
-                             totalCost: parseFloat(amount.replace(/,/g, ''))
-                         };
+                 let endMatch = pendingText.match(endPattern);
+                 if (endMatch) {
+                     let frontPart = pendingText.replace(endPattern, '');
+                     let qty = endMatch[1];
+                     let price = endMatch[2];
+                     let amount = endMatch[3];
+
+                     let startMatch = frontPart.match(/(OP\d+\/\d+|OP\d+|WK\d+|[-]{1,2})\s+([\s\S]+?)\s+(\d+)\s+([\s\S]+)$/);
+
+                     let patientId = "Unknown";
+                     let patientName = "Unknown";
+                     let medicationName = "Unknown";
+
+                     if (startMatch) {
+                         patientId = startMatch[1].trim();
+                         patientName = startMatch[2].trim() || 'Unknown Patient';
+                         medicationName = startMatch[4].trim();
                      } else {
-                         let fallbackStartMatch = frontPart.match(/^(OP\d+\/\d+|OP\d+|WK\d+|- -|- -[A-Za-z\s]+|-|WK\d+\s+[-A-Za-z\s]+)\s+([\s\S]+)$/);
-                         if (fallbackStartMatch) {
-                             saveCurrent();
-                             currentPrescription = {
-                                 patientId: fallbackStartMatch[1].trim(),
-                                 patientName: 'Unknown Patient',
-                                 medicationName: fallbackStartMatch[2].trim(),
-                                 dispensedBy: dispensingOfficer,
-                                 quantity: parseFloat(qty),
-                                 pricePerUnit: parseFloat(price.replace(/,/g, '')),
-                                 totalCost: parseFloat(amount.replace(/,/g, ''))
-                             };
+                         let fallbackMatch = frontPart.match(/(OP\d+\/\d+|OP\d+|WK\d+|[-]{1,2})\s+([\s\S]+)$/);
+                         if (fallbackMatch) {
+                             patientId = fallbackMatch[1].trim();
+                             medicationName = fallbackMatch[2].trim();
                          } else {
-                             if (currentPrescription) {
-                                 currentPrescription.medicationName += ' ' + line;
-                             }
+                             medicationName = frontPart.trim();
                          }
                      }
-                 } else {
-                     if (currentPrescription) {
-                         currentPrescription.medicationName += ' ' + line;
+
+                     // Remove trailing doc name from medicationName if present
+                     let docMatch = medicationName.match(/([\s\S]+)\s+([a-zA-Z._-]+)$/);
+                     let dispensedBy = dispensingOfficer;
+                     if (docMatch) {
+                          medicationName = docMatch[1].trim();
+                          dispensedBy = docMatch[2].trim();
                      }
+
+                     const newDispense: MedicationDispense = {
+                        id: `DSP-TXT-${Date.now()}-${addedCount}-${Math.floor(Math.random() * 1000)}`,
+                        medicationName: medicationName,
+                        patientName: patientName,
+                        patientId: patientId,
+                        dispenseDate: '2026-06-15',
+                        dispensedBy: dispensedBy,
+                        quantity: parseFloat(qty),
+                        pricePerUnit: parseFloat(price.replace(/,/g, '')),
+                        totalCost: parseFloat(amount.replace(/,/g, '')),
+                     };
+
+                     onDispenseMedication(newDispense);
+                     addedCount++;
+                     pendingText = "";
                  }
              }
-             saveCurrent();
           } else {
              // CSV parsing logic
              const parsedRows = parseCSVData(rawText);
@@ -2554,7 +2535,7 @@ export function PharmacyView({
             onClick={() => fixJulyUploads()}
             className="px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-md hover:bg-red-200 transition-colors"
           >
-            Fix July Uploads
+            Clear Bad Uploads
           </button>
         </div>
         <p className="text-[11px] text-stone-500">

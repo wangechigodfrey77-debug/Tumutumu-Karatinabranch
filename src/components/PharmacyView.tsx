@@ -808,86 +808,173 @@ export function PharmacyView({
     setDispenseUploadFeedback(null);
     const reader = new FileReader();
 
-    if (file.name.endsWith('.csv')) {
+    if (file.name.endsWith('.csv') || file.name.endsWith('.txt')) {
       setIsParsingDispenses(true);
       reader.onload = (e) => {
         try {
           const rawText = e.target?.result as string;
-          const parsedRows = parseCSVData(rawText);
-
-          if (parsedRows.length === 0) {
-            setDispenseUploadFeedback({ success: false, message: 'Vacant or incorrectly formatted CSV.' });
-            setIsParsingDispenses(false);
-            return;
-          }
-
           let addedCount = 0;
-          parsedRows.forEach((row, idx) => {
-            const findKey = (keywords: string[], excludeWords: string[] = []) => {
-              return Object.keys(row).find(k => {
-                const lk = k.toLowerCase();
-                const hasMatch = keywords.some(kw => lk.includes(kw));
-                const hasExclusion = excludeWords.some(ew => lk.includes(ew));
-                return hasMatch && !hasExclusion;
-              });
-            };
 
-            const medNameKey = findKey(['medication', 'item', 'product', 'drug']);
-            const patNameKey = findKey(['patient name', 'patient', 'name'], ['medication', 'item', 'product', 'drug']);
-            const patIdKey = findKey(['patient id', 'id', 'op number', 'ref', 'opno']);
-            const qtyKey = findKey(['qty', 'quantity', 'amount']);
-            const priceKey = findKey(['price', 'unit cost', 'cost']);
-            const dateKey = findKey(['date', 'time']);
-            const byKey = findKey(['dispensed by', 'pharmacist', 'officer']);
+          if (file.name.endsWith('.txt')) {
+             // OCR specific format parsing
+             const startPattern = /^(OP\d+\/\d+|OP\d+|WK\d+|- -|- -[A-Za-z\s]+|-|WK\d+\s+[-A-Za-z\s]+)\s+([A-Za-z\s,.\'-]+?)\s+(\d+)\s+(.+)$/;
+             const endPattern = /(.*?)\s+(-?\d+\.\d+)\s+(-?\d{1,3}(?:,\d{3})*\.\d+)\s+(-?\d{1,3}(?:,\d{3})*\.\d+)$/;
+             const lines = rawText.split('\n');
+             let currentPrescription: any = null;
+             
+             const saveCurrent = () => {
+                 if (currentPrescription) {
+                     const newDispense: MedicationDispense = {
+                        id: `DSP-TXT-${Date.now()}-${addedCount}-${Math.floor(Math.random() * 1000)}`,
+                        medicationName: currentPrescription.medicationName,
+                        patientName: currentPrescription.patientName,
+                        patientId: currentPrescription.patientId,
+                        dispenseDate: new Date().toISOString().split('T')[0],
+                        dispensedBy: currentPrescription.dispensedBy,
+                        quantity: currentPrescription.quantity,
+                        pricePerUnit: currentPrescription.pricePerUnit,
+                        totalCost: currentPrescription.totalCost,
+                     };
+                     onDispenseMedication(newDispense);
+                     addedCount++;
+                 }
+             };
 
-            const foundMedName = medNameKey ? row[medNameKey] : undefined;
-            const foundPatName = patNameKey ? row[patNameKey] : 'Unknown Patient';
-            const foundPatId = patIdKey ? row[patIdKey] : `PT-CSV-${Math.floor(1000 + Math.random() * 9000)}`;
-            const foundQty = qtyKey ? parseFloat(row[qtyKey].replace(/[^0-9.]/g, '')) : 1;
-            const foundPrice = priceKey ? parseFloat(row[priceKey].replace(/[^0-9.]/g, '')) : 0;
-            let foundDate = dateKey ? row[dateKey] : new Date().toISOString().split('T')[0];
-            const foundBy = byKey ? row[byKey] : dispensingOfficer;
-            
-            // Format date correctly if it doesn't match standard YYYY-MM-DD
-            if (foundDate && !foundDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-              try {
-                  foundDate = new Date(foundDate).toISOString().split('T')[0];
-              } catch (e) {
-                  foundDate = new Date().toISOString().split('T')[0];
-              }
-            }
+             for (let i = 0; i < lines.length; i++) {
+                 let line = lines[i].trim().replace(/^"|"$/g, '').trim();
+                 if (!line) continue;
+                 if (line.match(/^(Prescriptions|P\.C\.E\.A|Pharmacy|Patient No|g Doc\.|Total||Printed|==)/)) continue;
 
-            if (foundMedName && foundMedName.trim() && !isNaN(foundQty) && foundQty > 0) {
-              const newDispense: MedicationDispense = {
-                id: `DSP-CSV-${Date.now()}-${idx}-${Math.floor(Math.random() * 1000)}`,
-                medicationName: foundMedName.trim(),
-                patientName: foundPatName.trim(),
-                patientId: foundPatId.trim(),
-                dispenseDate: foundDate.trim(),
-                dispensedBy: foundBy.trim(),
-                quantity: foundQty,
-                pricePerUnit: isNaN(foundPrice) ? 0 : foundPrice,
-                totalCost: (isNaN(foundPrice) ? 0 : foundPrice) * foundQty,
-              };
+                 let endMatch = line.match(endPattern);
+                 if (endMatch) {
+                     let frontPart = endMatch[1];
+                     let qty = endMatch[2];
+                     let price = endMatch[3];
+                     let amount = endMatch[4];
+                     
+                     let startMatch = frontPart.match(startPattern);
+                     if (startMatch) {
+                         saveCurrent();
+                         let descAndDoc = startMatch[4].trim();
+                         let docMatch = descAndDoc.match(/(.+)\s+([a-zA-Z._-]+)$/);
+                         let medicationName = descAndDoc;
+                         let dispensedBy = dispensingOfficer;
+                         if (docMatch) {
+                             medicationName = docMatch[1].trim();
+                             dispensedBy = docMatch[2].trim();
+                         }
 
-              onDispenseMedication(newDispense);
-              addedCount++;
-            }
-          });
+                         currentPrescription = {
+                             patientId: startMatch[1].trim(),
+                             patientName: startMatch[2].trim() || 'Unknown Patient',
+                             medicationName: medicationName,
+                             dispensedBy: dispensedBy,
+                             quantity: parseFloat(qty),
+                             pricePerUnit: parseFloat(price.replace(/,/g, '')),
+                             totalCost: parseFloat(amount.replace(/,/g, ''))
+                         };
+                     } else {
+                         let fallbackStartMatch = frontPart.match(/^(OP\d+\/\d+|OP\d+|WK\d+|- -|- -[A-Za-z\s]+|-|WK\d+\s+[-A-Za-z\s]+)\s+([\s\S]+)$/);
+                         if (fallbackStartMatch) {
+                             saveCurrent();
+                             currentPrescription = {
+                                 patientId: fallbackStartMatch[1].trim(),
+                                 patientName: 'Unknown Patient',
+                                 medicationName: fallbackStartMatch[2].trim(),
+                                 dispensedBy: dispensingOfficer,
+                                 quantity: parseFloat(qty),
+                                 pricePerUnit: parseFloat(price.replace(/,/g, '')),
+                                 totalCost: parseFloat(amount.replace(/,/g, ''))
+                             };
+                         } else {
+                             if (currentPrescription) {
+                                 currentPrescription.medicationName += ' ' + line;
+                             }
+                         }
+                     }
+                 } else {
+                     if (currentPrescription) {
+                         currentPrescription.medicationName += ' ' + line;
+                     }
+                 }
+             }
+             saveCurrent();
+          } else {
+             // CSV parsing logic
+             const parsedRows = parseCSVData(rawText);
+
+             if (parsedRows.length === 0) {
+               setDispenseUploadFeedback({ success: false, message: 'Vacant or incorrectly formatted CSV.' });
+               setIsParsingDispenses(false);
+               return;
+             }
+
+             parsedRows.forEach((row, idx) => {
+               const findKey = (keywords: string[], excludeWords: string[] = []) => {
+                 return Object.keys(row).find(k => {
+                   const lk = k.toLowerCase();
+                   const hasMatch = keywords.some(kw => lk.includes(kw));
+                   const hasExclusion = excludeWords.some(ew => lk.includes(ew));
+                   return hasMatch && !hasExclusion;
+                 });
+               };
+
+               const medNameKey = findKey(['medication', 'item', 'product', 'drug']);
+               const patNameKey = findKey(['patient name', 'patient', 'name'], ['medication', 'item', 'product', 'drug']);
+               const patIdKey = findKey(['patient id', 'id', 'op number', 'ref', 'opno']);
+               const qtyKey = findKey(['qty', 'quantity', 'amount']);
+               const priceKey = findKey(['price', 'unit cost', 'cost']);
+               const dateKey = findKey(['date', 'time']);
+               const byKey = findKey(['dispensed by', 'pharmacist', 'officer']);
+
+               const foundMedName = medNameKey ? row[medNameKey] : undefined;
+               const foundPatName = patNameKey ? row[patNameKey] : 'Unknown Patient';
+               const foundPatId = patIdKey ? row[patIdKey] : `PT-CSV-${Math.floor(1000 + Math.random() * 9000)}`;
+               const foundQty = qtyKey ? parseFloat(row[qtyKey].replace(/[^0-9.]/g, '')) : 1;
+               const foundPrice = priceKey ? parseFloat(row[priceKey].replace(/[^0-9.]/g, '')) : 0;
+               let foundDate = dateKey ? row[dateKey] : new Date().toISOString().split('T')[0];
+               const foundBy = byKey ? row[byKey] : dispensingOfficer;
+               
+               if (foundDate && !foundDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                 try {
+                     foundDate = new Date(foundDate).toISOString().split('T')[0];
+                 } catch (e) {
+                     foundDate = new Date().toISOString().split('T')[0];
+                 }
+               }
+
+               if (foundMedName && foundMedName.trim() && !isNaN(foundQty) && foundQty > 0) {
+                 const newDispense: MedicationDispense = {
+                   id: `DSP-CSV-${Date.now()}-${idx}-${Math.floor(Math.random() * 1000)}`,
+                   medicationName: foundMedName.trim(),
+                   patientName: foundPatName.trim(),
+                   patientId: foundPatId.trim(),
+                   dispenseDate: foundDate.trim(),
+                   dispensedBy: foundBy.trim(),
+                   quantity: foundQty,
+                   pricePerUnit: isNaN(foundPrice) ? 0 : foundPrice,
+                   totalCost: (isNaN(foundPrice) ? 0 : foundPrice) * foundQty,
+                 };
+
+                 onDispenseMedication(newDispense);
+                 addedCount++;
+               }
+             });
+          }
 
           setDispenseUploadFeedback({ 
             success: true, 
-            message: `Extracted and saved ${addedCount} dispensing records from CSV successfully.` 
+            message: `Extracted and saved ${addedCount} dispensing records from file successfully.` 
           });
         } catch (err: any) {
-          setDispenseUploadFeedback({ success: false, message: `CSV upload error: ${err.message}` });
+          setDispenseUploadFeedback({ success: false, message: `File upload error: ${err.message}` });
         } finally {
           setIsParsingDispenses(false);
         }
       };
       reader.readAsText(file);
     } else {
-      setDispenseUploadFeedback({ success: false, message: 'Invalid file format. Select a .csv spreadsheet.' });
+      setDispenseUploadFeedback({ success: false, message: 'Invalid file format. Select a .csv or .txt file.' });
     }
   };
 
@@ -2481,7 +2568,7 @@ export function PharmacyView({
             type="file"
             ref={dispenseFileInputRef}
             onChange={handleDispenseFileChange}
-            accept=".csv"
+            accept=".csv, .txt"
             className="hidden"
           />
           {isParsingDispenses ? (

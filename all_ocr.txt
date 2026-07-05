@@ -1,0 +1,3293 @@
+==Start of OCR for page 1==
+Prescriptions - Page: 1
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP000301/26 Fidel Mbugua Kairu 1298850 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+jimmwangi 10.00 35.00 350.00
+OP000301/26 Fidel Mbugua Kairu 1298850 Needles G21 Each 1 jimmwangi 1.00 11.00 11.00
+OP000301/26 Fidel Mbugua Kairu 1298850 Omeprazole Caps 20mg 1 jimmwangi 20.00 2.00 40.00
+OP000301/26 Fidel Mbugua Kairu 1298850 Paracetamol Injection
+150mg/Mi 1
+jimmwangi 1.00 30.00 30.00
+OP000301/26 Fidel Mbugua Kairu 1298850 Paracetamol Tabs 500mg 1 jimmwangi 15.00 2.00 30.00
+OP000301/26 Fidel Mbugua Kairu 1298850 Syringe 5ml 1 jimmwangi 1.00 7.00 7.00
+OP000301/26 Fidel Mbugua Kairu 1298857 Needles G21 Each 1 jimmwangi 1.00 11.00 11.00
+OP000301/26 Fidel Mbugua Kairu 1298857 Ondansentron 4mg/2ml Inj.
+1
+jimmwangi 1.00 105.00 105.00
+OP000301/26 Fidel Mbugua Kairu 1298857 Syringe 5ml 1 jimmwangi 1.00 7.00 7.00
+OP000301/26 Fidel Mbugua Kairu 1298860 I.V.Cannular Size 24 - jimmwangi 1.00 17.00 17.00
+OP002191/26 Jackline Muthoni Mwangi 1299011 I.V.Cannular Size 22 1 jimmwangi 1.00 17.00 17.00
+OP002191/26 Jackline Muthoni Mwangi 1299011 I.V.Giving Sets 10 jimmwangi 1.00 221.00 221.00
+OP002191/26 Jackline Muthoni Mwangi 1299011 Paracetamol Infusion 1gm 1 jimmwangi 1.00 350.00 350.00
+OP00252688 Chepyegon Oliver 1299015 Albendazole 400mg - jimmwangi 1.00 50.00 50.00
+OP00252688 Chepyegon Oliver 1299015 Amoxycillin&Clavulanate
+Pottasium 1000mg -
+jimmwangi 10.00 70.00 700.00
+OP00252688 Chepyegon Oliver 1299015 Chlorhexidine 0.2% Mouth
+Wash -100mls -
+jimmwangi 1.00 310.00 310.00
+OP00252688 Chepyegon Oliver 1299015 Cuticor Cream 1 jimmwangi 1.00 255.00 255.00
+OP00252688 Chepyegon Oliver 1299015 Etorixocib 60mg And
+Paracetamol325mg Tabs -
+jimmwangi 10.00 65.00 650.00
+OP00252688 Chepyegon Oliver 1299015 Metronidazole Tabs 400 Mg
+1
+jimmwangi 15.00 5.00 75.00
+OP002191/26 Jackline Muthoni Mwangi 1299031 Amoxycillin&Clavulanate
+Pottasium 1000mg -
+jimmwangi 10.00 70.00 700.00
+OP002191/26 Jackline Muthoni Mwangi 1299031 Beecox Plus
+Caps(Celecocib +Pcm Tabs
+325mg) -
+jimmwangi 10.00 75.00 750.00
+OP002191/26 Jackline Muthoni Mwangi 1299031 Sabezole It(Rabeprazole
+20mg+Itopride 150mg) -
+jimmwangi 7.00 90.00 630.00
+OP002195/26 Jemimah Wambui Miringu 1299156 Albendazole 400mg - jimmwangi 1.00 50.00 50.00
+OP002195/26 Jemimah Wambui Miringu 1299156 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+jimmwangi 10.00 35.00 350.00
+OP002195/26 Jemimah Wambui Miringu 1299156 Beecox Plus
+Caps(Celecocib +Pcm Tabs
+325mg) -
+jimmwangi 10.00 75.00 750.00
+OP002195/26 Jemimah Wambui Miringu 1299156 Cough
+Suppresant(Dextromethapha
+n) Dacof 100ml 1
+jimmwangi 1.00 250.00 250.00
+OP002195/26 Jemimah Wambui Miringu 1299156 Hyoscine N-Butylbromide
+Tabs10mg -
+jimmwangi 30.00 6.00 180.00
+OP002195/26 Jemimah Wambui Miringu 1299156 Montebasto(Ebastine
+2.5mg+Montelukast Sodium
+4mg Tabs) -
+jimmwangi 7.00 91.00 637.00
+OP002195/26 Jemimah Wambui Miringu 1299156 Sabezole It(Rabeprazole
+20mg+Itopride 150mg) -
+jimmwangi 7.00 90.00 630.00
+OP00234718 Njeri Kirangi Avril 1299650 Amoxycillin Dispersible
+Tablets 250mg 1
+jimmwangi 28.00 6.00 168.00
+OP00234718 Njeri Kirangi Avril 1299650 Paracetamol Syrup 100mls
+(Curamol -
+jimmwangi 1.00 60.00 60.00
+OP00234718 Njeri Kirangi Avril 1299652 Zinc Sulphate 20mg - jimmwangi 10.00 5.00 50.00
+OP008904/24 Florence Wanjiru Kiritu 1299752 Aclosara-Sp(Paracetamol
+325mgs Serratiopeptidase
+15mgs Tabs) -
+jimmwangi 10.00 90.00 900.00
+OP008904/24 Florence Wanjiru Kiritu 1299752 Cartimove Tabs - jimmwangi 15.00 70.00 1,050.00
+OP008904/24 Florence Wanjiru Kiritu 1299752 Etoflam Gel(Etoricoxib
+Linsed Oil Methylsacylate
+&Menthol 50mg) -
+jimmwangi 1.00 1,045.00 1,045.00
+OP008904/24 Florence Wanjiru Kiritu 1299754 Losartan 50mg Hctz 12.5mg
+28
+jimmwangi 30.00 5.00 150.00
+OP00239750 Njogu Chomba Kennedy 1299784 Annusol Cream 1 jimmwangi 2.00 400.00 800.00
+OP00239750 Njogu Chomba Kennedy 1299784 Cartimove Tabs - jimmwangi 30.00 70.00 2,100.00
+OP00239750 Njogu Chomba Kennedy 1299784 Chlorhexidine 0.2% Mouth
+Wash -100mls -
+jimmwangi 1.00 310.00 310.00
+OP00239750 Njogu Chomba Kennedy 1299784 Lactulose Solution 4 Mg/Ml (
+1
+jimmwangi 1.00 525.00 525.00
+OP00239750 Njogu Chomba Kennedy 1299784 Zuru Mr
+(Aceclo+Para=Chlorzoxazol
+e) -
+jimmwangi 40.00 73.00 2,920.00
+==End of OCR for page 1==
+==Start of OCR for page 2==
+Prescriptions - Page: 2
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP007339/24 Jim Mwangi Gakumba 1300255 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+eunah 10.00 35.00 350.00
+OP007339/24 Jim Mwangi Gakumba 1300255 Cetrizine Dihydrochloride
+Tabs 10mg -
+eunah 5.00 5.00 25.00
+OP007339/24 Jim Mwangi Gakumba 1300255 Paracetamol Tabs 500mg 1 eunah 20.00 2.00 40.00
+OP002217/26 Damian Jayson Kibugi 1300344 Metronidazole Suspension
+100ml -
+eunah 1.00 80.00 80.00
+OP002217/26 Damian Jayson Kibugi 1300344 Omeprazole Caps 20mg 1 eunah 5.00 2.00 10.00
+OP002217/26 Damian Jayson Kibugi 1300344 Oral Rehydration
+Salt(Sachet) 1
+eunah 3.00 12.00 36.00
+OP002217/26 Damian Jayson Kibugi 1300344 Zinc Sulphate 20mg - eunah 5.00 5.00 25.00
+OP002218/26 Zuri Arianna Nyambura 1300355 Salbutamol Nebulizer
+2.5mg/2.5ml(Vial) 1
+eunah 1.00 300.00 300.00
+OP016861/25 Wachira Anthony Maina 1300719 Amoxicilin 500mg - ekabura 15.00 7.00 105.00
+OP016861/25 Wachira Anthony Maina 1300719 Cetrizine Dihydrochloride
+Tabs 10mg -
+ekabura 5.00 5.00 25.00
+OP016861/25 Wachira Anthony Maina 1300719 Paracetamol Tabs 500mg 1 ekabura 18.00 2.00 36.00
+OP016861/25 Wachira Anthony Maina 1300719 Secnidazole Tabs 1gm - ekabura 1.00 47.00 47.00
+OP016861/25 Wachira Anthony Maina 1300719 Zinc Sulphate 20mg - ekabura 5.00 5.00 25.00
+OP000301/26 Fidel Mbugua Kairu 1300954 Zinc Sulphate 20mg - ekabura 5.00 5.00 25.00
+OP00241229 Musomba Precious Joy 1300983 Albendazole 400mg - ekabura 1.00 50.00 50.00
+OP00241229 Musomba Precious Joy 1300983 Clotrimazole Cream 1
+20gms -
+ekabura 1.00 50.00 50.00
+OP00241229 Musomba Precious Joy 1300984 Cefuroxime 500mgtablets 1 ekabura 10.00 85.00 850.00
+OP00241242 Musomba Muli Xavier 1300998 Cefuroxime 500mgtablets 1 ekabura 10.00 85.00 850.00
+OP00241242 Musomba Muli Xavier 1300998 Paracetamol Tabs 500mg 1 ekabura 9.00 2.00 18.00
+OP00023184 Macharia Lisa Wanjiru 1301181 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+ekabura 10.00 35.00 350.00
+OP00023184 Macharia Lisa Wanjiru 1301181 Cetrizine Dihydrochloride
+Tabs 10mg -
+ekabura 5.00 5.00 25.00
+OP00023184 Macharia Lisa Wanjiru 1301181 Ibuprofen Tablets 400mg - ekabura 9.00 2.00 18.00
+OP00023184 Macharia Lisa Wanjiru 1301183 Chlorhexidine 0.2% Mouth
+Wash -100mls -
+ekabura 1.00 310.00 310.00
+OP00002443 Mundia Waguthi Elizabeth 1301326 Aclosara-Mr - jimmwangi 20.00 45.00 900.00
+OP00002443 Mundia Waguthi Elizabeth 1301326 Amlodipine 5 Mg Tabs 1 jimmwangi 60.00 8.00 480.00
+OP00002443 Mundia Waguthi Elizabeth 1301326 Atovastatin 20mg - jimmwangi 30.00 13.00 390.00
+OP00002443 Mundia Waguthi Elizabeth 1301326 Carbamazepine Tabs
+200mg -
+jimmwangi 30.00 10.00 300.00
+OP00002443 Mundia Waguthi Elizabeth 1301326 Cetrizine Dihydrochloride
+Tabs 10mg -
+jimmwangi 10.00 5.00 50.00
+OP00002443 Mundia Waguthi Elizabeth 1301326 Hydraiazine Tabs 25mg - jimmwangi 90.00 8.00 720.00
+OP00002443 Mundia Waguthi Elizabeth 1301326 Hydrochlorothiazide 50mg
+Sachets
+jimmwangi 30.00 5.00 150.00
+OP00002443 Mundia Waguthi Elizabeth 1301326 Losartan Tabs (Carditan )
+50mg
+jimmwangi 60.00 5.00 300.00
+OP00248545 Murigu Wanjiru Grace 1301954 Beecox Plus
+Caps(Celecocib +Pcm Tabs
+325mg) -
+jimmwangi 10.00 75.00 750.00
+OP00248545 Murigu Wanjiru Grace 1301954 Cefuroxime 500mgtablets 1 jimmwangi 10.00 85.00 850.00
+OP00248545 Murigu Wanjiru Grace 1301954 Rabeprazole Sodium Tabs
+20mg+Domperidone 30mg 1
+jimmwangi 5.00 60.00 300.00
+OP00013829 Kigotho Gathigia Jane 1302620 Esomeprazole 40mg Tablets
+Tablet
+eunah 10.00 30.00 300.00
+OP002264/26 Christine Kangai Mutembei 1303124 Losartan 50mg Hctz 12.5mg
+28
+eunah 60.00 5.00 300.00
+OP002264/26 Christine Kangai Mutembei 1303124 Symbicort9budesonide
+160/4.5 Mcgs) -
+eunah 1.00 1,200.00 1,200.00
+OP00248681 Wanjohi Wanjiku Joan 1303423 Metformin Tabs 500mg -Xr - eunah 30.00 15.00 450.00
+OP002163/26 Kingsley Kuria Maina 1304464 Benzyl Penicilline Injection
+1.0mu -
+eunah 1.00 27.00 27.00
+OP002163/26 Kingsley Kuria Maina 1304464 Gentamycin Injection
+80mg/2ml 10
+eunah 1.00 18.00 18.00
+OP002163/26 Kingsley Kuria Maina 1304464 I.V Canula G.26 - eunah 1.00 21.00 21.00
+OP002163/26 Kingsley Kuria Maina 1304464 Needles G21 Each 1 eunah 1.00 11.00 11.00
+OP002163/26 Kingsley Kuria Maina 1304464 Syringe 10ml 1 eunah 1.00 13.00 13.00
+OP002163/26 Kingsley Kuria Maina 1304464 Syringe 2ml - eunah 1.00 12.00 12.00
+OP00248545 Murigu Wanjiru Grace 1304541 Esomeprazole 40mg Nexpro
+Injection 1
+eunah 1.00 366.00 366.00
+==End of OCR for page 2==
+==Start of OCR for page 3==
+Prescriptions - Page: 3
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP00248545 Murigu Wanjiru Grace 1304541 I.V.Cannular Size 22 1 eunah 1.00 17.00 17.00
+OP00248545 Murigu Wanjiru Grace 1304541 Needles G21 Each 1 eunah 1.00 11.00 11.00
+OP00248545 Murigu Wanjiru Grace 1304541 Ondansentron 4mg/2ml Inj.
+1
+eunah 1.00 105.00 105.00
+OP00248545 Murigu Wanjiru Grace 1304541 Syringe 10ml 1 eunah 2.00 13.00 26.00
+OP010488/24 James Kamau Kiriiri 1304562 Candid B 1 eunah 1.00 339.00 339.00
+OP010488/24 James Kamau Kiriiri 1304562 Diloxanide 125 Mg +
+Metronidazole 100 Mg Syrup
+-
+eunah 2.00 114.00 228.00
+OP010488/24 James Kamau Kiriiri 1304562 Esomeprazole 40mg Tablets
+Tablet
+eunah 5.00 30.00 150.00
+OP010488/24 James Kamau Kiriiri 1304562 Saracal Syrup 1 eunah 2.00 650.00 1,300.00
+OP00078287 Mwangi Wachera Jane 1305257 Aclosara-Sp(Paracetamol
+325mgs Serratiopeptidase
+15mgs Tabs) -
+ngari 20.00 90.00 1,800.00
+OP00078287 Mwangi Wachera Jane 1305257 Cartimove Tabs - ngari 14.00 70.00 980.00
+OP00078287 Mwangi Wachera Jane 1305257 Etoflam Gel(Etoricoxib
+Linsed Oil Methylsacylate
+&Menthol 50mg) -
+ngari 1.00 1,045.00 1,045.00
+OP00078287 Mwangi Wachera Jane 1305257 Nervoplex Tabs - ngari 14.00 140.00 1,960.00
+OP00252550 Kiama Wambui Monica 1305583 Montebasto(Ebastine
+2.5mg+Montelukast Sodium
+4mg Tabs) -
+jimmwangi 5.00 91.00 455.00
+OP00252550 Kiama Wambui Monica 1305583 Mupiban Oint % Cream 1 jimmwangi 1.00 460.00 460.00
+OP00168787 Karobia Wanjiru Eunah 1305602 Azithromycin 500mg 1 jimmwangi 6.00 75.00 450.00
+OP00168787 Karobia Wanjiru Eunah 1305602 Cough
+Suppresant(Dextromethapha
+n) Dacof 100ml 1
+jimmwangi 1.00 250.00 250.00
+OP00168787 Karobia Wanjiru Eunah 1305602 Prednisolone 5mg (Zain)
+White 100s 1
+jimmwangi 12.00 3.00 36.00
+OP00168787 Karobia Wanjiru Eunah 1305602 Track Mr
+(Diclo,Para,Chlozoxazone
+500/50/250mg
+jimmwangi 1.00 20.00 20.00
+OP00168787 Karobia Wanjiru Eunah 1305606 Dyzol Ds 1 jimmwangi 15.00 25.00 375.00
+OP00248545 Murigu Wanjiru Grace 1306002 Esomeprazole 40mg Nexpro
+Injection 1
+jimmwangi 1.00 366.00 366.00
+OP00248545 Murigu Wanjiru Grace 1306002 I.V.Cannular Size 22 1 jimmwangi 1.00 17.00 17.00
+OP00248545 Murigu Wanjiru Grace 1306002 I.V.Giving Sets 10 jimmwangi 1.00 221.00 221.00
+OP00248545 Murigu Wanjiru Grace 1306002 Needles G21 Each 1 jimmwangi 1.00 11.00 11.00
+OP00248545 Murigu Wanjiru Grace 1306002 Paracetamol Infusion 1gm 1 jimmwangi 1.00 350.00 350.00
+OP00248545 Murigu Wanjiru Grace 1306002 Syringe 10ml 1 jimmwangi 1.00 13.00 13.00
+OP00248545 Murigu Wanjiru Grace 1306009 Ondansentron 4mg/2ml Inj.
+1
+jimmwangi 1.00 105.00 105.00
+OP002321/26 Cynthia Njeri Muiruri 1306404 Beecox Plus
+Caps(Celecocib +Pcm Tabs
+325mg) -
+jimmwangi 10.00 75.00 750.00
+OP002321/26 Cynthia Njeri Muiruri 1306404 Cephalexin Gen 500mg
+100s 1
+jimmwangi 15.00 10.00 150.00
+OP002321/26 Cynthia Njeri Muiruri 1306404 Gauze Roll 19 X 15
+Mesh(Per Piece) 90x50 1
+jimmwangi 5.00 9.00 45.00
+OP002321/26 Cynthia Njeri Muiruri 1306404 Normalsaline 0.9%/500mls 1 jimmwangi 1.00 180.00 180.00
+OP002321/26 Cynthia Njeri Muiruri 1306404 Silver Sulphadiazine
+Cream(250gm) 1
+jimmwangi 1.00 447.00 447.00
+OP002321/26 Cynthia Njeri Muiruri 1306415 Crepe Bandage 4inch 1 jimmwangi 1.00 120.00 120.00
+OP00048589 Muchemi Wairimu Marion 1306943 Atovastatin 10mg - jimmwangi 30.00 5.00 150.00
+OP00048589 Muchemi Wairimu Marion 1306943 Enalapril Tabs 5mg - jimmwangi 30.00 2.00 60.00
+OP00048589 Muchemi Wairimu Marion 1306943 Frusemide Tabs 40mg - jimmwangi 14.00 3.00 42.00
+OP00048589 Muchemi Wairimu Marion 1306943 Hydrochlorothiazide 25 Mg
+Tablet
+jimmwangi 30.00 2.00 60.00
+OP000303/26 Jedidah Wangui Muiga 1307397 Amlodipine 5 Mg Tabs 1 eunah 14.00 8.00 112.00
+OP000303/26 Jedidah Wangui Muiga 1307397 Lonoflam(Lornoscam And
+Paracetamol 325 Mgs) -
+eunah 10.00 57.00 570.00
+OP000303/26 Jedidah Wangui Muiga 1307397 Nervoplex Tabs - eunah 10.00 140.00 1,400.00
+OP002335/26 Paul Gichuki Kamuyu 1307428 Dextrose Injection 5% W/V
+500 Mls 1
+eunah 1.00 113.00 113.00
+OP002335/26 Paul Gichuki Kamuyu 1307428 I.V.Cannular Size 18 - eunah 1.00 16.00 16.00
+OP002335/26 Paul Gichuki Kamuyu 1307428 I.V.Giving Sets 10 eunah 1.00 221.00 221.00
+OP002321/26 Cynthia Njeri Muiruri 1307924 Gauze Roll 19 X 15
+Mesh(Per Piece) 90x50 1
+jimmwangi 6.00 9.00 54.00
+==End of OCR for page 3==
+==Start of OCR for page 4==
+Prescriptions - Page: 4
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP002321/26 Cynthia Njeri Muiruri 1307924 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+jimmwangi 2.00 51.00 102.00
+OP002321/26 Cynthia Njeri Muiruri 1307925 Crepe Bandage 4inch 1 jimmwangi 1.00 120.00 120.00
+OP000896/26 Nancy Njeri Wanjiku 1308013 Femiplan Cycle 1 jimmwangi 1.00 120.00 120.00
+OP000896/26 Nancy Njeri Wanjiku 1308013 Norethisterone 5mg
+Tabs(Primolut) -
+jimmwangi 10.00 35.00 350.00
+OP000896/26 Nancy Njeri Wanjiku 1308013 Tranexamic Acid 500mg
+Caps -
+jimmwangi 15.00 35.00 525.00
+OP000896/26 Nancy Njeri Wanjiku 1308015 Beecox Plus
+Caps(Celecocib +Pcm Tabs
+325mg) -
+jimmwangi 10.00 75.00 750.00
+OP000301/26 Fidel Mbugua Kairu 1308104 Cefuroxime Tabs 250mg - jimmwangi 10.00 50.00 500.00
+OP000301/26 Fidel Mbugua Kairu 1308104 Paracetamol Tabs 500mg 1 jimmwangi 15.00 2.00 30.00
+OP000301/26 Fidel Mbugua Kairu 1308108 Ondasentron 4 Mg
+Tab(Emadon) 1
+jimmwangi 5.00 43.00 215.00
+OP007339/24 Jim Mwangi Gakumba 1308115 Acecor Gel 1 eunah 1.00 560.00 560.00
+OP007339/24 Jim Mwangi Gakumba 1308115 Aclosara-Sp(Paracetamol
+325mgs Serratiopeptidase
+15mgs Tabs) -
+eunah 10.00 90.00 900.00
+OP007339/24 Jim Mwangi Gakumba 1308115 Crepe Bandage 4inch 1 eunah 1.00 120.00 120.00
+OP007339/24 Jim Mwangi Gakumba 1308115 Needles G21 Each 1 eunah 1.00 11.00 11.00
+OP007339/24 Jim Mwangi Gakumba 1308115 Syringe 10ml 1 eunah 1.00 13.00 13.00
+OP007339/24 Jim Mwangi Gakumba 1308115 Tramadol Inj. 100mg - eunah 1.00 35.00 35.00
+OP009756/24 Peris Wambura Njogu 1308550 I.V.Cannular Size 22 1 jimmwangi 1.00 17.00 17.00
+OP009756/24 Peris Wambura Njogu 1308550 I.V.Giving Sets 10 jimmwangi 1.00 221.00 221.00
+OP009756/24 Peris Wambura Njogu 1308550 Paracetamol Infusion 1gm 1 jimmwangi 1.00 350.00 350.00
+OP009756/24 Peris Wambura Njogu 1308562 Amitriptylline Tabs 25mg
+100
+jimmwangi 5.00 2.00 10.00
+OP009756/24 Peris Wambura Njogu 1308562 Etorixocib 60mg And
+Paracetamol325mg Tabs -
+jimmwangi 6.00 65.00 390.00
+OP009756/24 Peris Wambura Njogu 1308573 Cephalexin Gen 500mg
+100s 1
+jimmwangi 15.00 10.00 150.00
+OP00074714 Mathenge Muthakye Ann 1309170 Combivent
+Respirator(Salbutamol+Ipratr
+opium Bromide) 1
+jimmwangi 1.00 260.00 260.00
+OP00074714 Mathenge Muthakye Ann 1309170 Hydrocortisone Sodium
+Succ. Inj 100mg 1
+jimmwangi 2.00 49.00 98.00
+OP00074714 Mathenge Muthakye Ann 1309170 Needles G21 Each 1 jimmwangi 1.00 11.00 11.00
+OP00074714 Mathenge Muthakye Ann 1309170 Syringe 10ml 1 jimmwangi 1.00 13.00 13.00
+OP00074714 Mathenge Muthakye Ann 1309180 Nebulizer Mask Adult - jimmwangi 1.00 137.00 137.00
+OP00074714 Mathenge Muthakye Ann 1309325 Amoxycillin&Clavulanate
+Pottasium 1000mg -
+jimmwangi 10.00 70.00 700.00
+OP00074714 Mathenge Muthakye Ann 1309325 Cough Expectorant(Ascoril)
+(100ml) 1
+jimmwangi 1.00 280.00 280.00
+OP00074714 Mathenge Muthakye Ann 1309325 Montebasto(Ebastine
+2.5mg+Montelukast Sodium
+4mg Tabs) -
+jimmwangi 7.00 91.00 637.00
+OP00074714 Mathenge Muthakye Ann 1309325 Paracetamol Tabs 500mg 1 jimmwangi 30.00 2.00 60.00
+OP00074714 Mathenge Muthakye Ann 1309325 Salbutamol Nebulizer
+2.5mg/2.5ml(Vial) 1
+jimmwangi 1.00 300.00 300.00
+OP012000/25 Muema Prince Othniel 1309543 Cetrizine 5mg Syrup 60ml - jimmwangi 1.00 50.00 50.00
+OP012000/25 Muema Prince Othniel 1309543 Paracetamol Syrup 100mls
+(Curamol -
+jimmwangi 1.00 60.00 60.00
+OP012000/25 Muema Prince Othniel 1309547 Amoxycillin Suspension
+250mg/5mls(100mls) 1
+jimmwangi 1.00 110.00 110.00
+OP011201/25 Mathilda Gathigia Kiragu 1309578 Augmentin 228mg/5mls 1 jimmwangi 1.00 450.00 450.00
+OP011201/25 Mathilda Gathigia Kiragu 1309578 Cetrizine 5mg Syrup 60ml - jimmwangi 1.00 50.00 50.00
+OP011201/25 Mathilda Gathigia Kiragu 1309578 Paracetamol Syrup 100mls
+(Curamol -
+jimmwangi 1.00 60.00 60.00
+OP00258468 Wangui Mitambo Dariel 1309585 Cetrizine 5mg Syrup 60ml - jimmwangi 1.00 50.00 50.00
+OP00258468 Wangui Mitambo Dariel 1309585 Flucloxacin Syrup
+125mg/5mls(100mls) -
+jimmwangi 1.00 100.00 100.00
+OP00258468 Wangui Mitambo Dariel 1309585 Paracetamol Syrup 100mls
+(Curamol -
+jimmwangi 1.00 60.00 60.00
+OP002374/26 Kelvin Kingori Gachuiri 1309656 Cefuroxime 500mgtablets 1 jimmwangi 10.00 85.00 850.00
+OP002374/26 Kelvin Kingori Gachuiri 1309656 Omeprazole Caps 20mg 1 jimmwangi 10.00 2.00 20.00
+OP002374/26 Kelvin Kingori Gachuiri 1309656 Paracetamol Tabs 500mg 1 jimmwangi 30.00 2.00 60.00
+OP00256014 Mwirigi Nkatha Esther 1309659 Norethisterone 5mg
+Tabs(Primolut) -
+jimmwangi 10.00 35.00 350.00
+==End of OCR for page 4==
+==Start of OCR for page 5==
+Prescriptions - Page: 5
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP00256014 Mwirigi Nkatha Esther 1309659 Tranexamic Acid 500mg
+Caps -
+jimmwangi 15.00 35.00 525.00
+OP002321/26 Cynthia Njeri Muiruri 1310162 Crepe Bandage 4inch 1 eunah 1.00 120.00 120.00
+OP002321/26 Cynthia Njeri Muiruri 1310162 Gauze Roll 19 X 15
+Mesh(Per Piece) 90x50 1
+eunah 10.00 9.00 90.00
+OP002321/26 Cynthia Njeri Muiruri 1310162 Metronidazole Suspension
+100ml -
+eunah 1.00 80.00 80.00
+OP002321/26 Cynthia Njeri Muiruri 1310162 Normalsaline 0.9%/500mls 1 eunah 1.00 180.00 180.00
+OP002321/26 Cynthia Njeri Muiruri 1310162 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+eunah 2.00 51.00 102.00
+OP00166749 Murimi Kinyua Michael 1311339 Aclosara-Mr - eunah 10.00 45.00 450.00
+OP00166749 Murimi Kinyua Michael 1311339 Etoflam Gel(Etoricoxib
+Linsed Oil Methylsacylate
+&Menthol 50mg) -
+eunah 1.00 1,045.00 1,045.00
+OP00166749 Murimi Kinyua Michael 1311339 I.V.Cannular Size 22 1 eunah 1.00 17.00 17.00
+OP00166749 Murimi Kinyua Michael 1311339 I.V.Giving Sets 10 eunah 1.00 221.00 221.00
+OP00166749 Murimi Kinyua Michael 1311339 Nervoplex Tabs - eunah 10.00 140.00 1,400.00
+OP00166749 Murimi Kinyua Michael 1311339 Paracetamol Infusion 1gm 1 eunah 1.00 350.00 350.00
+OP002195/26 Jemimah Wambui Miringu 1312164 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+eunah 10.00 26.00 260.00
+OP002195/26 Jemimah Wambui Miringu 1312164 Cetrizine Dihydrochloride
+Tabs 10mg -
+eunah 5.00 4.00 20.00
+OP002195/26 Jemimah Wambui Miringu 1312164 Esomeprazole 40mg Tablets
+Tablet
+eunah 5.00 23.00 115.00
+OP002195/26 Jemimah Wambui Miringu 1312164 Paracetamol Tabs 500mg 1 eunah 18.00 2.00 36.00
+OP00046737 Gatumbi Lucy Wanene 1312214 Lonoflam(Lornoscam And
+Paracetamol 325 Mgs) -
+eunah 30.00 57.00 1,710.00
+OP00046737 Gatumbi Lucy Wanene 1312214 Nervoplex Tabs - eunah 30.00 140.00 4,200.00
+OP002321/26 Cynthia Njeri Muiruri 1312658 Gauze Roll 1.5 Grams Piece monicak 5.00 9.00 45.00
+OP002321/26 Cynthia Njeri Muiruri 1312658 Normalsaline 0.9%/500mls 1 monicak 1.00 180.00 180.00
+OP002321/26 Cynthia Njeri Muiruri 1312658 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+monicak 1.00 51.00 51.00
+OP002409/26 Kennedy Kipchumba Muthee 1312920 Amoxicilin 500mg - eunah 56.00 7.00 392.00
+OP002409/26 Kennedy Kipchumba Muthee 1312920 Metronidazole Tabs 400 Mg
+1
+eunah 56.00 5.00 280.00
+OP002409/26 Kennedy Kipchumba Muthee 1312920 Omeprazole Caps 20mg 1 eunah 84.00 2.00 168.00
+OP00246756 Wambugu Nyawira Lynacy 1313369 Rabeprazole Sodium Tabs
+20mg+Domperidone 30mg 1
+eunah 10.00 60.00 600.00
+OP00246756 Wambugu Nyawira Lynacy 1313370 Antacid (Alugel) 1 eunah 1.00 90.00 90.00
+OP00246756 Wambugu Nyawira Lynacy 1313384 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+eunah 10.00 35.00 350.00
+OP00252550 Kiama Wambui Monica 1313389 Ebastine Syrup(Histy)
+5mg/5ml
+eunah 1.00 698.00 698.00
+OP002452/26 Jemmah Mumbi Nderitu 1313956 Etorixocib 60mg And
+Paracetamol325mg Tabs -
+jimmwangi 5.00 65.00 325.00
+OP002452/26 Jemmah Mumbi Nderitu 1313956 Gabacare Tabs 300/500mg - jimmwangi 14.00 100.00 1,400.00
+OP002452/26 Jemmah Mumbi Nderitu 1313956 Glibenclamide Tabs 5mg 28 jimmwangi 30.00 5.00 150.00
+OP002452/26 Jemmah Mumbi Nderitu 1313956 Losartan 50mg Hctz 12.5mg
+28
+jimmwangi 60.00 5.00 300.00
+OP002452/26 Jemmah Mumbi Nderitu 1313956 Metformin 1gm 1 jimmwangi 60.00 16.00 960.00
+OP00246756 Wambugu Nyawira Lynacy 1314330 Etorixocib 60mg And
+Paracetamol325mg Tabs -
+jimmwangi 7.00 65.00 455.00
+OP00246756 Wambugu Nyawira Lynacy 1314330 Hyoscine N-Butylbromide
+Tabs10mg -
+jimmwangi 30.00 6.00 180.00
+OP00165041 Mathenge Gathoni Mercy 1314620 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+jimmwangi 10.00 35.00 350.00
+OP00165041 Mathenge Gathoni Mercy 1314620 Antacid (Alugel) 1 jimmwangi 1.00 90.00 90.00
+OP00165041 Mathenge Gathoni Mercy 1314620 Rabeprazole Sodium Tabs
+20mg+Domperidone 30mg 1
+jimmwangi 7.00 60.00 420.00
+OP00165041 Mathenge Gathoni Mercy 1314628 Etorixocib 60mg And
+Paracetamol325mg Tabs -
+jimmwangi 5.00 65.00 325.00
+OP012805/25 Mercy Wanjiru Nderitu 1314696 Amlodipine 5 Mg Tabs 1 drjohn 30.00 8.00 240.00
+OP012805/25 Mercy Wanjiru Nderitu 1314696 Losartan 50mg Hctz 12.5mg
+28
+drjohn 30.00 5.00 150.00
+OP017577/25 Grace Wambura Kibuthu 1314760 Amlodipine 5 Mg Tabs 1 drjohn 30.00 8.00 240.00
+OP017577/25 Grace Wambura Kibuthu 1314760 Carveddilol Tabs 6.25mg - drjohn 30.00 5.00 150.00
+OP017577/25 Grace Wambura Kibuthu 1314760 Gliclazide 80mg Sachets drjohn 60.00 10.00 600.00
+==End of OCR for page 5==
+==Start of OCR for page 6==
+Prescriptions - Page: 6
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP017577/25 Grace Wambura Kibuthu 1314760 Losartan 50mg Hctz 12.5mg
+28
+drjohn 30.00 5.00 150.00
+OP017577/25 Grace Wambura Kibuthu 1314760 Metformin 850 Mg 1 drjohn 60.00 4.00 240.00
+OP00230479 Njoroge Nduta Nelias 1314836 Flucloxacillin 250mg
+Capsules -
+jimmwangi 28.00 7.00 196.00
+OP00230479 Njoroge Nduta Nelias 1314836 Gentamycin Eye/Ear Drops - jimmwangi 1.00 50.00 50.00
+OP012866/25 Lailah Nduta Njagi 1315067 Amoxycillin Dispersible
+Tablets 250mg 1
+eunah 20.00 6.00 120.00
+OP012866/25 Lailah Nduta Njagi 1315067 Cetrizine 5mg Syrup 60ml - eunah 1.00 50.00 50.00
+OP012866/25 Lailah Nduta Njagi 1315067 Clotrimazole Cream 1
+20gms -
+eunah 1.00 50.00 50.00
+OP012866/25 Lailah Nduta Njagi 1315070 Paracetamol Susp (Cetamol
+) 100ml -
+eunah 1.00 80.00 80.00
+OP015496/25 Leevon Macharia Njagi 1315081 Amoxycillin Suspension
+125mg/5ml(100mls) -
+eunah 1.00 75.00 75.00
+OP015496/25 Leevon Macharia Njagi 1315081 Cetrizine 5mg Syrup 60ml - eunah 1.00 50.00 50.00
+OP015496/25 Leevon Macharia Njagi 1315081 Paracetamol Susp (Cetamol
+) 100ml -
+eunah 1.00 80.00 80.00
+OP015496/25 Leevon Macharia Njagi 1315081 Syringe 10ml 1 eunah 1.00 13.00 13.00
+OP012866/25 Lailah Nduta Njagi 1315084 Amoxycillin Dispersible
+Tablets 250mg 1
+eunah 10.00 6.00 60.00
+OP00216008 Kihoro Njeri Sharon 1315433 Ebastine 10mg Tabs - eunah 5.00 41.00 205.00
+OP002475/26 Isaac Waithaka Karumba 1315441 H.Pylori Kit (Surekit) Pack 1 eunah 2.00 2,330.00 4,660.00
+OP00069840 Muriuki Murimi David 1315756 Albendazole 400mg - jimmwangi 1.00 50.00 50.00
+OP00069840 Muriuki Murimi David 1315756 Cough
+Suppresant(Dextromethapha
+n) Dacof 100ml 1
+jimmwangi 1.00 250.00 250.00
+OP00069840 Muriuki Murimi David 1315756 Zinc Sulphate 20mg - jimmwangi 7.00 5.00 35.00
+OP002487/26 Lina Metho Wanjiku 1315886 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+15.00 2.00 30.00
+OP002487/26 Lina Metho Wanjiku 1315886 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+30.00 2.00 60.00
+OP002924/23 Amalia Muthoni Mathenge 1315893 Flucloxacilin Syrup
+125mg/5mls(100mls) -
+jimmwangi 1.00 100.00 100.00
+OP002924/23 Amalia Muthoni Mathenge 1315893 Mupiban Oint % Cream 1 jimmwangi 1.00 720.00 720.00
+OP002924/23 Amalia Muthoni Mathenge 1315894 Ibuprofen Syrup 100mg/5ml
+-
+jimmwangi 1.00 60.00 60.00
+OP00044445 Murage. Muchemi Stephen 1315906 Antacid (Alugel) 1 jimmwangi 1.00 90.00 90.00
+OP00044445 Murage. Muchemi Stephen 1315906 H.Pylori Kit (Surekit) Pack 1 jimmwangi 1.00 2,330.00 2,330.00
+OP00044445 Murage. Muchemi Stephen 1315906 Hyoscine N-Butylbromide
+Tabs10mg -
+jimmwangi 9.00 6.00 54.00
+OP00044445 Murage. Muchemi Stephen 1315906 Paracetamol Tabs 500mg 1 jimmwangi 30.00 2.00 60.00
+OP00044445 Murage. Muchemi Stephen 1315907 Montebasto(Ebastine
+2.5mg+Montelukast Sodium
+4mg Tabs) -
+jimmwangi 5.00 91.00 455.00
+OP00216030 Kinyua Mahenge Cyrus 1315912 Antacid (Alugel) 1 jimmwangi 1.00 90.00 90.00
+OP00216030 Kinyua Mahenge Cyrus 1315912 Etorixocib 60mg And
+Paracetamol325mg Tabs -
+jimmwangi 10.00 65.00 650.00
+OP00216030 Kinyua Mahenge Cyrus 1315912 Rabeprazole Sodium Tabs
+20mg+Domperidone 30mg 1
+jimmwangi 10.00 60.00 600.00
+OP00216030 Kinyua Mahenge Cyrus 1315915 Cosflora Probiotics 2mg jimmwangi 7.00 80.00 560.00
+OP000785/26 Leslie Wanjiru Mwangi 1315940 Cetrizine 5mg Syrup 60ml - jimmwangi 1.00 50.00 50.00
+OP000785/26 Leslie Wanjiru Mwangi 1315945 Augmentin 228mg/5mls 1 jimmwangi 1.00 450.00 450.00
+OP000059/23 Ann Adhiambo Oner 1315948 Cosflora Probiotics 2mg jimmwangi 10.00 80.00 800.00
+OP000059/23 Ann Adhiambo Oner 1315948 Metronidazole Tabs 400 Mg
+1
+jimmwangi 15.00 5.00 75.00
+OP000059/23 Ann Adhiambo Oner 1315948 Zinc Sulphate 20mg - jimmwangi 10.00 5.00 50.00
+OP019097/25 Damian Maina Njeri 1318233 Salbutamol Nebulizer
+2.5mg/2.5ml(Vial) 1
+eunah 1.00 300.00 300.00
+OP019097/25 Damian Maina Njeri 1318375 Cefuroxime Tabs 250mg - eunah 10.00 50.00 500.00
+OP019097/25 Damian Maina Njeri 1318375 Paracetamol Tabs 500mg 1 eunah 4.50 2.00 9.00
+OP019097/25 Damian Maina Njeri 1318375 Salbutamol Nebulizer
+2.5mg/2.5ml(Vial) 1
+eunah 1.00 300.00 300.00
+OP008783/24 Harvey Eston Okatch 1318702 Augmentin Suspension 457
+Mg-70mls 1
+eunah 1.00 1,410.00 1,410.00
+OP008783/24 Harvey Eston Okatch 1318702 Cetrizine 5mg Syrup 60ml - eunah 1.00 50.00 50.00
+OP008783/24 Harvey Eston Okatch 1318702 Ibugesic Syp 100ml 1 eunah 1.00 150.00 150.00
+OP00249595 Wambura Miano Wenslaus 1319015 Amoxycillin Dispersible
+Tablets 250mg 1
+eunah 20.00 6.00 120.00
+==End of OCR for page 6==
+==Start of OCR for page 7==
+Prescriptions - Page: 7
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP00249595 Wambura Miano Wenslaus 1319015 Ibuprofen Tabs 200mg 1 eunah 9.00 1.00 9.00
+OP00249595 Wambura Miano Wenslaus 1319015 Liquid Paraffin(100mls) 1 eunah 1.00 41.00 41.00
+OP002548/26 Rose Kabui Muriithi 1319134 Brustan
+Tabs(Brufen+Paracet) -
+eunah 9.00 20.00 180.00
+OP002548/26 Rose Kabui Muriithi 1319134 Flucloxacillin 250mg
+Capsules -
+eunah 40.00 7.00 280.00
+OP002548/26 Rose Kabui Muriithi 1319134 I.V.Cannular Size 22 1 eunah 1.00 17.00 17.00
+OP002548/26 Rose Kabui Muriithi 1319134 I.V.Giving Sets 10 eunah 1.00 221.00 221.00
+OP002548/26 Rose Kabui Muriithi 1319134 Nylon No2 Cutting Needle
+40mm-Non Absorbable -
+eunah 1.00 390.00 390.00
+OP002548/26 Rose Kabui Muriithi 1319134 Paracetamol Infusion 1gm 1 eunah 1.00 350.00 350.00
+OP002548/26 Rose Kabui Muriithi 1319134 Vicryl No 2/0 Round Body
+35mm Absorbable(Polyglactin) 12
+eunah 1.00 600.00 600.00
+OP00027774 Gichohi Mwangi Sammy 1319251 Aclosara-Sp(Paracetamol
+325mgs Serratiopeptidase
+15mgs Tabs) -
+eunah 10.00 90.00 900.00
+OP00027774 Gichohi Mwangi Sammy 1319251 Amoxycillin&Clavulanate
+Pottasium 1000mg -
+eunah 10.00 70.00 700.00
+OP00027774 Gichohi Mwangi Sammy 1319251 Chlorhexidine 0.2% Mouth
+Wash -100mls -
+eunah 1.00 310.00 310.00
+OP00027774 Gichohi Mwangi Sammy 1319251 Ebastine 10mg Tabs - eunah 5.00 41.00 205.00
+OP000896/26 Nancy Njeri Wanjiku 1319723 Etorixocib 60mg And
+Paracetamol325mg Tabs -
+jimmwangi 5.00 65.00 325.00
+OP000896/26 Nancy Njeri Wanjiku 1319723 Montebasto(Ebastine
+2.5mg+Montelukast Sodium
+4mg Tabs) -
+jimmwangi 5.00 91.00 455.00
+OP000896/26 Nancy Njeri Wanjiku 1319723 Sodium Chromoglycate
+2.0% Eye Drops -
+jimmwangi 1.00 780.00 780.00
+OP000303/26 Jedidah Wangui Muiga 1320315 Aclosara-Sp(Paracetamol
+325mgs Serratiopeptidase
+15mgs Tabs) -
+jimmwangi 10.00 90.00 900.00
+OP000303/26 Jedidah Wangui Muiga 1320315 Amlodipine 10 Mg 28 jimmwangi 30.00 12.00 360.00
+OP000303/26 Jedidah Wangui Muiga 1320315 Cartimove Tabs - jimmwangi 20.00 70.00 1,400.00
+OP000303/26 Jedidah Wangui Muiga 1320315 Gabacare Tabs 300/500mg - jimmwangi 10.00 100.00 1,000.00
+OP000303/26 Jedidah Wangui Muiga 1320315 Hydrochlorothiazide 50mg
+Sachets
+jimmwangi 30.00 5.00 150.00
+OP000785/26 Leslie Wanjiru Mwangi 1320322 Cosflora Probiotics 2mg jimmwangi 5.00 80.00 400.00
+OP000785/26 Leslie Wanjiru Mwangi 1320322 Diloxanide 125 Mg +
+Metronidazole 100 Mg Syrup
+-
+jimmwangi 1.00 114.00 114.00
+OP000785/26 Leslie Wanjiru Mwangi 1320322 Oral Rehydration
+Salt(Sachet) 1
+jimmwangi 5.00 12.00 60.00
+OP000785/26 Leslie Wanjiru Mwangi 1320322 Zinc Sulphate 20mg - jimmwangi 10.00 5.00 50.00
+OP00009176 Wahome Nyaguthii Serah 1321737 Aclosara-Mr - jimmwangi 10.00 45.00 450.00
+OP00009176 Wahome Nyaguthii Serah 1321737 Atovastatin 10mg - jimmwangi 30.00 5.00 150.00
+OP00009176 Wahome Nyaguthii Serah 1321737 Cetrizine Dihydrochloride
+Tabs 10mg -
+jimmwangi 10.00 5.00 50.00
+OP00009176 Wahome Nyaguthii Serah 1321737 Etoflam Gel(Etoricoxib
+Linsed Oil Methylsacylate
+&Menthol 50mg) -
+jimmwangi 1.00 1,045.00 1,045.00
+OP00246756 Wambugu Nyawira Lynacy 1321803 Amoxycillin&Clavulanate
+Pottasium 1000mg -
+jimmwangi 10.00 70.00 700.00
+OP00246756 Wambugu Nyawira Lynacy 1321803 Cough
+Suppresant(Dextromethapha
+n) Dacof 100ml 1
+jimmwangi 1.00 250.00 250.00
+OP00246756 Wambugu Nyawira Lynacy 1321803 Montebasto(Ebastine
+2.5mg+Montelukast Sodium
+4mg Tabs) -
+jimmwangi 5.00 91.00 455.00
+OP00246756 Wambugu Nyawira Lynacy 1321803 Paracetamol Tabs 500mg 1 jimmwangi 30.00 2.00 60.00
+OP002616/26 Beth Wambui Kariuki 1321858 Flumox 500mg 1 jimmwangi 15.00 5.00 750.00
+OP002616/26 Beth Wambui Kariuki 1321858 Gentamycin Eye/Ear Drops - jimmwangi 1.00 50.00 50.00
+OP002616/26 Beth Wambui Kariuki 1321858 Lonoflam(Lornoscam And
+Paracetamol 325 Mgs) -
+jimmwangi 10.00 57.00 570.00
+OP001803/23 Claire Muthoni Wangari 1322173 Crepe Bandage 4inch 1 jimmwangi 1.00 120.00 120.00
+OP001803/23 Claire Muthoni Wangari 1322173 Etoflam Gel(Etoricoxib
+Linsed Oil Methylsacylate
+&Menthol 50mg) -
+jimmwangi 1.00 1,045.00 1,045.00
+OP001803/23 Claire Muthoni Wangari 1322175 Ibuprofen Tabs 200mg 1 jimmwangi 15.00 1.00 15.00
+OP007339/24 Jim Mwangi Gakumba 1322386 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+eunah 10.00 35.00 350.00
+==End of OCR for page 7==
+==Start of OCR for page 8==
+Prescriptions - Page: 8
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP007339/24 Jim Mwangi Gakumba 1322386 Cough Expectorant(Ascoril)
+(100ml) 1
+eunah 1.00 280.00 280.00
+OP007339/24 Jim Mwangi Gakumba 1322386 Esomeprazole 40mg Tablets
+Tablet
+eunah 10.00 30.00 300.00
+OP007339/24 Jim Mwangi Gakumba 1322386 Metoclopramide Hcl Tabs
+10mg 1
+eunah 10.00 3.00 30.00
+OP007339/24 Jim Mwangi Gakumba 1322386 Montelukast And
+Levocetrizine Tabs 10/5mg(
+Meftal Plus) Tablet
+eunah 5.00 75.00 375.00
+OP007339/24 Jim Mwangi Gakumba 1322386 Paracetamol Tabs 500mg 1 eunah 30.00 2.00 60.00
+OP00169280 Kinyua Kaara Victor 1322432 Amoxicillin 250mg Bp 100s 1 jimmwangi 15.00 3.00 45.00
+OP00169280 Kinyua Kaara Victor 1322432 Cetrizine Dihydrochloride
+Tabs 10mg -
+jimmwangi 5.00 5.00 25.00
+OP00169280 Kinyua Kaara Victor 1322432 Cough Expectorant(Ascoril)
+(100ml) 1
+jimmwangi 1.00 280.00 280.00
+OP00169280 Kinyua Kaara Victor 1322432 Montelucast 4mg(Myteka)
+Satchets 1
+jimmwangi 5.00 50.00 250.00
+OP000623/26 Britney Joy Wangui Gathoni 1322445 Augmentin Suspension 457
+Mg-70mls 1
+jimmwangi 1.00 1,410.00 1,410.00
+OP000623/26 Britney Joy Wangui Gathoni 1322445 Chlorpheniramine Maleate
+2mg/Ml 60ml 1
+jimmwangi 1.00 30.00 30.00
+OP000623/26 Britney Joy Wangui Gathoni 1322445 Ibuprofen Syrup 100mg/5ml
+-
+jimmwangi 1.00 60.00 60.00
+OP000623/26 Britney Joy Wangui Gathoni 1322451 Cosflora Probiotics 2mg jimmwangi 5.00 80.00 400.00
+OP000623/26 Britney Joy Wangui Gathoni 1322451 Paracetamol(Adult)Supposto
+ries-250mg -
+jimmwangi 1.00 30.00 30.00
+OP00074671 Murage Muchemi Stephen 1322562 H.Pylori Kit (Surekit) Pack 1 jimmwangi 1.00 2,330.00 2,330.00
+OP00237521 Muiruri Wambui Ann 1322810 Diclofenac Gel Ointment 1 polly 1.00 50.00 50.00
+OP00237521 Muiruri Wambui Ann 1322810 Saline Nasal Drops 0.9%(10
+Mls) -
+polly 1.00 60.00 60.00
+OP019097/25 Damian Maina Njeri 1325264 Montelucast 4mg(Myteka)
+Satchets 1
+gicheha 5.00 50.00 250.00
+OP002674/26 Judy Muringo Murage 1325494 I.V.Cannular Size 22 1 eunah 1.00 17.00 17.00
+OP002674/26 Judy Muringo Murage 1325494 I.V.Giving Sets 10 eunah 1.00 221.00 221.00
+OP002674/26 Judy Muringo Murage 1325494 Paracetamol Infusion 1gm 1 eunah 1.00 350.00 350.00
+OP00162484 Muriithi Kabui Rose 1325565 Metronidazole Injection
+500mg/100mls -
+eunah 1.00 102.00 102.00
+OP00162484 Muriithi Kabui Rose 1325565 Normalsaline 0.9%/500mls 1 eunah 1.00 180.00 180.00
+OP00162484 Muriithi Kabui Rose 1325565 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+eunah 1.00 51.00 51.00
+OP001680/26 Dion Ella Wairimu Miano 1325590 Augmentin Suspension 457
+Mg-70mls 1
+eunah 1.00 1,410.00 1,410.00
+OP001680/26 Dion Ella Wairimu Miano 1325590 Ebastine Syrup(Histy)
+5mg/5ml
+eunah 1.00 698.00 698.00
+OP002674/26 Judy Muringo Murage 1325609 Amoxicilin 500mg - eunah 15.00 7.00 105.00
+OP002674/26 Judy Muringo Murage 1325609 Paracetamol Tabs 500mg 1 eunah 18.00 2.00 36.00
+OP002674/26 Judy Muringo Murage 1325611 Amoxicilin 500mg - eunah 15.00 7.00 105.00
+OP002674/26 Judy Muringo Murage 1325611 Paracetamol Tabs 500mg 1 eunah 18.00 2.00 36.00
+OP00204788 Murage Gathoni Grace 1326032 Albendazole Syrup 20mls 1 eunah 1.00 60.00 60.00
+OP00204788 Murage Gathoni Grace 1326032 Annusol Suppositories - eunah 5.00 90.00 450.00
+OP00204788 Murage Gathoni Grace 1326032 Corclav 228 1 eunah 2.00 515.00 1,030.00
+OP00204788 Murage Gathoni Grace 1326032 Ebastine Syrup(Histy)
+5mg/5ml
+eunah 1.00 698.00 698.00
+OP00204788 Murage Gathoni Grace 1326032 Ibugesic Syp 100ml 1 eunah 1.00 150.00 150.00
+OP00204788 Murage Gathoni Grace 1326033 Paracetamol Susp (Cetamol
+) 100ml -
+eunah 1.00 80.00 80.00
+OP00205282 Mumbi Wanjiru Delaney 1326525 Corclav 228 1 eunah 1.00 515.00 515.00
+OP00205282 Mumbi Wanjiru Delaney 1326525 Ebastine Syrup(Histy)
+5mg/5ml
+eunah 1.00 698.00 698.00
+OP00205282 Mumbi Wanjiru Delaney 1326525 Ibugesic Syp 100ml 1 eunah 1.00 150.00 150.00
+OP00148119 Macharia Mumbi Maureen 1326528 Cartimove-D Tablets 1 eunah 10.00 120.00 1,200.00
+OP00148119 Macharia Mumbi Maureen 1326528 Nervoplex Tabs - eunah 10.00 140.00 1,400.00
+OP0024941 Mwai Wangui Abigail 1327081 Cetrizine Dihydrochloride
+Tabs 10mg -
+jimmwangi 5.00 5.00 25.00
+OP0024941 Mwai Wangui Abigail 1327081 Ciprofloxacin Tabs 500mg - jimmwangi 10.00 6.00 60.00
+OP0024941 Mwai Wangui Abigail 1327081 Clotrimazole Virginal
+Pessaries 200mg (Pack Of
+3) 1
+jimmwangi 1.00 56.00 56.00
+==End of OCR for page 8==
+==Start of OCR for page 9==
+Prescriptions - Page: 9
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP000064/23 Julius Maina Muraguri 1327101 Aclosara-Sp(Paracetamol
+325mgs Serratiopeptidase
+15mgs Tabs) -
+jimmwangi 10.00 90.00 900.00
+OP000064/23 Julius Maina Muraguri 1327101 Cartimove Tabs - jimmwangi 14.00 70.00 980.00
+OP000064/23 Julius Maina Muraguri 1327101 Etoflam Gel(Etoricoxib
+Linsed Oil Methylsacylate
+&Menthol 50mg) -
+jimmwangi 1.00 1,045.00 1,045.00
+OP017131/25 Meghan Wanjiru Kirethi 1327197 Augmentin 228mg/5mls 1 jimmwangi 1.00 450.00 450.00
+OP017131/25 Meghan Wanjiru Kirethi 1327197 Ibugesic Syp 100ml 1 jimmwangi 1.00 150.00 150.00
+OP002708/26 Abidan Muturi Kariithi 1327555 Albendazole Syrup 20mls 1 jimmwangi 1.00 60.00 60.00
+OP002708/26 Abidan Muturi Kariithi 1327555 Augmentin 228mg/5mls 1 jimmwangi 2.00 450.00 900.00
+OP002708/26 Abidan Muturi Kariithi 1327555 Ebastine Syrup(Histy)
+5mg/5ml
+jimmwangi 1.00 698.00 698.00
+OP002708/26 Abidan Muturi Kariithi 1327555 Ibugesic Syp 100ml 1 jimmwangi 1.00 150.00 150.00
+OP00162484 Muriithi Kabui Rose 1327608 Gauze Roll 1.5 Grams Piece jimmwangi 5.00 9.00 45.00
+OP00162484 Muriithi Kabui Rose 1327608 Surgical Spirit 90% - jimmwangi 10.00 2.00 20.00
+OP001960/23 David Mundia Gachini 1328054 Amlodipine 5 Mg Tabs 1 jimmwangi 30.00 8.00 240.00
+OP001960/23 David Mundia Gachini 1328054 Atovastatin 10mg - jimmwangi 30.00 5.00 150.00
+OP001960/23 David Mundia Gachini 1328054 Clopidogrel 75 Mg - jimmwangi 30.00 10.00 300.00
+OP001960/23 David Mundia Gachini 1328054 Losartan Tabs (Carditan )
+50mg
+jimmwangi 60.00 5.00 300.00
+OP001960/23 David Mundia Gachini 1328054 Mixtard ( Human)/100units - jimmwangi 1.00 600.00 600.00
+OP001960/23 David Mundia Gachini 1328056 Etorixocib 60mg And
+Paracetamol325mg Tabs -
+jimmwangi 5.00 65.00 325.00
+OP007339/24 Jim Mwangi Gakumba 1328620 Gauze Roll 1.5 Grams Piece eunah 5.00 9.00 45.00
+OP007339/24 Jim Mwangi Gakumba 1328620 Opsite Dressing 6.5*5.5 - eunah 3.00 23.00 69.00
+OP00166688 Mundia Wanjugu Margaret 1328761 Paracetamol Tabs 500mg 1 eunah 20.00 2.00 40.00
+OP00071894 Kamwere Alice Wanjiru 1328820 Atovastatin 20mg - eunah 20.00 13.00 260.00
+OP00071894 Kamwere Alice Wanjiru 1328820 Cartimove Tabs - eunah 7.00 70.00 490.00
+OP00071894 Kamwere Alice Wanjiru 1328820 Losartan Tabs (Carditan )
+50mg
+eunah 20.00 5.00 100.00
+OP00071894 Kamwere Alice Wanjiru 1328820 Metformin Tabs 500mg -Xr - eunah 20.00 15.00 300.00
+OP002686/26 Joseph Maina Ngonjo 1328981 Amlodipine 5 Mg Tabs 1 eunah 14.00 8.00 112.00
+OP002686/26 Joseph Maina Ngonjo 1328981 Atenolol Tabs 50mg 1 eunah 14.00 5.00 70.00
+OP017774/25 Peter Kariuki Gitonga 1329159 Paracetamol( Paeds
+)Suppositories-125mg 1
+eunah 1.00 20.00 20.00
+OP017774/25 Peter Kariuki Gitonga 1329159 Salbutamol Nebulizer
+2.5mg/2.5ml(Vial) 1
+eunah 1.00 300.00 300.00
+OP00251197 Wachira Wangui Natasha 1329164 Benzyl Penicilline Injection
+1.0mu -
+eunah 1.00 27.00 27.00
+OP00251197 Wachira Wangui Natasha 1329164 Gentamycin Injection
+80mg/2ml 10
+eunah 2.00 18.00 36.00
+OP00251197 Wachira Wangui Natasha 1329164 I.V.Cannular Size 24 - eunah 1.00 17.00 17.00
+OP00251197 Wachira Wangui Natasha 1329164 Needles G21 Each 1 eunah 1.00 11.00 11.00
+OP00251197 Wachira Wangui Natasha 1329164 Syringe 10ml 1 eunah 1.00 13.00 13.00
+OP017774/25 Peter Kariuki Gitonga 1329188 Salbutamol Nebulizer
+2.5mg/2.5ml(Vial) 1
+eunah 1.00 300.00 300.00
+OP002746/26 Vanessa Njoki Kibochi 1329418 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+eunah 10.00 35.00 350.00
+OP002746/26 Vanessa Njoki Kibochi 1329418 Montebasto(Ebastine
+2.5mg+Montelukast Sodium
+4mg Tabs) -
+eunah 5.00 91.00 455.00
+OP002746/26 Vanessa Njoki Kibochi 1329418 Paracetamol Tabs 500mg 1 eunah 18.00 2.00 36.00
+OP018779/25 Samuel Wachira Muriuki 1329549 Nifedipine Tabs 20mg - eunah 1.00 5.00 5.00
+OP018779/25 Samuel Wachira Muriuki 1329595 Losartan 50mg Hctz 12.5mg
+28
+eunah 7.00 5.00 35.00
+OP018779/25 Samuel Wachira Muriuki 1329598 Aclosara-Sp(Paracetamol
+325mgs Serratiopeptidase
+15mgs Tabs) -
+eunah 10.00 90.00 900.00
+OP00078287 Mwangi Wachera Jane 1329741 Beecox Plus
+Caps(Celecocib +Pcm Tabs
+325mg) -
+eunah 14.00 75.00 1,050.00
+OP00078287 Mwangi Wachera Jane 1329741 Cartimove Tabs - eunah 10.00 70.00 700.00
+OP00078287 Mwangi Wachera Jane 1329741 Nervoplex Tabs - eunah 10.00 140.00 1,400.00
+OP00078287 Mwangi Wachera Jane 1329742 Cartimove Tabs - eunah 5.00 70.00 350.00
+OP00078287 Mwangi Wachera Jane 1329742 Nervoplex Tabs - eunah 5.00 140.00 700.00
+OP016710/25 Njeri Shephat Wachira 1329855 Aclosara-Mr - eunah 10.00 45.00 450.00
+==End of OCR for page 9==
+==Start of OCR for page 10==
+Prescriptions - Page: 10
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP016710/25 Njeri Shephat Wachira 1329855 Flucloxacilin 500mg - eunah 20.00 15.00 300.00
+OP016710/25 Njeri Shephat Wachira 1329855 Opsite Dressing 6.5*5.5 - eunah 3.00 23.00 69.00
+OP016710/25 Njeri Shephat Wachira 1329907 Aclosara-Mr - eunah 10.00 45.00 450.00
+OP016710/25 Njeri Shephat Wachira 1329907 Flucloxacilin 500mg - eunah 20.00 15.00 300.00
+OP016710/25 Njeri Shephat Wachira 1329907 Ibuprofen Tablets 400mg - eunah 3.00 2.00 6.00
+OP016710/25 Njeri Shephat Wachira 1329907 Opsite Dressing 6.5*5.5 - eunah 1.00 23.00 23.00
+OP00244077 Wairimu Wamuyu Mollin 1330293 Hyoscine N-Butylbromide
+Injection 20mg/Ml 1
+jimmwangi 1.00 32.00 32.00
+OP00244077 Wairimu Wamuyu Mollin 1330293 I.V.Cannular Size 22 1 jimmwangi 1.00 17.00 17.00
+OP00244077 Wairimu Wamuyu Mollin 1330293 I.V.Giving Sets 10 jimmwangi 1.00 221.00 221.00
+OP00244077 Wairimu Wamuyu Mollin 1330293 Needles G21 Each 1 jimmwangi 1.00 11.00 11.00
+OP00244077 Wairimu Wamuyu Mollin 1330293 Paracetamol Infusion 1gm 1 jimmwangi 1.00 350.00 350.00
+OP00244077 Wairimu Wamuyu Mollin 1330293 Syringe 10ml 1 jimmwangi 1.00 13.00 13.00
+OP00244077 Wairimu Wamuyu Mollin 1330295 Beecox Plus
+Caps(Celecocib +Pcm Tabs
+325mg) -
+jimmwangi 10.00 75.00 750.00
+OP00244077 Wairimu Wamuyu Mollin 1330295 Montebasto(Ebastine
+2.5mg+Montelukast Sodium
+4mg Tabs) -
+jimmwangi 7.00 91.00 637.00
+OP00244077 Wairimu Wamuyu Mollin 1330295 Probeta N Drops 1 jimmwangi 1.00 160.00 160.00
+OP00244077 Wairimu Wamuyu Mollin 1330296 Montebasto(Ebastine
+2.5mg+Montelukast Sodium
+4mg Tabs) -
+jimmwangi 7.00 91.00 637.00
+OP00244077 Wairimu Wamuyu Mollin 1330298 Amoxycillin&Clavulanate
+Pottasium 1000mg -
+jimmwangi 10.00 70.00 700.00
+OP002836/23 Aidel Dion Kamau Gachuhi 1330333 Augmentin 228mg/5mls 1 jimmwangi 2.00 450.00 900.00
+OP002836/23 Aidel Dion Kamau Gachuhi 1330333 Chlorpheniramine Maleate
+2mg/Ml 60ml 1
+jimmwangi 1.00 30.00 30.00
+OP002836/23 Aidel Dion Kamau Gachuhi 1330333 Montelucast 4mg(Myteka)
+Satchets 1
+jimmwangi 5.00 50.00 250.00
+OP015496/25 Leevon Macharia Njagi 1330410 Augmentin 228mg/5mls 1 jimmwangi 1.00 450.00 450.00
+OP015496/25 Leevon Macharia Njagi 1330410 Chlorpheniramine Maleate
+2mg/Ml 60ml 1
+jimmwangi 1.00 30.00 30.00
+OP015496/25 Leevon Macharia Njagi 1330410 Paracetamol Syrup 100mls
+(Curamol -
+jimmwangi 1.00 60.00 60.00
+OP015496/25 Leevon Macharia Njagi 1330412 Tetracycline Skin Ointment 1 jimmwangi 1.00 40.00 40.00
+OP015496/25 Leevon Macharia Njagi 1330415 Tetracycline Eye Ointment 1 jimmwangi 1.00 50.00 50.00
+OP001724/26 Elvian Waweru Ngani 252592 Nystatin Oral Drops 1 Dr.Angela
+Nyambura
+1.00 80.00 80.00
+OP000742/23 Bernad Mwangi Muteithia 252611 Albendazole 400mg - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP000742/23 Bernad Mwangi Muteithia 252611 Atovastatin 20mg - Dr.Angela
+Nyambura
+30.00 13.00 390.00
+OP000742/23 Bernad Mwangi Muteithia 252611 Bisacodyll Tabs 5mg - Dr.Angela
+Nyambura
+10.00 5.00 50.00
+OP000742/23 Bernad Mwangi Muteithia 252611 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+5.00 30.00 150.00
+OP000742/23 Bernad Mwangi Muteithia 252611 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP000742/23 Bernad Mwangi Muteithia 252611 Metoclopramide Hcl Tabs
+10mg 1
+Dr.Angela
+Nyambura
+10.00 3.00 30.00
+WK252612 Yvonne 252612 Diclomol Sr 100mg 100s 1 Dr.Angela
+Nyambura
+5.00 6.00 30.00
+OP000978/23 Alice Wanjiru Maguru 252621 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP000978/23 Alice Wanjiru Maguru 252621 Glibenclamide Tabs 5mg 28 Dr.Angela
+Nyambura
+60.00 5.00 300.00
+OP000978/23 Alice Wanjiru Maguru 252621 Hydraiazine Tabs 25mg - Dr.Angela
+Nyambura
+90.00 8.00 720.00
+OP000978/23 Alice Wanjiru Maguru 252621 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+60.00 5.00 300.00
+OP000978/23 Alice Wanjiru Maguru 252621 Metformin 850 Mg 1 Dr.Angela
+Nyambura
+60.00 4.00 240.00
+OP000978/23 Alice Wanjiru Maguru 252621 Nifedipine Tabs 20mg - Dr.Angela
+Nyambura
+2.00 5.00 10.00
+OP017774/25 Leyla Wangui Mwangi 252627 Diloxanide 125 Mg +
+Metronidazole 100 Mg Syrup
+-
+Dr.Angela
+Nyambura
+1.00 114.00 114.00
+OP017774/25 Leyla Wangui Mwangi 252627 Paracetamol Syrup 100mls
+(Curamol -
+Dr.Angela
+Nyambura
+1.00 60.00 60.00
+OP017774/25 Leyla Wangui Mwangi 252627 Zinc Sulphate 20mg - Dr.Angela
+Nyambura
+10.00 5.00 50.00
+==End of OCR for page 10==
+==Start of OCR for page 11==
+Prescriptions - Page: 11
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+WK252637 John 252637 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+5.00 9.00 45.00
+WK252637 John 252637 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+Dr.Angela
+Nyambura
+1.00 51.00 51.00
+OP000698/26 Peter Njoroge Kimani 252638 Diloxanide
+250mg+Metronindazole
+200mg 1
+Dr.Angela
+Nyambura
+30.00 6.00 180.00
+WK252639 Peter 252639 Albendazole Olworm 1 Dr.Angela
+Nyambura
+1.00 30.00 30.00
+OP002196/26 Bianca Britta Wambui 252647 Augmentin Suspension 457
+Mg-70mls 1
+Dr.Angela
+Nyambura
+1.00 650.00 650.00
+OP002196/26 Bianca Britta Wambui 252647 Ibuprofen Syrup 100mg/5ml
+-
+Dr.Angela
+Nyambura
+1.00 60.00 60.00
+OP002196/26 Bianca Britta Wambui 252648 Augmentin Suspension 457
+Mg-70mls 1
+Dr.Angela
+Nyambura
+2.00 650.00 1,300.00
+OP002196/26 Bianca Britta Wambui 252648 Ibuprofen Syrup 100mg/5ml
+-
+Dr.Angela
+Nyambura
+2.00 60.00 120.00
+OP016120/25 Agatha Wothaya Wachira 252669 Ifaas(Ferrous Sulphate
+200mg&Folic Acid 400mg) -
+Dr.Angela
+Nyambura
+30.00 2.00 60.00
+OP002197/26 Dalia Wanjiku Murimi 252673 Cetrizine 5mg Syrup 60ml - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP002197/26 Dalia Wanjiku Murimi 252673 Ondansentron Syrup 1 Dr.Angela
+Nyambura
+1.00 320.00 320.00
+OP002197/26 Dalia Wanjiku Murimi 252673 Oral Rehydration
+Salt(Sachet) 1
+Dr.Angela
+Nyambura
+5.00 12.00 60.00
+OP002197/26 Dalia Wanjiku Murimi 252673 Paracetamol Syrup 100mls
+(Curamol -
+Dr.Angela
+Nyambura
+1.00 60.00 60.00
+OP002197/26 Dalia Wanjiku Murimi 252673 Zinc Sulphate 20mg - Dr.Angela
+Nyambura
+10.00 5.00 50.00
+WK252736 Triza 252736 Safe72 1 Dr.Angela
+Nyambura
+1.00 133.00 133.00
+WK252757 Jane 252757 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+2.00 9.00 18.00
+WK252757 Jane 252757 Surgical Blade Size 23 - Dr.Angela
+Nyambura
+1.00 20.00 20.00
+WK252776 Ann 252776 Domperidone 10mg - Dr.Angela
+Nyambura
+3.00 5.00 15.00
+OP001760/23 Jane Wangui Mwangi 252785 Celecoxib 200mg - Dr.Angela
+Nyambura
+10.00 16.00 160.00
+OP001760/23 Jane Wangui Mwangi 252785 Clotrimazole Cream 1
+20gms -
+Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP001760/23 Jane Wangui Mwangi 252785 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP001760/23 Jane Wangui Mwangi 252785 Nifedipine Tabs 20mg - Dr.Angela
+Nyambura
+60.00 5.00 300.00
+OP019175/25 Justus Mwangi Kihara 252786 Amlodipine 5 Mg Tabs 1 Dr.Angela
+Nyambura
+30.00 8.00 240.00
+OP019175/25 Justus Mwangi Kihara 252786 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+60.00 5.00 300.00
+WK252791 Rosemary 252791 Crepe Bandage 4inch 1 Dr.Angela
+Nyambura
+2.00 120.00 240.00
+WK252791 Rosemary 252791 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+40.00 9.00 360.00
+WK252791 Rosemary 252791 Metronidazole Injection
+500mg/100mls -
+Dr.Angela
+Nyambura
+1.00 102.00 102.00
+WK252791 Rosemary 252791 Normalsaline 0.9%/500mls 1 Dr.Angela
+Nyambura
+1.00 180.00 180.00
+OP001558/26 Phyllis Njeri Kanyiri 252806 Aclosara-Mr - Dr.Angela
+Nyambura
+10.00 45.00 450.00
+OP001558/26 Phyllis Njeri Kanyiri 252806 Cartimove Tabs - Dr.Angela
+Nyambura
+15.00 70.00 1,050.00
+OP001558/26 Phyllis Njeri Kanyiri 252806 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+7.00 30.00 210.00
+OP001558/26 Phyllis Njeri Kanyiri 252806 Fludex C Tablets 10s 1 Dr.Angela
+Nyambura
+15.00 14.00 210.00
+OP001558/26 Phyllis Njeri Kanyiri 252806 Metoclopramide Hcl Tabs
+10mg 1
+Dr.Angela
+Nyambura
+10.00 3.00 30.00
+OP001558/26 Phyllis Njeri Kanyiri 252806 Needles G21 Each 1 Dr.Angela
+Nyambura
+1.00 11.00 11.00
+OP001558/26 Phyllis Njeri Kanyiri 252806 Paracetamol Injection
+150mg/Mi 1
+Dr.Angela
+Nyambura
+1.00 30.00 30.00
+OP001558/26 Phyllis Njeri Kanyiri 252806 Syringe 5ml 1 Dr.Angela
+Nyambura
+1.00 7.00 7.00
+OP012490/25 Joan Wairimu Kinyua 252808 Aclosara-Mr - Dr.Angela
+Nyambura
+10.00 45.00 450.00
+==End of OCR for page 11==
+==Start of OCR for page 12==
+Prescriptions - Page: 12
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP012490/25 Joan Wairimu Kinyua 252808 Bisacodyll Tabs 5mg - Dr.Angela
+Nyambura
+10.00 5.00 50.00
+WK252820 - - Cash Sale 252820 Glibenclamide Tabs 5mg 28 Dr.Angela
+Nyambura
+28.00 5.00 140.00
+OP00251946 Muriuki Munene Hezron 252920 Sabezole It(Rabeprazole
+20mg+Itopride 150mg) -
+Dr.Angela
+Nyambura
+1.00 145.00 145.00
+WK252956 Emily 252956 Cetrizine 5mg Syrup 60ml - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+WK252965 Jane 252965 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+5.00 2.00 10.00
+WK253080 Brian 253080 Safe72 1 Dr.Angela
+Nyambura
+1.00 133.00 133.00
+OP00148065 Jecinta Wangechi
+Ngirigacha
+253083 Amlodipine 5 Mg Tabs 1 Dr.Angela
+Nyambura
+30.00 8.00 240.00
+OP00148065 Jecinta Wangechi
+Ngirigacha
+253083 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP00148065 Jecinta Wangechi
+Ngirigacha
+253083 Metformin
+500mg+Glibenclamide Tabs
+5mg -
+Dr.Angela
+Nyambura
+60.00 8.00 480.00
+OP00199716 Ngure Wambura Esther 253105 Acecor Gel 1 Dr.Angela
+Nyambura
+1.00 560.00 560.00
+OP00199716 Ngure Wambura Esther 253105 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+15.00 5.00 75.00
+OP00199716 Ngure Wambura Esther 253105 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP002226/26 Monicah Muthoni Maina 253110 Albendazole 400mg - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP002226/26 Monicah Muthoni Maina 253110 Clob B Cream 1 Dr.Angela
+Nyambura
+1.00 70.00 70.00
+OP016978/25 Eunice Muthoni Macharia 253117 Amlodipine 5 Mg Tabs 1 Dr.Angela
+Nyambura
+30.00 8.00 240.00
+OP016978/25 Eunice Muthoni Macharia 253117 Carveddilol 12.5mgs - Dr.Angela
+Nyambura
+30.00 8.00 240.00
+OP016978/25 Eunice Muthoni Macharia 253117 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00202322 Dickson Kahoi Irungu 253121 Albendazole 400mg - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+WK253138 Rosemary 253138 Crepe Bandage 4inch 1 Dr.Angela
+Nyambura
+1.00 120.00 120.00
+WK253138 Rosemary 253138 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+15.00 9.00 135.00
+WK253138 Rosemary 253138 Surgical Gloves Size 7.5 50 Dr.Angela
+Nyambura
+1.00 100.00 100.00
+WK253138 Rosemary 253138 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+Dr.Angela
+Nyambura
+1.00 51.00 51.00
+OP019325/25 Yvonne Wanjiru Maina 253144 Amoxicilin 500mg - Dr.Angela
+Nyambura
+56.00 7.00 392.00
+OP019325/25 Yvonne Wanjiru Maina 253144 Annusol Cream 1 Dr.Angela
+Nyambura
+1.00 400.00 400.00
+OP019325/25 Yvonne Wanjiru Maina 253144 Metronidazole Tabs 400 Mg
+1
+Dr.Angela
+Nyambura
+56.00 5.00 280.00
+OP019325/25 Yvonne Wanjiru Maina 253144 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+28.00 2.00 56.00
+OP019325/25 Yvonne Wanjiru Maina 253144 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+20.00 2.00 40.00
+OP002236/26 Rose Ngonyo Wandeto 253168 Amoxycillin&Clavulanate
+Pottasium 1000mg -
+Dr.Angela
+Nyambura
+10.00 70.00 700.00
+OP002236/26 Rose Ngonyo Wandeto 253168 Cetrizine Dihydrochloride
+Tabs 10mg -
+Dr.Angela
+Nyambura
+5.00 5.00 25.00
+OP002236/26 Rose Ngonyo Wandeto 253168 Cough Expectorant(Ascoril)
+(100ml) 1
+Dr.Angela
+Nyambura
+1.00 280.00 280.00
+OP002236/26 Rose Ngonyo Wandeto 253168 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+30.00 2.00 60.00
+OP00081745 Wachira Muthoni Shelmith 253202 Celecoxib 200mg - Dr.Angela
+Nyambura
+10.00 16.00 160.00
+OP00081745 Wachira Muthoni Shelmith 253202 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP00081745 Wachira Muthoni Shelmith 253202 Metoclopramide Hcl Tabs
+10mg 1
+Dr.Angela
+Nyambura
+10.00 3.00 30.00
+OP00081745 Wachira Muthoni Shelmith 253202 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+28.00 2.00 56.00
+OP00259312 Kinaro Wangari Julia 253206 Cartimove Tabs - Dr.Angela
+Nyambura
+14.00 70.00 980.00
+OP00259312 Kinaro Wangari Julia 253206 Celecoxib 200mg - Dr.Angela
+Nyambura
+10.00 16.00 160.00
+==End of OCR for page 12==
+==Start of OCR for page 13==
+Prescriptions - Page: 13
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP00259312 Kinaro Wangari Julia 253206 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+14.00 2.00 28.00
+OP016598/25 Robert Wachira Weru 253208 Amlodipine 10 Mg 28 Dr.Angela
+Nyambura
+30.00 12.00 360.00
+OP016598/25 Robert Wachira Weru 253208 Foley Catheter Size 18
+2way 10
+Dr.Angela
+Nyambura
+1.00 80.00 80.00
+OP016598/25 Robert Wachira Weru 253208 Needles G21 Each 1 Dr.Angela
+Nyambura
+1.00 11.00 11.00
+OP016598/25 Robert Wachira Weru 253208 Syringe 10ml 1 Dr.Angela
+Nyambura
+3.00 13.00 39.00
+OP016598/25 Robert Wachira Weru 253208 Urine Bag Adult 1 Dr.Angela
+Nyambura
+1.00 62.00 62.00
+OP016598/25 Robert Wachira Weru 253208 Water For Injection 1 Dr.Angela
+Nyambura
+2.00 20.00 40.00
+WK253210 Kelvin 253210 Ibuprofen Syrup 100mg/5ml
+-
+Dr.Angela
+Nyambura
+1.00 60.00 60.00
+WK253210 Kelvin 253210 Metronidazole Suspension
+100ml -
+Dr.Angela
+Nyambura
+1.00 80.00 80.00
+WK253217 Mary Wangari 253217 Glibenclamide Tabs 5mg 28 Dr.Angela
+Nyambura
+42.00 5.00 210.00
+WK253336 John 253336 Metformin 500mg 28 Dr.Angela
+Nyambura
+14.00 5.00 70.00
+WK253373 Simon 253373 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+2.00 50.00 100.00
+WK253392 John 253392 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+5.00 9.00 45.00
+WK253418 Geofrey 253418 Prostaflo-F(Tamsulosin
+Hydrochloride
+Sr+Finasteride Caps) 1
+Dr.Angela
+Nyambura
+15.00 61.00 915.00
+WK253447 Liam 253447 Oral Rehydration
+Salt(Sachet) 1
+Dr.Angela
+Nyambura
+2.00 12.00 24.00
+WK253447 Liam 253447 Zinc Sulphate 20mg - Dr.Angela
+Nyambura
+10.00 5.00 50.00
+WK253465 Josphine 253465 Albendazole 400mg - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+WK253465 Josphine 253465 Clob B Cream 1 Dr.Angela
+Nyambura
+1.00 70.00 70.00
+WK253465 Josphine 253465 Secnid Ds 2s 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP002265/26 Lucy Wangari Warui 253485 Amlodipine 5 Mg Tabs 1 Dr.Angela
+Nyambura
+7.00 8.00 56.00
+WK253573 Margret 253573 Atovastatin 20mg - Dr.Angela
+Nyambura
+30.00 13.00 390.00
+WK253573 Margret 253573 Hydraiazine Tabs 25mg - Dr.Angela
+Nyambura
+30.00 8.00 240.00
+WK253573 Margret 253573 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00237715 Murage Phyliis Wanjugu 253581 Atovastatin 20mg - Dr.Angela
+Nyambura
+10.00 13.00 130.00
+OP00237715 Murage Phyliis Wanjugu 253581 Enalapril Tabs 5mg - Dr.Angela
+Nyambura
+30.00 2.00 60.00
+OP00238123 Kimani Kamungu Ndaiga 253591 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00238123 Kimani Kamungu Ndaiga 253591 Nifedipine Tabs 20mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00076889 Ndaiga Nyakinyua Margaret 253593 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00076889 Ndaiga Nyakinyua Margaret 253593 Atovastatin 10mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00076889 Ndaiga Nyakinyua Margaret 253593 Hydraiazine Tabs 25mg - Dr.Angela
+Nyambura
+60.00 8.00 480.00
+OP00076889 Ndaiga Nyakinyua Margaret 253593 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00076889 Ndaiga Nyakinyua Margaret 253593 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+10.00 2.00 20.00
+WK253624 Rose 253624 Crepe Bandage 4inch 1 Dr.Angela
+Nyambura
+1.00 120.00 120.00
+WK253624 Rose 253624 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+20.00 9.00 180.00
+WK253624 Rose 253624 Metronidazole Injection
+500mg/100mls -
+Dr.Angela
+Nyambura
+1.00 102.00 102.00
+WK253624 Rose 253624 Normalsaline 0.9%/500mls 1 Dr.Angela
+Nyambura
+1.00 180.00 180.00
+WK253624 Rose 253624 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+Dr.Angela
+Nyambura
+1.00 51.00 51.00
+==End of OCR for page 13==
+==Start of OCR for page 14==
+Prescriptions - Page: 14
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+WK253626 Rose 253626 Surgical Blade Size 23 - Dr.Angela
+Nyambura
+1.00 20.00 20.00
+OP00162187 Wandeto Wamahoro Hope 253690 Annusol Cream 1 Dr.Angela
+Nyambura
+1.00 400.00 400.00
+OP00162187 Wandeto Wamahoro Hope 253690 Annusol Suppositories - Dr.Angela
+Nyambura
+10.00 90.00 900.00
+WK253724 Ann 253724 Glibenclamide Tabs 5mg 28 Dr.Angela
+Nyambura
+28.00 5.00 140.00
+WK253724 Ann 253724 Metformin 500mg 28 Dr.Angela
+Nyambura
+28.00 5.00 140.00
+OP00248681 Wanjohi Wanjiku Joan 253726 Albendazole Syrup 20mls 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP006450/24 Keilah Kanyi Mwaniki 253737 Amoxycillin Dispersible
+Tablets 250mg 1
+Dr.Angela
+Nyambura
+56.00 6.00 336.00
+OP006450/24 Keilah Kanyi Mwaniki 253737 Metronidazole Suspension
+100ml -
+Dr.Angela
+Nyambura
+2.00 80.00 160.00
+OP006450/24 Keilah Kanyi Mwaniki 253737 Oral Rehydration
+Salt(Sachet) 1
+Dr.Angela
+Nyambura
+3.00 12.00 36.00
+OP006450/24 Keilah Kanyi Mwaniki 253737 Zinc Sulphate 20mg - Dr.Angela
+Nyambura
+5.00 5.00 25.00
+WK253738 John 253738 Cetrizine Dihydrochloride
+Tabs 10mg -
+Dr.Angela
+Nyambura
+5.00 5.00 25.00
+WK253738 John 253738 Prednisolone 5mg (Zain)
+White 100s 1
+Dr.Angela
+Nyambura
+6.00 3.00 18.00
+OP002163/26 Kingsley Kuria Maina 253739 Paracetamol( Paeds
+)Suppositories-125mg 1
+Dr.Angela
+Nyambura
+1.00 20.00 20.00
+OP002281/26 Grace Ngina Ngige 253742 Haematinic |(Vitaglobin
+200ml
+Dr.Angela
+Nyambura
+1.00 399.00 399.00
+WK253745 Veronicah 253745 Atovastatin 10mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+WK253745 Veronicah 253745 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+WK253745 Veronicah 253745 Metformin
+500mg+Glibenclamide Tabs
+5mg -
+Dr.Angela
+Nyambura
+60.00 8.00 480.00
+OP002283/26 Jayden Mwangangi Judy 253746 Cefuroxime Tabs 250mg - Dr.Angela
+Nyambura
+10.00 50.00 500.00
+OP002283/26 Jayden Mwangangi Judy 253746 Ibuprofen Tabs 200mg 1 Dr.Angela
+Nyambura
+10.00 1.00 10.00
+OP002289/26 Milka Wanjiru Hiuko 253868 Needles G21 Each 1 Dr.Angela
+Nyambura
+1.00 11.00 11.00
+OP002289/26 Milka Wanjiru Hiuko 253868 Syringe 5ml 1 Dr.Angela
+Nyambura
+1.00 7.00 7.00
+OP002289/26 Milka Wanjiru Hiuko 253868 Tramadol Inj. 100mg - Dr.Angela
+Nyambura
+1.00 35.00 35.00
+WK253869 Jane 253869 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+10.00 2.00 20.00
+WK253874 - - Cash Sale 253874 Glibenclamide Tabs 5mg 28 Dr.Angela
+Nyambura
+28.00 5.00 140.00
+WK253874 - - Cash Sale 253874 Metformin 500mg 28 Dr.Angela
+Nyambura
+28.00 5.00 140.00
+OP00033110 Muraguri Gathigia Jemimah 253875 Losartan Tabs (Carditan )
+50mg
+Dr.Angela
+Nyambura
+23.00 5.00 115.00
+OP00033110 Muraguri Gathigia Jemimah 253875 Nifedipine Tabs 20mg - Dr.Angela
+Nyambura
+60.00 5.00 300.00
+OP00033110 Muraguri Gathigia Jemimah 253875 Saracal-M Caps 1 Dr.Angela
+Nyambura
+10.00 70.00 700.00
+WK253884 Lucy 253884 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+28.00 5.00 140.00
+WK253884 Lucy 253884 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+28.00 5.00 140.00
+OP002296/26 Maureen Wairimu Wanjiru 253905 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+Dr.Angela
+Nyambura
+10.00 35.00 350.00
+OP002296/26 Maureen Wairimu Wanjiru 253905 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+10.00 2.00 20.00
+OP002296/26 Maureen Wairimu Wanjiru 253905 Montebasto(Ebastine
+2.5mg+Montelukast Sodium
+4mg Tabs) -
+Dr.Angela
+Nyambura
+5.00 91.00 455.00
+OP002289/26 Milka Wanjiru Hiuko 253932 Aclosara-Sp(Paracetamol
+325mgs Serratiopeptidase
+15mgs Tabs) -
+Dr.Angela
+Nyambura
+10.00 90.00 900.00
+OP002289/26 Milka Wanjiru Hiuko 253932 Nervoplex Tabs - Dr.Angela
+Nyambura
+10.00 140.00 1,400.00
+WK253971 John 253971 Ceftriaxone Injection 1gm 1 Dr.Angela
+Nyambura
+1.00 85.00 85.00
+==End of OCR for page 14==
+==Start of OCR for page 15==
+Prescriptions - Page: 15
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+WK253971 John 253971 Combivent
+Respirator(Salbutamol+Ipratr
+opium Bromide) 1
+Dr.Angela
+Nyambura
+1.00 260.00 260.00
+WK253971 John 253971 Hydrocortisone Sodium
+Succ. Inj 100mg 1
+Dr.Angela
+Nyambura
+2.00 49.00 98.00
+WK253971 John 253971 I.V.Cannular Size 22 1 Dr.Angela
+Nyambura
+1.00 17.00 17.00
+WK253971 John 253971 Needles G23 Each 1 Dr.Angela
+Nyambura
+2.00 10.00 20.00
+WK253971 John 253971 Syringe 10ml 1 Dr.Angela
+Nyambura
+2.00 13.00 26.00
+OP00002711 Mwai Wangui Mary 254124 Amlodipine 10 Mg 28 Dr.Angela
+Nyambura
+30.00 12.00 360.00
+OP00002711 Mwai Wangui Mary 254124 Antacid (Alugel) 1 Dr.Angela
+Nyambura
+1.00 90.00 90.00
+OP00002711 Mwai Wangui Mary 254124 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00002711 Mwai Wangui Mary 254124 Clob B Cream 1 Dr.Angela
+Nyambura
+1.00 70.00 70.00
+OP00002711 Mwai Wangui Mary 254124 Hydraiazine Tabs 25mg - Dr.Angela
+Nyambura
+60.00 8.00 480.00
+OP00002711 Mwai Wangui Mary 254124 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00002711 Mwai Wangui Mary 254124 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+40.00 2.00 80.00
+OP00002711 Mwai Wangui Mary 254127 Celecoxib 200mg - Dr.Angela
+Nyambura
+10.00 16.00 160.00
+OP015192/25 Gachochori Joseph Githinji 254132 Atovastatin 20mg - Dr.Angela
+Nyambura
+30.00 13.00 390.00
+OP015192/25 Gachochori Joseph Githinji 254132 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP015192/25 Gachochori Joseph Githinji 254132 Nifedipine Tabs 20mg - Dr.Angela
+Nyambura
+60.00 5.00 300.00
+OP015192/25 Gachochori Joseph Githinji 254132 Treviamet Tabs 50 500mg
+35s 1
+Dr.Angela
+Nyambura
+30.00 58.00 1,740.00
+WK254150 James 254150 Celecoxib 200mg - Dr.Angela
+Nyambura
+10.00 16.00 160.00
+OP009756/24 Peris Wambura Njogu 254155 Amoxycillin&Clavulanate
+Pottasium 1000mg -
+Dr.Angela
+Nyambura
+10.00 70.00 700.00
+OP009756/24 Peris Wambura Njogu 254155 Celecoxib 200mg - Dr.Angela
+Nyambura
+5.00 16.00 80.00
+OP009756/24 Peris Wambura Njogu 254155 Cetrizine Dihydrochloride
+Tabs 10mg -
+Dr.Angela
+Nyambura
+5.00 5.00 25.00
+OP00055740 Mwangi Nancy Wakiini 254158 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00055740 Mwangi Nancy Wakiini 254158 Cetrizine Dihydrochloride
+Tabs 10mg -
+Dr.Angela
+Nyambura
+20.00 5.00 100.00
+OP00055740 Mwangi Nancy Wakiini 254158 Cough Exp (Chesty) - Dr.Angela
+Nyambura
+1.00 80.00 80.00
+OP00055740 Mwangi Nancy Wakiini 254158 Enalapril Tabs 5mg - Dr.Angela
+Nyambura
+15.00 2.00 30.00
+OP00055740 Mwangi Nancy Wakiini 254158 Prednisolone 5mg (Zain)
+White 100s 1
+Dr.Angela
+Nyambura
+40.00 3.00 120.00
+WK254163 Joseph 254163 Mixtard ( Human)/100units - Dr.Angela
+Nyambura
+1.00 600.00 600.00
+OP000963/26 Margaret Nyawira Wamai 254165 Amlodipine 10 Mg 28 Dr.Angela
+Nyambura
+30.00 12.00 360.00
+OP000963/26 Margaret Nyawira Wamai 254165 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP000963/26 Margaret Nyawira Wamai 254165 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP002322/26 Richard Muhoro Ngari 254191 Aclosara-Mr - Dr.Angela
+Nyambura
+10.00 45.00 450.00
+OP002322/26 Richard Muhoro Ngari 254191 Pregabalin Caps 75mg 1 Dr.Angela
+Nyambura
+7.00 20.00 140.00
+OP002322/26 Richard Muhoro Ngari 254191 Pyridoxine Tabs 50mg 100 Dr.Angela
+Nyambura
+14.00 1.00 14.00
+WK254205 Rosemary 254205 Crepe Bandage 4inch 1 Dr.Angela
+Nyambura
+1.00 120.00 120.00
+WK254205 Rosemary 254205 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+10.00 9.00 90.00
+WK254205 Rosemary 254205 Surgical Gloves Size 7.5 50 Dr.Angela
+Nyambura
+1.00 100.00 100.00
+OP00023734 Kahome Mwihaki Rose 254206 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+31.00 5.00 155.00
+==End of OCR for page 15==
+==Start of OCR for page 16==
+Prescriptions - Page: 16
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP002314/26 Mary Gathoni Githinji 254217 Cefuroxime 500mgtablets 1 Dr.Angela
+Nyambura
+10.00 85.00 850.00
+OP002314/26 Mary Gathoni Githinji 254217 Haematinic |(Vitaglobin
+200ml
+Dr.Angela
+Nyambura
+1.00 399.00 399.00
+OP002314/26 Mary Gathoni Githinji 254217 Ifaas(Ferrous Sulphate
+200mg&Folic Acid 400mg) -
+Dr.Angela
+Nyambura
+60.00 2.00 120.00
+OP002314/26 Mary Gathoni Githinji 254217 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+40.00 2.00 80.00
+OP002314/26 Mary Gathoni Githinji 254217 Vastamin (Multivit +Amino
+Acid) 200ml
+Dr.Angela
+Nyambura
+1.00 432.00 432.00
+WK254229 Mercy 254229 Clotrimazole Cream 1
+20gms -
+Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP00260604 Wahome Gathoni Rosalid 254240 Atovastatin 20mg - Dr.Angela
+Nyambura
+30.00 13.00 390.00
+OP00260604 Wahome Gathoni Rosalid 254240 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP001813/26 Nyaguthii Mwangi Helinah 254247 Cefuroxime 500mgtablets 1 Dr.Angela
+Nyambura
+10.00 85.00 850.00
+OP001813/26 Nyaguthii Mwangi Helinah 254247 Cough Expectorant(Ascoril)
+(100ml) 1
+Dr.Angela
+Nyambura
+1.00 280.00 280.00
+OP001813/26 Nyaguthii Mwangi Helinah 254247 Ebastine 10mg Tabs - Dr.Angela
+Nyambura
+5.00 41.00 205.00
+WK254248 Jim 254248 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+Dr.Angela
+Nyambura
+2.00 51.00 102.00
+OP010239/24 Salome Wairimu Githaiga 254267 Amoxycillin&Clavulanate
+Pottasium 1000mg -
+Dr.Angela
+Nyambura
+10.00 70.00 700.00
+OP010239/24 Salome Wairimu Githaiga 254267 Cetrizine Dihydrochloride
+Tabs 10mg -
+Dr.Angela
+Nyambura
+7.00 5.00 35.00
+OP010239/24 Salome Wairimu Githaiga 254267 Cough Expectorant(Ascoril)
+(100ml) 1
+Dr.Angela
+Nyambura
+1.00 280.00 280.00
+OP010239/24 Salome Wairimu Githaiga 254267 Hydrocortisone Sodium
+Succ. Inj 100mg 1
+Dr.Angela
+Nyambura
+2.00 49.00 98.00
+OP010239/24 Salome Wairimu Githaiga 254267 Needles G21 Each 1 Dr.Angela
+Nyambura
+2.00 11.00 22.00
+OP010239/24 Salome Wairimu Githaiga 254267 Paracetamol Injection
+150mg/Mi 1
+Dr.Angela
+Nyambura
+1.00 30.00 30.00
+OP010239/24 Salome Wairimu Githaiga 254267 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+30.00 2.00 60.00
+OP010239/24 Salome Wairimu Githaiga 254267 Syringe 10ml 1 Dr.Angela
+Nyambura
+2.00 13.00 26.00
+WK254288 Anthony 254288 Metformin
+500mg+Glibenclamide Tabs
+5mg -
+Dr.Angela
+Nyambura
+28.00 8.00 224.00
+WK254304 Sandra 254304 Loperamide Caps 6s 1 Dr.Angela
+Nyambura
+1.00 25.00 25.00
+WK254304 Sandra 254304 Secnid Ds 2s 1 Dr.Angela
+Nyambura
+2.00 50.00 100.00
+OP000084/23 Millicent Ngima Nguyo 254437 Azithromycin 500mg 1 Dr.Angela
+Nyambura
+3.00 75.00 225.00
+OP000084/23 Millicent Ngima Nguyo 254437 Combivent
+Respirator(Salbutamol+Ipratr
+opium Bromide) 1
+Dr.Angela
+Nyambura
+1.00 260.00 260.00
+OP000084/23 Millicent Ngima Nguyo 254437 Cough Expectorant(Ascoril)
+(100ml) 1
+Dr.Angela
+Nyambura
+1.00 280.00 280.00
+OP000084/23 Millicent Ngima Nguyo 254437 Dexamethasone Sodium
+Phosphate Injection 8 Mg/2
+Ml 1
+Dr.Angela
+Nyambura
+1.00 100.00 100.00
+OP000084/23 Millicent Ngima Nguyo 254437 Lonoflam(Lornoscam And
+Paracetamol 325 Mgs) -
+Dr.Angela
+Nyambura
+6.00 57.00 342.00
+OP000084/23 Millicent Ngima Nguyo 254437 Montebasto(Ebastine
+2.5mg+Montelukast Sodium
+4mg Tabs) -
+Dr.Angela
+Nyambura
+5.00 91.00 455.00
+OP000084/23 Millicent Ngima Nguyo 254437 Needles G21 Each 1 Dr.Angela
+Nyambura
+3.00 11.00 33.00
+OP000084/23 Millicent Ngima Nguyo 254437 Paracetamol Injection
+150mg/Mi 1
+Dr.Angela
+Nyambura
+1.00 30.00 30.00
+OP000084/23 Millicent Ngima Nguyo 254437 Syringe 2ml - Dr.Angela
+Nyambura
+2.00 12.00 24.00
+OP002265/26 Lucy Wangari Warui 254442 Amlodipine 5 Mg Tabs 1 Dr.Angela
+Nyambura
+30.00 8.00 240.00
+OP002265/26 Lucy Wangari Warui 254442 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+WK254453 - - Cash Sale 254453 Metformin 850 Mg 1 Dr.Angela
+Nyambura
+60.00 4.00 240.00
+OP000303/26 Jedidah Wangui Muiga 254460 Amlodipine 5 Mg Tabs 1 Dr.Angela
+Nyambura
+14.00 8.00 112.00
+==End of OCR for page 16==
+==Start of OCR for page 17==
+Prescriptions - Page: 17
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP000303/26 Jedidah Wangui Muiga 254460 Clob B Cream 1 Dr.Angela
+Nyambura
+1.00 70.00 70.00
+OP000303/26 Jedidah Wangui Muiga 254460 Griseofulvin 500mg Tablets
+-
+Dr.Angela
+Nyambura
+7.00 12.00 84.00
+OP000303/26 Jedidah Wangui Muiga 254460 Lonoflam(Lornoscam And
+Paracetamol 325 Mgs) -
+Dr.Angela
+Nyambura
+10.00 57.00 570.00
+OP000303/26 Jedidah Wangui Muiga 254460 Nervoplex Tabs - Dr.Angela
+Nyambura
+10.00 140.00 1,400.00
+WK254497 Teresiah 254497 Mixtard ( Human)/100units - Dr.Angela
+Nyambura
+1.00 600.00 600.00
+OP002339/26 Consolata Njeri Wambaire 254501 Ifaas(Ferrous Sulphate
+200mg&Folic Acid 400mg) -
+Dr.Angela
+Nyambura
+30.00 2.00 60.00
+OP002339/26 Consolata Njeri Wambaire 254501 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+10.00 2.00 20.00
+WK254612 Halima 254612 Paracetamol(Adult)Supposto
+ries-250mg -
+Dr.Angela
+Nyambura
+1.00 30.00 30.00
+WK254626 James 254626 Salbutamol Nebulizer
+2.5mg/2.5ml(Vial) 1
+Dr.Angela
+Nyambura
+2.00 300.00 600.00
+OP00232969 Mwangi Wairimu Eunice 254632 Aclosara-Mr - Dr.Angela
+Nyambura
+10.00 45.00 450.00
+OP00232969 Mwangi Wairimu Eunice 254632 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00232969 Mwangi Wairimu Eunice 254632 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP00232969 Mwangi Wairimu Eunice 254632 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00232969 Mwangi Wairimu Eunice 254632 Nifedipine Tabs 20mg - Dr.Angela
+Nyambura
+2.00 5.00 10.00
+OP00232969 Mwangi Wairimu Eunice 254633 Aclosara-Mr - Dr.Angela
+Nyambura
+8.00 45.00 360.00
+OP00232969 Mwangi Wairimu Eunice 254633 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+15.00 5.00 75.00
+OP00232969 Mwangi Wairimu Eunice 254633 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP00232969 Mwangi Wairimu Eunice 254633 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+15.00 5.00 75.00
+OP00232969 Mwangi Wairimu Eunice 254633 Nifedipine Tabs 20mg - Dr.Angela
+Nyambura
+2.00 5.00 10.00
+WK254763 - - Cash Sale 254763 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+5.00 9.00 45.00
+WK254765 Eunice 254765 Cartimove Tabs - Dr.Angela
+Nyambura
+10.00 70.00 700.00
+WK254776 Prince 254776 Trust Condoms 1 Dr.Angela
+Nyambura
+2.00 50.00 100.00
+OP004496/23 Margaret Muthoni Hoseah 254782 Amlodipine 10 Mg 28 Dr.Angela
+Nyambura
+30.00 12.00 360.00
+OP004496/23 Margaret Muthoni Hoseah 254782 Atovastatin 20mg - Dr.Angela
+Nyambura
+30.00 13.00 390.00
+OP004496/23 Margaret Muthoni Hoseah 254782 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00052375 Gathungu Wangui Veronicah 254807 Atovastatin 20mg - Dr.Angela
+Nyambura
+30.00 13.00 390.00
+OP00052375 Gathungu Wangui Veronicah 254807 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+15.00 5.00 75.00
+OP00052375 Gathungu Wangui Veronicah 254807 Pregabalin Caps 75mg 1 Dr.Angela
+Nyambura
+10.00 20.00 200.00
+OP00052375 Gathungu Wangui Veronicah 254807 Sodium Chromoglycate
+2.0% Eye Drops -
+Dr.Angela
+Nyambura
+1.00 780.00 780.00
+OP001735/23 Paul Muriuki 254809 Amlodipine 10 Mg 28 Dr.Angela
+Nyambura
+30.00 12.00 360.00
+OP001735/23 Paul Muriuki 254809 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP001735/23 Paul Muriuki 254809 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP002357/26 Betsy Muringo Githui 254814 Esomeprazole 40mg Nexpro
+Injection 1
+Dr.Angela
+Nyambura
+1.00 366.00 366.00
+OP002357/26 Betsy Muringo Githui 254814 I.V.Cannular Size 22 1 Dr.Angela
+Nyambura
+1.00 17.00 17.00
+OP002357/26 Betsy Muringo Githui 254814 I.V.Giving Sets 10 Dr.Angela
+Nyambura
+1.00 221.00 221.00
+OP002357/26 Betsy Muringo Githui 254814 Needles G21 Each 1 Dr.Angela
+Nyambura
+1.00 11.00 11.00
+OP002357/26 Betsy Muringo Githui 254814 Paracetamol Infusion 1gm 1 Dr.Angela
+Nyambura
+1.00 350.00 350.00
+OP002357/26 Betsy Muringo Githui 254814 Syringe 10ml 1 Dr.Angela
+Nyambura
+1.00 13.00 13.00
+==End of OCR for page 17==
+==Start of OCR for page 18==
+Prescriptions - Page: 18
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+WK254819 Dorcas 254819 Combicor(Olfox+Ornindazol
+e) 1
+Dr.Angela
+Nyambura
+10.00 50.00 500.00
+WK254819 Dorcas 254819 Foley Catheter Size16 2way
+10
+Dr.Angela
+Nyambura
+2.00 80.00 160.00
+WK254819 Dorcas 254819 Metronidazole Injection
+500mg/100mls -
+Dr.Angela
+Nyambura
+2.00 102.00 204.00
+WK254819 Dorcas 254819 Urine Bag Adult 1 Dr.Angela
+Nyambura
+2.00 62.00 124.00
+OP002357/26 Betsy Muringo Githui 254848 Esomeprazole 40mg Nexpro
+Injection 1
+Dr.Angela
+Nyambura
+1.00 366.00 366.00
+OP002357/26 Betsy Muringo Githui 254848 I.V.Cannular Size 22 1 Dr.Angela
+Nyambura
+1.00 17.00 17.00
+OP002357/26 Betsy Muringo Githui 254848 I.V.Giving Sets 10 Dr.Angela
+Nyambura
+1.00 221.00 221.00
+OP002357/26 Betsy Muringo Githui 254848 Needles G21 Each 1 Dr.Angela
+Nyambura
+1.00 11.00 11.00
+OP002357/26 Betsy Muringo Githui 254848 Paracetamol Infusion 1gm 1 Dr.Angela
+Nyambura
+1.00 350.00 350.00
+OP002357/26 Betsy Muringo Githui 254848 Syringe 10ml 1 Dr.Angela
+Nyambura
+1.00 13.00 13.00
+OP00241501 Kinaro Muriuki Brayden 254895 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+Dr.Angela
+Nyambura
+10.00 35.00 350.00
+OP00241501 Kinaro Muriuki Brayden 254895 Ibuprofen Tabs 200mg 1 Dr.Angela
+Nyambura
+10.00 1.00 10.00
+OP00241501 Kinaro Muriuki Brayden 254895 Needles G21 Each 1 Dr.Angela
+Nyambura
+1.00 11.00 11.00
+OP00241501 Kinaro Muriuki Brayden 254895 Paracetamol Injection
+150mg/Mi 1
+Dr.Angela
+Nyambura
+1.00 30.00 30.00
+OP00241501 Kinaro Muriuki Brayden 254895 Syringe 5ml 1 Dr.Angela
+Nyambura
+1.00 7.00 7.00
+WK254900 Monica 254900 Metformin 850 Mg 1 Dr.Angela
+Nyambura
+60.00 4.00 240.00
+WK254905 Florence 254905 Bisacodyll Tabs 5mg - Dr.Angela
+Nyambura
+10.00 5.00 50.00
+OP000954/26 Eunice Warigo Gatuguti 254923 Nifedipine Tabs 20mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+WK254939 Arnest 254939 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+60.00 5.00 300.00
+OP002371/26 Daniel Kinyua Muraguri 254945 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+7.00 30.00 210.00
+OP002371/26 Daniel Kinyua Muraguri 254945 Hyoscine N-Butylbromide
+Tabs10mg -
+Dr.Angela
+Nyambura
+30.00 6.00 180.00
+WK254952 Ngima 254952 Metformin 500mg 28 Dr.Angela
+Nyambura
+14.00 5.00 70.00
+WK255066 Sandra 255066 Ebastine 10mg Tabs - Dr.Angela
+Nyambura
+1.00 41.00 41.00
+WK255067 Ann 255067 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+56.00 5.00 280.00
+OP00093143 Mutahi Wamai John 255101 Amlodipine 10 Mg 28 Dr.Angela
+Nyambura
+30.00 12.00 360.00
+OP00093143 Mutahi Wamai John 255101 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00093143 Mutahi Wamai John 255101 Glibenclamide Tabs 5mg 28 Dr.Angela
+Nyambura
+90.00 5.00 450.00
+OP00093143 Mutahi Wamai John 255101 Hydraiazine Tabs 25mg - Dr.Angela
+Nyambura
+70.00 8.00 560.00
+OP00093143 Mutahi Wamai John 255101 Metformin 850 Mg 1 Dr.Angela
+Nyambura
+60.00 4.00 240.00
+OP00245595 Gichohi Wachira Marcelo 255117 Augmentin 228mg/5mls 1 Dr.Angela
+Nyambura
+1.00 450.00 450.00
+OP00245595 Gichohi Wachira Marcelo 255117 Ebastine Syrup(Histy)
+5mg/5ml
+Dr.Angela
+Nyambura
+1.00 698.00 698.00
+OP00245595 Gichohi Wachira Marcelo 255117 Ibuprofen Syrup 100mg/5ml
+-
+Dr.Angela
+Nyambura
+1.00 60.00 60.00
+OP002391/26 Mary Njoki Mararo 255136 Antacid (Alugel) 1 Dr.Angela
+Nyambura
+1.00 90.00 90.00
+OP002391/26 Mary Njoki Mararo 255136 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+5.00 30.00 150.00
+WK255137 John 255137 Tamiton Plus (Tamsulosin
+0.4 Dutasteride 0.5) 1
+Dr.Angela
+Nyambura
+15.00 50.00 750.00
+OP016120/25 Agatha Wothaya Wachira 255160 Folic Acid Tabs 5mg 1 Dr.Angela
+Nyambura
+30.00 1.00 30.00
+OP016120/25 Agatha Wothaya Wachira 255160 Nitrofurantoin Sodium Tabs
+100mg -
+Dr.Angela
+Nyambura
+10.00 3.00 30.00
+WK255164 Jim 255164 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+==End of OCR for page 18==
+==Start of OCR for page 19==
+Prescriptions - Page: 19
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+WK255166 Jane 255166 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+14.00 5.00 70.00
+WK255166 Jane 255166 Metformin 500mg 28 Dr.Angela
+Nyambura
+14.00 5.00 70.00
+WK255307 Mary 255307 Nystatin Oral Drops 1 Dr.Angela
+Nyambura
+1.00 80.00 80.00
+OP002409/26 Kennedy Kipchumba Muthee 255310 Aclosara-Mr - Dr.Angela
+Nyambura
+6.00 45.00 270.00
+OP002409/26 Kennedy Kipchumba Muthee 255310 Clob B Cream 1 Dr.Angela
+Nyambura
+1.00 70.00 70.00
+OP002409/26 Kennedy Kipchumba Muthee 255310 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+2.00 30.00 60.00
+WK255315 Kennedy 255315 Albendazole 400mg - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+WK255330 Daniel 255330 Symbicort9budesonide
+160/4.5 Mcgs) -
+Dr.Angela
+Nyambura
+1.00 1,200.00 1,200.00
+WK255335 Lydia 255335 Albendazole Syrup 20mls 1 Dr.Angela
+Nyambura
+1.00 60.00 60.00
+WK255335 Lydia 255335 Cetrizine 5mg Syrup 60ml - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP002422/26 Hawi Kiruthu Abeta 255372 Amoxycillin Suspension
+125mg/5ml(100mls) -
+Dr.Angela
+Nyambura
+1.00 75.00 75.00
+OP002422/26 Hawi Kiruthu Abeta 255372 Chlorpheniramine Maleate
+2mg/Mi 60ml 1
+Dr.Angela
+Nyambura
+1.00 30.00 30.00
+WK255375 Rosemary 255375 Crepe Bandage 4inch 1 Dr.Angela
+Nyambura
+1.00 120.00 120.00
+WK255375 Rosemary 255375 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+15.00 9.00 135.00
+WK255375 Rosemary 255375 Metronidazole Injection
+500mg/100mls -
+Dr.Angela
+Nyambura
+1.00 102.00 102.00
+OP008631/24 Adrian Gichine Macharia 255525 Amoxycillin Suspension
+250mg/5mls(100mls) 1
+Dr.Angela
+Nyambura
+1.00 110.00 110.00
+OP008631/24 Adrian Gichine Macharia 255525 Cetrizine 5mg Syrup 60ml - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP008631/24 Adrian Gichine Macharia 255525 Oral Rehydration
+Salt(Sachet) 1
+Dr.Angela
+Nyambura
+3.00 12.00 36.00
+OP008631/24 Adrian Gichine Macharia 255525 Zinc Sulphate 20mg - Dr.Angela
+Nyambura
+5.00 5.00 25.00
+WK255536 - - Cash Sale 255536 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+56.00 5.00 280.00
+WK255536 - - Cash Sale 255536 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+56.00 5.00 280.00
+WK255541 John 255541 Ondasentron 4 Mg
+Tab(Emadon) 1
+Dr.Angela
+Nyambura
+1.00 43.00 43.00
+OP00201788 Maranga Muriithi Edward 255543 Amlodipine 10 Mg 28 Dr.Angela
+Nyambura
+1.00 12.00 12.00
+OP00201788 Maranga Muriithi Edward 255543 Carvedilol 12.5mgs - Dr.Angela
+Nyambura
+28.00 8.00 224.00
+OP00201788 Maranga Muriithi Edward 255543 Mixtard ( Human)/100units - Dr.Angela
+Nyambura
+1.00 600.00 600.00
+WK255555 Naomi 255555 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+10.00 9.00 90.00
+WK255555 Naomi 255555 Nylon No2 Cutting Needle
+40mm-Non Absorbable -
+Dr.Angela
+Nyambura
+1.00 390.00 390.00
+WK255555 Naomi 255555 Opsite Dressing 6.5*5.5 - Dr.Angela
+Nyambura
+1.00 23.00 23.00
+WK255555 Naomi 255555 Surgical Gloves Size 7.5 50 Dr.Angela
+Nyambura
+1.00 100.00 100.00
+WK255561 Naomi 255561 Flucloxacilin 500mg - Dr.Angela
+Nyambura
+15.00 15.00 225.00
+WK255561 Naomi 255561 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+20.00 2.00 40.00
+OP002437/26 Evans Atero Nyuama 255567 Amoxicilin 500mg - Dr.Angela
+Nyambura
+15.00 7.00 105.00
+OP002437/26 Evans Atero Nyuama 255567 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+20.00 2.00 40.00
+WK255577 Jane 255577 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+10.00 2.00 20.00
+OP00150981 Macharia Wangechi Eva 255578 Antacid (Alugel) 1 Dr.Angela
+Nyambura
+1.00 90.00 90.00
+OP00150981 Macharia Wangechi Eva 255578 Sabezole It(Rabeprazole
+20mg+Itopride 150mg) -
+Dr.Angela
+Nyambura
+3.00 145.00 435.00
+OP00253839 Nderitu Kagwiri Kaiden 255589 Amoxycillin Suspension
+250mg/5mls(100mls) 1
+Dr.Angela
+Nyambura
+1.00 110.00 110.00
+OP00253839 Nderitu Kagwiri Kaiden 255589 Cetrizine 5mg Syrup 60ml - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+==End of OCR for page 19==
+==Start of OCR for page 20==
+Prescriptions - Page: 20
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+WK255605 Phyllis 255605 Amoxicilin 500mg - Dr.Angela
+Nyambura
+15.00 7.00 105.00
+WK255605 Phyllis 255605 Cough
+Suppresant(Dextromethapha
+n) Dacof 100ml 1
+Dr.Angela
+Nyambura
+1.00 250.00 250.00
+WK255605 Phyllis 255605 Nervoplex Tabs - Dr.Angela
+Nyambura
+7.50 140.00 1,050.00
+OP00261200 Mweri Nyokabi Esther 255617 Antacid (Alugel) 1 Dr.Angela
+Nyambura
+1.00 90.00 90.00
+OP00261200 Mweri Nyokabi Esther 255617 Cosflora Probiotics 2mg Dr.Angela
+Nyambura
+10.00 80.00 800.00
+OP00261200 Mweri Nyokabi Esther 255617 Sabezole It(Rabeprazole
+20mg+Itopride 150mg) -
+Dr.Angela
+Nyambura
+7.00 145.00 1,015.00
+WK255623 Joan 255623 Albendazole 400mg - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP016827/25 Margaret Wambui Gatere 255633 Amoxycillin 500mg Clavanic
+Acid 125mg (Clavulin) 1
+Dr.Angela
+Nyambura
+10.00 35.00 350.00
+OP016827/25 Margaret Wambui Gatere 255633 Etoricoxib 90mg - Dr.Angela
+Nyambura
+14.00 30.00 420.00
+OP016827/25 Margaret Wambui Gatere 255633 Saracal Syrup 1 Dr.Angela
+Nyambura
+1.00 650.00 650.00
+OP00000634 Warui Mwangi Simon 255644 Amlodipine 5 Mg Tabs 1 Dr.Angela
+Nyambura
+30.00 8.00 240.00
+OP00000634 Warui Mwangi Simon 255644 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+WK255655 John 255655 Gloves Rubber(Pair) 1 Dr.Angela
+Nyambura
+1.00 15.00 15.00
+OP001065/26 Cheryl Cherotich Kimetto 255656 Tranexamic Acid 500mg
+Caps -
+Dr.Angela
+Nyambura
+9.00 35.00 315.00
+WK255665 - - Cash Sale 255665 Hemisamic Injection 500mg
+1
+Dr.Angela
+Nyambura
+2.00 104.00 208.00
+WK255665 - - Cash Sale 255665 I.V.Cannular Size 22 1 Dr.Angela
+Nyambura
+1.00 17.00 17.00
+OP000963/26 Margaret Nyawira Wamai 255791 Flucloxacilin 500mg - Dr.Angela
+Nyambura
+20.00 15.00 300.00
+OP000963/26 Margaret Nyawira Wamai 255791 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+5.00 9.00 45.00
+OP000963/26 Margaret Nyawira Wamai 255791 Mupiban Oint % Cream 1 Dr.Angela
+Nyambura
+1.00 720.00 720.00
+OP000963/26 Margaret Nyawira Wamai 255791 Opsite Dressing 6.5*5.5 - Dr.Angela
+Nyambura
+1.00 23.00 23.00
+OP006381/24 Patrick Waweru Nyamu 255815 Amlodipine 10 Mg 28 Dr.Angela
+Nyambura
+30.00 12.00 360.00
+OP006381/24 Patrick Waweru Nyamu 255815 Atovastatin 10mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP006381/24 Patrick Waweru Nyamu 255815 Carvedilol 12.5mgs - Dr.Angela
+Nyambura
+60.00 8.00 480.00
+OP015790/25 Mary Muthoni Mbugi 255823 Enalapril Tabs 5mg - Dr.Angela
+Nyambura
+30.00 2.00 60.00
+WK255830 Muthoni Kimeny 255830 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+28.00 5.00 140.00
+OP00005505 Wanjohi Gathigia Elizabeth 255835 Cefuroxime 500mgtablets 1 Dr.Angela
+Nyambura
+10.00 85.00 850.00
+OP00005505 Wanjohi Gathigia Elizabeth 255835 Cetrizine Dihydrochloride
+Tabs 10mg -
+Dr.Angela
+Nyambura
+10.00 5.00 50.00
+OP00005505 Wanjohi Gathigia Elizabeth 255835 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+20.00 2.00 40.00
+OP002322/26 Richard Muhoro Ngari 255836 Calcium Plus Tabs(Calcium
+Citratemagnesiumzinc&Vita
+min D3)-Saracal -
+Dr.Angela
+Nyambura
+15.00 25.00 375.00
+OP002322/26 Richard Muhoro Ngari 255836 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+5.00 9.00 45.00
+OP002322/26 Richard Muhoro Ngari 255836 I.V.Cannular Size 18 - Dr.Angela
+Nyambura
+1.00 16.00 16.00
+OP002322/26 Richard Muhoro Ngari 255836 Pregabalin Caps 75mg 1 Dr.Angela
+Nyambura
+10.00 20.00 200.00
+OP002322/26 Richard Muhoro Ngari 255836 Syringe 10ml 1 Dr.Angela
+Nyambura
+1.00 13.00 13.00
+OP002322/26 Richard Muhoro Ngari 255836 Track Mr
+(Diclo,Para,Chlozoxazone
+500/50/250mg
+Dr.Angela
+Nyambura
+10.00 20.00 200.00
+WK255867 Nancy Njoki 255867 Aclosara-Sp(Paracetamol
+325mgs Serratiopeptidase
+15mgs Tabs) -
+Dr.Angela
+Nyambura
+10.00 90.00 900.00
+WK255867 Nancy Njoki 255867 Omega 3 Caps 4gm
+(Samega) -`
+Dr.Angela
+Nyambura
+10.00 55.00 550.00
+==End of OCR for page 20==
+==Start of OCR for page 21==
+Prescriptions - Page: 21
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+WK255869 Elizabeth 255869 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+10.00 2.00 20.00
+OP00223714 Wanyiri Gathoni Catherine 255885 Crepe Bandage 4inch 1 Dr.Angela
+Nyambura
+1.00 120.00 120.00
+OP00223714 Wanyiri Gathoni Catherine 255885 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+10.00 9.00 90.00
+OP00223714 Wanyiri Gathoni Catherine 255885 Metronidazole Injection
+500mg/100mls -
+Dr.Angela
+Nyambura
+3.00 102.00 306.00
+WK255891 Elizabeth 255891 Cough Exp (Chesty) - Dr.Angela
+Nyambura
+1.00 80.00 80.00
+OP00223714 Wanyiri Gathoni Catherine 255902 Esomeprazole 40mg Nexpro
+Injection 1
+Dr.Angela
+Nyambura
+1.00 366.00 366.00
+OP00223714 Wanyiri Gathoni Catherine 255902 Metoclopramide Inj. 10 Mg
+1
+Dr.Angela
+Nyambura
+1.00 24.00 24.00
+OP00223714 Wanyiri Gathoni Catherine 255902 Normalsaline 0.9%/500mls 1 Dr.Angela
+Nyambura
+1.00 180.00 180.00
+OP00223714 Wanyiri Gathoni Catherine 255902 Paracetamol Infusion 1gm 1 Dr.Angela
+Nyambura
+1.00 350.00 350.00
+OP00223714 Wanyiri Gathoni Catherine 255902 Tramadol Inj. 100mg - Dr.Angela
+Nyambura
+1.00 35.00 35.00
+WK255905 Rosemary 255905 Crepe Bandage 4inch 1 Dr.Angela
+Nyambura
+1.00 120.00 120.00
+WK255905 Rosemary 255905 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+20.00 9.00 180.00
+WK255905 Rosemary 255905 Surgical Gloves Size 7.5 50 Dr.Angela
+Nyambura
+1.00 100.00 100.00
+WK255905 Rosemary 255905 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+Dr.Angela
+Nyambura
+1.00 51.00 51.00
+WK255911 Gladys 255911 Clotrimazole Cream 1
+20gms -
+Dr.Angela
+Nyambura
+1.00 50.00 50.00
+WK255911 Gladys 255911 Fluconazole 200mg - Dr.Angela
+Nyambura
+3.00 6.00 18.00
+WK255915 John 255915 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+40.00 9.00 360.00
+WK255915 John 255915 Normal Saline 0.9%/ 500
+mls
+Dr.Angela
+Nyambura
+1.00 180.00 180.00
+WK255915 John 255915 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+Dr.Angela
+Nyambura
+1.00 51.00 51.00
+WK255925 Daniel 255925 Amoxicilin 500mg - Dr.Angela
+Nyambura
+21.00 7.00 147.00
+WK255925 Daniel 255925 Ebastine 10mg Tabs - Dr.Angela
+Nyambura
+6.00 41.00 246.00
+WK255925 Daniel 255925 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+10.00 2.00 20.00
+OP00232969 Mwangi Wairimu Eunice 255932 Cartimove Tabs - Dr.Angela
+Nyambura
+15.00 70.00 1,050.00
+OP00232969 Mwangi Wairimu Eunice 255932 Celecoxib 200mg - Dr.Angela
+Nyambura
+10.00 16.00 160.00
+OP00232969 Mwangi Wairimu Eunice 255932 Nervoplex Tabs - Dr.Angela
+Nyambura
+10.00 140.00 1,400.00
+WK255935 James 255935 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+10.00 9.00 90.00
+WK255935 James 255935 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+Dr.Angela
+Nyambura
+1.00 51.00 51.00
+WK255941 Jane 255941 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+15.00 2.00 30.00
+WK255941 Jane 255941 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+14.00 2.00 28.00
+WK255941 Jane 255941 Prednesol Forte Soluble 1 Dr.Angela
+Nyambura
+14.00 3.00 42.00
+==End of OCR for page 21==
+==Start of OCR for page 22==
+Prescriptions - Page: 22
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+WK255942 Jane 255942 Clob B Cream 1 Dr.Angela
+Nyambura
+1.00 70.00 70.00
+WK255946 Jackline 255946 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+10.00 9.00 90.00
+WK255952 Jane 255952 Enalapril Tabs 5mg - Dr.Angela
+Nyambura
+14.00 2.00 28.00
+OP001760/23 Jane Wangui Mwangi 255953 Antacid (Alugel) 1 Dr.Angela
+Nyambura
+1.00 90.00 90.00
+OP001760/23 Jane Wangui Mwangi 255953 Candas-B Cream 1 Dr.Angela
+Nyambura
+1.00 80.00 80.00
+OP001760/23 Jane Wangui Mwangi 255953 Celecoxib 200mg - Dr.Angela
+Nyambura
+10.00 16.00 160.00
+OP001760/23 Jane Wangui Mwangi 255953 Gabapentin Caps 300mg - Dr.Angela
+Nyambura
+10.00 15.00 150.00
+WK255960 Mwihaki 255960 Crepe Bandage 4inch 1 Dr.Angela
+Nyambura
+1.00 120.00 120.00
+WK255960 Mwihaki 255960 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+10.00 9.00 90.00
+WK255960 Mwihaki 255960 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+Dr.Angela
+Nyambura
+1.00 51.00 51.00
+OP002265/26 Lucy Wangari Warui 255971 Needles G21 Each 1 Dr.Angela
+Nyambura
+2.00 11.00 22.00
+OP002265/26 Lucy Wangari Warui 255971 Normal Saline 0.9%/ 500
+mls
+Dr.Angela
+Nyambura
+1.00 180.00 180.00
+OP013233/25 Daniel Kinyua Muraguri 255981 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+28.00 30.00 840.00
+OP013233/25 Daniel Kinyua Muraguri 255981 Secnid Ds 2s 1 Dr.Angela
+Nyambura
+2.00 50.00 100.00
+OP016978/25 Eunice Muthoni Macharia 255990 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP016978/25 Eunice Muthoni Macharia 255990 Atovastatin 20mg - Dr.Angela
+Nyambura
+30.00 13.00 390.00
+OP016978/25 Eunice Muthoni Macharia 255990 Calcium Plus Tabs(Calcium
+Citratemagnesiumzinc&Vita
+min D3)-Saracal -
+Dr.Angela
+Nyambura
+30.00 25.00 750.00
+OP002281/26 Grace Ngina Ngige 256005 Ibuprofen Syrup 100mg/5ml
+-
+Dr.Angela
+Nyambura
+1.00 60.00 60.00
+OP002281/26 Grace Ngina Ngige 256005 Metronidazole Suspension
+100ml -
+Dr.Angela
+Nyambura
+1.00 80.00 80.00
+OP002281/26 Grace Ngina Ngige 256005 Zinc Sulphate Syrup 1 Dr.Angela
+Nyambura
+1.00 80.00 80.00
+OP00002711 Mwai Wangui Mary 256015 Bisacodyll Tabs 5mg - Dr.Angela
+Nyambura
+10.00 5.00 50.00
+OP00002711 Mwai Wangui Mary 256015 Calcium Plus Tabs(Calcium
+Citratemagnesiumzinc&Vita
+min D3)-Saracal -
+Dr.Angela
+Nyambura
+30.00 25.00 750.00
+OP00002711 Mwai Wangui Mary 256015 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP00002711 Mwai Wangui Mary 256015 Pregabalin Caps 75mg 1 Dr.Angela
+Nyambura
+15.00 20.00 300.00
+OP00055106 Beatrice Nyawira Gachora 256021 Needles G21 Each 1 Dr.Angela
+Nyambura
+1.00 11.00 11.00
+OP00055106 Beatrice Nyawira Gachora 256021 Normal Saline 0.9%/ 500
+mls
+Dr.Angela
+Nyambura
+1.00 180.00 180.00
+OP00055106 Beatrice Nyawira Gachora 256021 Syringe 10ml 1 Dr.Angela
+Nyambura
+1.00 13.00 13.00
+OP00055106 Beatrice Nyawira Gachora 256021 Urine Bag Adult 1 Dr.Angela
+Nyambura
+1.00 62.00 62.00
+EX004416/26 Beatrice Nyawira Gachora 256025 Normal Saline 0.9%/ 500
+mls
+Dr.Angela
+Nyambura
+1.00 180.00 180.00
+==End of OCR for page 22==
+==Start of OCR for page 23==
+Prescriptions - Page: 23
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+EX004416/26 Beatrice Nyawira Gachora 256025 Urine Bag Adult 1 Dr.Angela
+Nyambura
+1.00 62.00 62.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Crepe Bandage 4inch 1 Dr.Angela
+Nyambura
+1.00 120.00 120.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+35.00 9.00 315.00
+EX004416/26 Beatrice Nyawira Gachora 256030 General Dressing 1 Dr.Angela
+Nyambura
+1.00 1,220.00 1,220.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Gloves Rubber(Pair) 1 Dr.Angela
+Nyambura
+1.00 15.00 15.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Hydrogen Peroxide 6%
+200ml
+Dr.Angela
+Nyambura
+1.00 85.00 85.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Metoclopramide Inj. 10 Mg
+1
+Dr.Angela
+Nyambura
+2.00 24.00 48.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Needles G21 Each 1 Dr.Angela
+Nyambura
+2.00 11.00 22.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Normalsaline 0.9%/500mls 1 Dr.Angela
+Nyambura
+1.00 180.00 180.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Paracetamol Infusion 1gm 1 Dr.Angela
+Nyambura
+1.00 350.00 350.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Ranitidine Inj - Dr.Angela
+Nyambura
+1.00 24.00 24.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Syringe 5ml 1 Dr.Angela
+Nyambura
+2.00 7.00 14.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Tramadol Inj. 100mg - Dr.Angela
+Nyambura
+1.00 35.00 35.00
+EX004416/26 Beatrice Nyawira Gachora 256030 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+Dr.Angela
+Nyambura
+1.00 51.00 51.00
+WK256056 Josphine 256056 Normal Saline 0.9%/ 500
+mls
+Dr.Angela
+Nyambura
+1.00 180.00 180.00
+OP012490/25 Joan Wairimu Kinyua 256117 Glibenclamide Tabs 5mg 28 Dr.Angela
+Nyambura
+42.00 5.00 210.00
+OP012490/25 Joan Wairimu Kinyua 256117 Metformin 500mg 28 Dr.Angela
+Nyambura
+56.00 5.00 280.00
+OP012490/25 Joan Wairimu Kinyua 256121 Bisacodyll Tabs 5mg - Dr.Angela
+Nyambura
+10.00 5.00 50.00
+OP012490/25 Joan Wairimu Kinyua 256121 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+WK256124 Joseph 256124 Calpol Inf Drops 15ml - Dr.Angela
+Nyambura
+1.00 150.00 150.00
+WK256124 Joseph 256124 Chlorpheniramine Maleate
+2mg/Mi 60ml 1
+Dr.Angela
+Nyambura
+1.00 30.00 30.00
+OP002265/26 Lucy Wangari Warui 256158 Clob B Cream 1 Dr.Angela
+Nyambura
+1.00 70.00 70.00
+OP002265/26 Lucy Wangari Warui 256158 Griseofulvin 125mg Tablets - Dr.Angela
+Nyambura
+14.00 10.00 140.00
+WK256172 Halima 256172 Safe72 1 Dr.Angela
+Nyambura
+1.00 133.00 133.00
+OP004496/23 Margaret Muthoni Hoseah 256185 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP01558/26 Phyllis Njeri Kanyiri 256191 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP01558/26 Phyllis Njeri Kanyiri 256191 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00251946 Muriuki Munene Hezron 256201 Pregabalin Caps 75mg 1 Dr.Angela
+Nyambura
+10.00 20.00 200.00
+OP00148065 Jecinta Wangechi
+Ngirigacha
+256202 Atenolol Tabs 50mg 1 Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00148065 Jecinta Wangechi
+Ngirigacha
+256202 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00199716 Ngure Wambura Esther 256203 Atovastatin 20mg - Dr.Angela
+Nyambura
+30.00 13.00 390.00
+==End of OCR for page 23==
+==Start of OCR for page 24==
+Prescriptions - Page: 24
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP00199716 Ngure Wambura Esther 256203 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00002711 Mwai Wangui Mary 256205 Atovastatin 20mg - Dr.Angela
+Nyambura
+30.00 13.00 390.00
+OP00002711 Mwai Wangui Mary 256205 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+WK256206 John 256206 Diloxanide
+250mg+Metronindazole
+200mg 1
+Dr.Angela
+Nyambura
+30.00 6.00 180.00
+WK256206 John 256206 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+5.00 2.00 10.00
+OP000963/26 Margaret Nyawira Wamai 256215 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+7.00 30.00 210.00
+WK256216 Teresiah 256216 Cefuroxime 500mgtablets 1 Dr.Angela
+Nyambura
+10.00 85.00 850.00
+WK256216 Teresiah 256216 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+28.00 30.00 840.00
+WK256216 Teresiah 256216 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+10.00 2.00 20.00
+OP00052375 Gathungu Wangui Veronicah 256233 Celecoxib 200mg - Dr.Angela
+Nyambura
+10.00 16.00 160.00
+OP00052375 Gathungu Wangui Veronicah 256233 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP00052375 Gathungu Wangui Veronicah 256233 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+WK256235 Dorcas 256235 Aclosara-Mr - Dr.Angela
+Nyambura
+10.00 45.00 450.00
+WK256235 Dorcas 256235 Ciprofloxacin Eye/Ear
+Drops 5ml 1
+Dr.Angela
+Nyambura
+1.00 150.00 150.00
+WK256235 Dorcas 256235 Clotrimazole Ear Drops - Dr.Angela
+Nyambura
+1.00 150.00 150.00
+OP00093143 Mutahi Wamai John 256247 Atovastatin 20mg - Dr.Angela
+Nyambura
+30.00 13.00 390.00
+==End of OCR for page 24==
+==Start of OCR for page 25==
+Prescriptions - Page: 25
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP00245595 Gichohi Wachira Marcelo 256251 Paracetamol Syrup 100mls
+(Curamol -
+Dr.Angela
+Nyambura
+1.00 60.00 60.00
+WK256253 Naomi 256253 Flucloxacilin 500mg - Dr.Angela
+Nyambura
+15.00 15.00 225.00
+WK256253 Naomi 256253 Loperamide Caps 6s 1 Dr.Angela
+Nyambura
+1.00 25.00 25.00
+WK256253 Naomi 256253 Oral Rehydration
+Salt(Sachet) 1
+Dr.Angela
+Nyambura
+5.00 12.00 60.00
+OP002437/26 Evans Atero Nyuama 256260 Cefuroxime 500mgtablets 1 Dr.Angela
+Nyambura
+10.00 85.00 850.00
+OP00253839 Nderitu Kagwiri Kaiden 256270 Cough SyrupPaed(Tuscon) Dr.Angela
+Nyambura
+1.00 150.00 150.00
+OP00261200 Mweri Nyokabi Esther 256275 Antacid (Alugel) 1 Dr.Angela
+Nyambura
+1.00 90.00 90.00
+OP00261200 Mweri Nyokabi Esther 256275 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+15.00 5.00 75.00
+OP00261200 Mweri Nyokabi Esther 256275 Cosflora Probiotics 2mg Dr.Angela
+Nyambura
+10.00 80.00 800.00
+OP00261200 Mweri Nyokabi Esther 256275 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+14.00 30.00 420.00
+OP00000634 Warui Mwangi Simon 256285 Atovastatin 10mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00005505 Wanjohi Gathigia Elizabeth 256302 Antacid (Alugel) 1 Dr.Angela
+Nyambura
+1.00 90.00 90.00
+OP00005505 Wanjohi Gathigia Elizabeth 256302 Cough Expectorant(Ascoril)
+(100ml) 1
+Dr.Angela
+Nyambura
+1.00 280.00 280.00
+OP00005505 Wanjohi Gathigia Elizabeth 256302 Prednesol Forte Soluble 1 Dr.Angela
+Nyambura
+10.00 3.00 30.00
+OP00223714 Wanyiri Gathoni Catherine 256303 Aclosara-Mr - Dr.Angela
+Nyambura
+10.00 45.00 450.00
+OP00223714 Wanyiri Gathoni Catherine 256303 Bisacodyll Tabs 5mg - Dr.Angela
+Nyambura
+10.00 5.00 50.00
+OP00223714 Wanyiri Gathoni Catherine 256303 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+14.00 30.00 420.00
+OP00223714 Wanyiri Gathoni Catherine 256303 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+15.00 2.00 30.00
+OP00223714 Wanyiri Gathoni Catherine 256303 Prednisolone 5mg (Zain)
+White 100s 1
+Dr.Angela
+Nyambura
+15.00 3.00 45.00
+OP002281/26 Grace Ngina Ngige 256312 Ascoril Expectorant Syrup 1 Dr.Angela
+Nyambura
+1.00 300.00 300.00
+OP002281/26 Grace Ngina Ngige 256312 Cefuroxime Suspension 1 Dr.Angela
+Nyambura
+1.00 650.00 650.00
+==End of OCR for page 25==
+==Start of OCR for page 26==
+Prescriptions - Page: 26
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP002281/26 Grace Ngina Ngige 256312 Prednisolone 5mg (Zain)
+White 100s 1
+Dr.Angela
+Nyambura
+15.00 3.00 45.00
+OP00055106 Beatrice Nyawira Gachora 256321 Gauze Roll 1.5 Grams Piece Dr.Angela
+Nyambura
+10.00 9.00 90.00
+OP00055106 Beatrice Nyawira Gachora 256321 Vaseline
+Gauzes(Sterlile)Dressing
+Pad -
+Dr.Angela
+Nyambura
+1.00 51.00 51.00
+WK256323 Mureithi 256323 Safe72 1 Dr.Angela
+Nyambura
+1.00 133.00 133.00
+OP0000698/26 Peter Njoroge Kimani 256324 Loperamide Caps 6s 1 Dr.Angela
+Nyambura
+1.00 25.00 25.00
+OP0000698/26 Peter Njoroge Kimani 256324 Secnid Ds 2s 1 Dr.Angela
+Nyambura
+2.00 50.00 100.00
+OP002196/26 Bianca Britta Wambui 256330 Ibuprofen Syrup 100mg/5ml
+-
+Dr.Angela
+Nyambura
+1.00 60.00 60.00
+OP002196/26 Bianca Britta Wambui 256330 Zinc Sulphate Syrup 1 Dr.Angela
+Nyambura
+1.00 80.00 80.00
+WK256335 James 256335 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP016120/25 Agatha Wothaya Wachira 256345 Hemoglob(Haemoglobin B
+Sulphate Capsules )-Ifaas -
+Dr.Angela
+Nyambura
+30.00 20.00 600.00
+OP002197/26 Dalia Wanjiku Murimi 256356 Paracetamol Syrup 100mls
+(Curamol -
+Dr.Angela
+Nyambura
+1.00 60.00 60.00
+WK256357 Triza 256357 Safe72 1 Dr.Angela
+Nyambura
+1.00 133.00 133.00
+WK256360 Jane 256360 Multivitamin Syrup 100ml - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+WK256365 Ann 256365 Metoclopramide Hcl Tabs
+10mg 1
+Dr.Angela
+Nyambura
+10.00 3.00 30.00
+WK256365 Ann 256365 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+10.00 2.00 20.00
+OP019175/25 Justus Mwangi Kihara 256372 Amlodipine 5 Mg Tabs 1 Dr.Angela
+Nyambura
+30.00 8.00 240.00
+OP019175/25 Justus Mwangi Kihara 256372 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP019175/25 Justus Mwangi Kihara 256372 Omega 3 Caps 4gm
+(Samega) -`
+Dr.Angela
+Nyambura
+30.00 55.00 1,650.00
+WK256375 Rosemary 256375 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+==End of OCR for page 26==
+==Start of OCR for page 27==
+Prescriptions - Page: 27
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+WK256375 Rosemary 256375 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+15.00 2.00 30.00
+OP00259312 Kinaro Wangari Julia 256385 Carveddilol Tabs 6.25mg - Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00259312 Kinaro Wangari Julia 256385 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP016598/25 Robert Wachira Weru 256391 Ciprofloxacin 500mg 1 Dr.Angela
+Nyambura
+10.00 10.00 100.00
+OP016598/25 Robert Wachira Weru 256391 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+15.00 2.00 30.00
+WK256392 Kelvin 256392 Cetrizine 5mg Syrup 60ml - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+WK256392 Kelvin 256392 Ibuprofen Syrup 100mg/5ml
+-
+Dr.Angela
+Nyambura
+1.00 60.00 60.00
+WK256395 Mary Wangari 256395 Antacid (Alugel) 1 Dr.Angela
+Nyambura
+1.00 90.00 90.00
+WK256395 Mary Wangari 256395 Glibenclamide Tabs 5mg 28 Dr.Angela
+Nyambura
+28.00 5.00 140.00
+WK256395 Mary Wangari 256395 Metformin 500mg 28 Dr.Angela
+Nyambura
+56.00 5.00 280.00
+WK256402 John 256402 Metformin 500mg 28 Dr.Angela
+Nyambura
+28.00 5.00 140.00
+WK256405 Simon 256405 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+10.00 2.00 20.00
+WK256411 John 256411 Amlodipine 5 Mg Tabs 1 Dr.Angela
+Nyambura
+28.00 8.00 224.00
+WK256411 John 256411 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+28.00 5.00 140.00
+WK256412 Geofrey 256412 Omeprazole Caps 20mg 1 Dr.Angela
+Nyambura
+30.00 2.00 60.00
+WK256415 Liam 256415 Paracetamol Syrup 100mls
+(Curamol -
+Dr.Angela
+Nyambura
+1.00 60.00 60.00
+WK256416 Margret 256416 Amoxicilin 500mg - Dr.Angela
+Nyambura
+15.00 7.00 105.00
+OP00237715 Murage Phyliis Wanjugu 256421 Losartan 50mg Hctz 12.5mg
+28
+Dr.Angela
+Nyambura
+30.00 5.00 150.00
+OP00238123 Kimani Kamungu Ndaiga 256425 Hydraiazine Tabs 25mg - Dr.Angela
+Nyambura
+30.00 8.00 240.00
+OP00076889 Ndaiga Nyakinyua Margaret 256430 Hydraiazine Tabs 25mg - Dr.Angela
+Nyambura
+28.00 8.00 224.00
+WK256432 Rose 256432 Aclosara-Mr - Dr.Angela
+Nyambura
+10.00 45.00 450.00
+OP00162187 Wandeto Wamahoro Hope 256444 Esomeprazole 20mg Tablet - Dr.Angela
+Nyambura
+30.00 20.00 600.00
+OP00248681 Wanjohi Wanjiku Joan 256456 Ascoril Expectorant Syrup 1 Dr.Angela
+Nyambura
+1.00 300.00 300.00
+==End of OCR for page 27==
+==Start of OCR for page 28==
+Prescriptions - Page: 28
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP006450/24 Keilah Kanyi Mwaniki 256460 Cetrizine 5mg Syrup 60ml - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+WK256465 John 256465 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+10.00 2.00 20.00
+OP002163/26 Kingsley Kuria Maina 256472 Amoxycillin Suspension
+250mg/5mls(100mls) 1
+Dr.Angela
+Nyambura
+1.00 110.00 110.00
+OP002163/26 Kingsley Kuria Maina 256472 Cetrizine 5mg Syrup 60ml - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+WK256475 Veronicah 256475 Gabapentin Caps 300mg - Dr.Angela
+Nyambura
+10.00 15.00 150.00
+OP002283/26 Jayden Mwangangi Judy 256481 Amoxycillin Dispersible
+Tablets 250mg 1
+Dr.Angela
+Nyambura
+10.00 6.00 60.00
+OP002283/26 Jayden Mwangangi Judy 256481 Metronidazole Suspension
+100ml -
+Dr.Angela
+Nyambura
+1.00 80.00 80.00
+OP002289/26 Milka Wanjiru Hiuko 256490 Aclosara-Mr - Dr.Angela
+Nyambura
+10.00 45.00 450.00
+OP002289/26 Milka Wanjiru Hiuko 256491 Aclosara-Mr - Dr.Angela
+Nyambura
+10.00 45.00 450.00
+WK256492 Jane 256492 Amoxicilin 500mg - Dr.Angela
+Nyambura
+15.00 7.00 105.00
+OP00033110 Muraguri Gathigia Jemimah 256502 Antacid (Alugel) 1 Dr.Angela
+Nyambura
+1.00 90.00 90.00
+OP00033110 Muraguri Gathigia Jemimah 256502 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+14.00 30.00 420.00
+WK256505 Lucy 256505 Atovastatin 20mg - Dr.Angela
+Nyambura
+28.00 13.00 364.00
+OP002296/26 Maureen Wairimu Wanjiru 256515 Azithromycin Suspension
+200mg/5ml-15ml -
+Dr.Angela
+Nyambura
+1.00 450.00 450.00
+OP002296/26 Maureen Wairimu Wanjiru 256515 Cetrizine 5mg Syrup 60ml - Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP009756/24 Peris Wambura Njogu 256525 Cough Expectorant(Ascoril)
+(100ml) 1
+Dr.Angela
+Nyambura
+1.00 280.00 280.00
+OP00055740 Mwangi Nancy Wakiini 256530 Salbutamol Syrup 2mg/5ml
+-
+Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP002322/26 Richard Muhoro Ngari 256545 Antacid (Alugel) 1 Dr.Angela
+Nyambura
+1.00 90.00 90.00
+OP002322/26 Richard Muhoro Ngari 256545 Pregabalin Caps 75mg 1 Dr.Angela
+Nyambura
+10.00 20.00 200.00
+OP00023734 Kahome Mwihaki Rose 256555 Antacid (Alugel) 1 Dr.Angela
+Nyambura
+1.00 90.00 90.00
+OP00023734 Kahome Mwihaki Rose 256555 Clotrimazole Cream 1
+20gms -
+Dr.Angela
+Nyambura
+1.00 50.00 50.00
+==End of OCR for page 28==
+==Start of OCR for page 29==
+Prescriptions - Page: 29
+P.C.E.A TumuTumu Hospital Printed On: Monday 15/ 06/ 26 09::23
+Pharmacy Drug Prescriptions Period : May 1, 2026 - May 31, 2026
+Patient No Patient_Name Pr. No Description Prescribin
+g Doc.
+Qty Unit Price Amount
+OP002314/26 Mary Gathoni Githinji 256565 Folic Acid Tabs 5mg 1 Dr.Angela
+Nyambura
+30.00 1.00 30.00
+OP002314/26 Mary Gathoni Githinji 256565 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+30.00 2.00 60.00
+WK256567 Mercy 256567 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+10.00 2.00 20.00
+OP00260604 Wahome Gathoni Rosalid 256581 Esomeprazole 40mg Tablets
+Tablet
+Dr.Angela
+Nyambura
+14.00 30.00 420.00
+OP00260604 Wahome Gathoni Rosalid 256581 Gabapentin Caps 300mg - Dr.Angela
+Nyambura
+14.00 15.00 210.00
+OP001813/26 Nyaguthii Mwangi Helinah 256591 Paracetamol Tabs 500mg 1 Dr.Angela
+Nyambura
+15.00 2.00 30.00
+WK256592 Jim 256592 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+10.00 2.00 20.00
+OP010239/24 Salome Wairimu Githaiga 256605 Zinc Sulphate Syrup 1 Dr.Angela
+Nyambura
+1.00 80.00 80.00
+WK256612 Anthony 256612 Ibuprofen Tablets 400mg - Dr.Angela
+Nyambura
+10.00 2.00 20.00
+WK256615 Sandra 256615 Clotrimazole Cream 1
+20gms -
+Dr.Angela
+Nyambura
+1.00 50.00 50.00
+OP000084/23 Millicent Ngima Nguyo 256623 Candas-B Cream 1 Dr.Angela
+Nyambura
+1.00 80.00 80.00
+OP000084/23 Millicent Ngima Nguyo 256623 Cetrizine Dihydrochloride
+Tabs 10mg -
+Dr.Angela
+Nyambura
+5.00 5.00 25.00
+OP000303/26 Jedidah Wangui Muiga 256633 Griseofulvin 125mg Tablets - Dr.Angela
+Nyambura
+14.00 10.00 140.00
+OP000303/26 Jedidah Wangui Muiga 256633 Prednisolone 5mg (Zain)
+White 100s 1
+Dr.Angela
+Nyambura
+14.00 3.00 42.00
+OP002339/26 Consolata Njeri Wambaire 256645 Diclofenac Gel Ointment 1 Dr.Angela
+Nyambura
+1.00 50.00 50.00
+Total 295,052.00
+==End of OCR for page 29==

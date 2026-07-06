@@ -65,6 +65,7 @@ export interface Patient {
   phone: string;
   category: 'General Consultation' | 'Consultant Clinic' | 'Walk-in Lab' | 'Walk-in Pharmacy' | 'Outpatient Procedure';
   consultantSubCategory?: 'Surgical' | 'Pediatrics' | 'MOPC' | 'Obs/Gyn';
+  currentStatus?: 'Pending Triage' | 'Triage Complete' | 'With Doctor' | 'At Lab' | 'At Pharmacy' | 'Admitted' | 'Discharged' | string;
   registeredAt: string;
   registeredBy: string;
   medicalHistory: MedicalRecord[];

@@ -885,6 +885,37 @@ export async function saveMedicationDispense(disp: MedicationDispense) {
   }
 }
 
+export async function saveBulkMedicationDispenses(dispenses: MedicationDispense[]) {
+  const path = `medicationDispenses`;
+  try {
+    let currentBatch = writeBatch(db);
+    let opsInCurrentBatch = 0;
+    const batches = [];
+
+    for (const disp of dispenses) {
+      const docRef = doc(db, 'medicationDispenses', disp.id);
+      currentBatch.set(docRef, cleanUndefined(disp));
+      opsInCurrentBatch++;
+
+      if (opsInCurrentBatch === 500) {
+        batches.push(currentBatch);
+        currentBatch = writeBatch(db);
+        opsInCurrentBatch = 0;
+      }
+    }
+
+    if (opsInCurrentBatch > 0) {
+      batches.push(currentBatch);
+    }
+
+    for (const b of batches) {
+      await b.commit();
+    }
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, path);
+  }
+}
+
 export async function savePharmacyItem(item: PharmacyItem) {
   const path = `pharmacyItems/${item.id}`;
   try {
@@ -1127,19 +1158,17 @@ export async function saveSystemConfigLastReset(dateStr: string) {
   }
 }
 
-
-export async function fixJulyUploads() {
+export async function clearUploadedDispenses() {
   const colRef = collection(db, 'medicationDispenses');
   const snap = await getDocs(colRef);
   let count = 0;
   
-  // We process in chunks of 500 to stay within batch limits
   let batches = [];
   let currentBatch = writeBatch(db);
   let opsInCurrentBatch = 0;
 
   snap.forEach((d) => {
-    if (d.id.includes('DSP-TXT-')) {
+    if (d.id.includes('DSP-TXT-') || d.id.includes('DSP-CSV-')) {
       currentBatch.delete(d.ref);
       opsInCurrentBatch++;
       count++;
@@ -1157,11 +1186,12 @@ export async function fixJulyUploads() {
   }
 
   if (count > 0) {
-    for (let b of batches) {
+    for (const b of batches) {
         await b.commit();
     }
-    alert(`Wiped ${count} incorrectly parsed TXT upload records. You can now re-upload the file!`);
-  } else {
-    alert("No bad TXT records found. You can upload the file.");
   }
+  return count;
 }
+
+
+

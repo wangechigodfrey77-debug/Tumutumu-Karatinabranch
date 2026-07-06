@@ -48,6 +48,7 @@ import {
   saveLabTest,
   saveLabCatalogItem,
   saveMedicationDispense,
+  saveBulkMedicationDispenses,
   savePharmacyItem,
   saveDutyAllocation,
   removeDutyAllocation,
@@ -397,6 +398,19 @@ export default function App() {
     } catch (error) {
       console.error("Dispensation failed", error);
       alert("Permission denied. Pharmacist credentials required.");
+    }
+  };
+
+  const handleBulkDispenseMedicine = async (dispenses: MedicationDispense[]) => {
+    try {
+      await saveBulkMedicationDispenses(dispenses);
+      
+      // Bulk update stock items? (Not strictly necessary for TXT uploads since they are historical, but let's just log it)
+      await logMutation('DISPENSE_MEDICINE_BULK', `Bulk dispensed ${dispenses.length} records from uploaded file.`);
+      alert(`Successfully saved ${dispenses.length} dispensing records.`);
+    } catch (error) {
+      console.error("Bulk Dispensation failed", error);
+      alert("Error saving bulk dispensation records. Check your connection or batch size.");
     }
   };
 
@@ -848,6 +862,7 @@ export default function App() {
                 userEmail={currentUser.email}
                 userName={currentUser.name}
                 onDispenseMedication={handleDispenseMedicine}
+                onBulkDispenseMedication={handleBulkDispenseMedicine}
                 onRestockItem={handleRestockItem}
                 onAddNewStockItem={handleAddNewStockItem}
                 onUpdateThreshold={handleUpdateThreshold}

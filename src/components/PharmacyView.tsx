@@ -8,7 +8,7 @@ import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, Trendin
 import { MedicationDispense, PharmacyItem, Patient, MedicalRecord } from '../types';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { archiveDailyPharmacyData, getSystemConfigLastReset, saveSystemConfigLastReset, fixJulyUploads } from '../dbService';
+import { archiveDailyPharmacyData, getSystemConfigLastReset, saveSystemConfigLastReset, clearUploadedDispenses } from '../dbService';
 
 interface PharmacyViewProps {
   stock: PharmacyItem[];
@@ -17,6 +17,7 @@ interface PharmacyViewProps {
   userEmail: string;
   userName: string;
   onDispenseMedication: (dispense: MedicationDispense) => void;
+  onBulkDispenseMedication?: (dispenses: MedicationDispense[]) => void;
   onRestockItem: (itemId: string, qty: number) => void;
   onAddNewStockItem: (item: PharmacyItem) => void;
   onUpdateThreshold?: (itemId: string, threshold: number) => void;
@@ -31,6 +32,7 @@ export function PharmacyView({
   userEmail,
   userName,
   onDispenseMedication,
+  onBulkDispenseMedication,
   onRestockItem,
   onAddNewStockItem,
   onUpdateThreshold,
@@ -797,6 +799,20 @@ export function PharmacyView({
     }
   };
 
+  const handleClearUploads = async () => {
+    if (window.confirm("Are you sure you want to clear all uploaded dispensing records? This will delete all records that were imported from CSV or TXT files.")) {
+      setIsParsingDispenses(true);
+      try {
+        const count = await clearUploadedDispenses();
+        setDispenseUploadFeedback({ success: true, message: `Successfully deleted ${count} uploaded records.` });
+      } catch (err: any) {
+        setDispenseUploadFeedback({ success: false, message: `Failed to clear records: ${err.message}` });
+      } finally {
+        setIsParsingDispenses(false);
+      }
+    }
+  };
+
   const handleDispenseFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
@@ -810,10 +826,11 @@ export function PharmacyView({
 
     if (file.name.endsWith('.csv') || file.name.endsWith('.txt')) {
       setIsParsingDispenses(true);
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           const rawText = e.target?.result as string;
           let addedCount = 0;
+          const parsedDispenses: MedicationDispense[] = [];
 
           if (file.name.endsWith('.txt')) {
              // OCR specific format parsing
@@ -875,7 +892,7 @@ export function PharmacyView({
                         totalCost: parseFloat(amount.replace(/,/g, '')),
                      };
 
-                     onDispenseMedication(newDispense);
+                     parsedDispenses.push(newDispense);
                      addedCount++;
                      pendingText = "";
                  }
@@ -939,10 +956,14 @@ export function PharmacyView({
                    totalCost: (isNaN(foundPrice) ? 0 : foundPrice) * foundQty,
                  };
 
-                 onDispenseMedication(newDispense);
+                 parsedDispenses.push(newDispense);
                  addedCount++;
                }
              });
+          }
+          
+          if (parsedDispenses.length > 0 && onBulkDispenseMedication) {
+              await onBulkDispenseMedication(parsedDispenses);
           }
 
           setDispenseUploadFeedback({ 
@@ -2532,10 +2553,11 @@ export function PharmacyView({
             Bulk Dispense Records Loader
           </h3>
           <button
-            onClick={() => fixJulyUploads()}
-            className="px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-md hover:bg-red-200 transition-colors"
+            onClick={handleClearUploads}
+            disabled={isParsingDispenses}
+            className="px-3 py-1 bg-red-50 text-red-600 text-[11px] font-medium rounded border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50"
           >
-            Clear Bad Uploads
+            Clear Previous Uploads
           </button>
         </div>
         <p className="text-[11px] text-stone-500">

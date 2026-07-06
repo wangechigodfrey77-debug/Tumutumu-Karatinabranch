@@ -29,7 +29,7 @@ interface RecordsReceptionViewProps {
 }
 
 export function RecordsReceptionView({
-  patients,
+  patients: allPatients,
   appointments,
   userRole,
   userEmail,
@@ -46,6 +46,19 @@ export function RecordsReceptionView({
   onUpdateLabTest,
   onDeletePatient,
 }: RecordsReceptionViewProps) {
+  const [globalSearch, setGlobalSearch] = useState('');
+
+  const patients = allPatients.filter((p) => {
+    const q = globalSearch.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      p.name.toLowerCase().includes(q) ||
+      p.id.toLowerCase().includes(q) ||
+      (p.opNumber && p.opNumber.toLowerCase().includes(q)) ||
+      (p.phone && p.phone.includes(q))
+    );
+  });
+
   // Tabs: Register Patient, Manage Records, Appointments & Billing, View Patient Card
   const [activeSubTab, setActiveSubTab] = useState<'register' | 'history' | 'appointments' | 'card'>('register');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -675,6 +688,27 @@ export function RecordsReceptionView({
         </div>
       )}
 
+      {/* Global Patient Search */}
+      <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-sm flex items-center gap-3 focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition-all">
+        <Search className="w-5 h-5 text-stone-400 shrink-0" />
+        <input
+          id="global-patient-search"
+          type="text"
+          placeholder="Search and filter entire workspace by Patient Name, ID, Phone or OP Number..."
+          value={globalSearch}
+          onChange={(e) => setGlobalSearch(e.target.value)}
+          className="bg-transparent outline-hidden w-full text-stone-800 placeholder-stone-400 font-medium text-sm"
+        />
+        {globalSearch && (
+          <button
+            onClick={() => setGlobalSearch('')}
+            className="text-stone-400 hover:text-stone-600 font-bold text-xs shrink-0 px-2 cursor-pointer"
+          >
+            Clear Filter
+          </button>
+        )}
+      </div>
+
       {/* Sub Tabs */}
       <div className="bg-white border border-stone-200 rounded-xl p-1 flex gap-1">
         <button
@@ -1104,6 +1138,7 @@ export function RecordsReceptionView({
                     <th className="py-2.5">Age/Sex</th>
                     <th className="py-2.5">Phone Contact</th>
                     <th className="py-2.5">Inpatient Category</th>
+                    <th className="py-2.5">Current Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100 text-stone-700">
@@ -1140,11 +1175,39 @@ export function RecordsReceptionView({
                           ) : null}
                         </div>
                       </td>
+                      <td className="py-2.5">
+                        <select
+                          value={p.currentStatus || 'Pending Triage'}
+                          onChange={(e) => {
+                            if (onAddPatient) {
+                              onAddPatient({ ...p, currentStatus: e.target.value });
+                              setToastMessage('Patient flow status updated!');
+                            }
+                          }}
+                          className={`text-[10px] font-semibold rounded px-1.5 py-1 border outline-hidden transition-colors ${
+                            p.currentStatus === 'Admitted' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                            p.currentStatus === 'Discharged' ? 'bg-stone-100 text-stone-500 border-stone-200' :
+                            p.currentStatus === 'With Doctor' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                            p.currentStatus === 'At Lab' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                            p.currentStatus === 'At Pharmacy' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                            p.currentStatus === 'Triage Complete' ? 'bg-teal-50 text-teal-700 border-teal-200' :
+                            'bg-amber-50 text-amber-700 border-amber-200'
+                          }`}
+                        >
+                          <option value="Pending Triage">Pending Triage</option>
+                          <option value="Triage Complete">Triage Complete</option>
+                          <option value="With Doctor">With Doctor</option>
+                          <option value="At Lab">At Lab</option>
+                          <option value="At Pharmacy">At Pharmacy</option>
+                          <option value="Admitted">Admitted</option>
+                          <option value="Discharged">Discharged</option>
+                        </select>
+                      </td>
                     </tr>
                   ))}
                   {filteredPatients.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-stone-400">No patients recorded in filters.</td>
+                      <td colSpan={7} className="py-8 text-center text-stone-400">No patients recorded in filters.</td>
                     </tr>
                   )}
                 </tbody>

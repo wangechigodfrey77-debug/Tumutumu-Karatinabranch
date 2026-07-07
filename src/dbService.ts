@@ -897,7 +897,7 @@ export async function saveBulkMedicationDispenses(dispenses: MedicationDispense[
       currentBatch.set(docRef, cleanUndefined(disp));
       opsInCurrentBatch++;
 
-      if (opsInCurrentBatch === 500) {
+      if (opsInCurrentBatch === 250) {
         batches.push(currentBatch);
         currentBatch = writeBatch(db);
         opsInCurrentBatch = 0;
@@ -908,8 +908,11 @@ export async function saveBulkMedicationDispenses(dispenses: MedicationDispense[
       batches.push(currentBatch);
     }
 
-    for (const b of batches) {
-      await b.commit();
+    for (let i = 0; i < batches.length; i++) {
+      await batches[i].commit();
+      if (i < batches.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
     }
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
@@ -1173,7 +1176,7 @@ export async function clearUploadedDispenses() {
       opsInCurrentBatch++;
       count++;
       
-      if (opsInCurrentBatch === 500) {
+      if (opsInCurrentBatch === 250) {
           batches.push(currentBatch);
           currentBatch = writeBatch(db);
           opsInCurrentBatch = 0;
@@ -1186,8 +1189,11 @@ export async function clearUploadedDispenses() {
   }
 
   if (count > 0) {
-    for (const b of batches) {
-        await b.commit();
+    for (let i = 0; i < batches.length; i++) {
+        await batches[i].commit();
+        if (i < batches.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
     }
   }
   return count;

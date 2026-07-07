@@ -411,6 +411,7 @@ export default function App() {
     } catch (error) {
       console.error("Bulk Dispensation failed", error);
       alert("Error saving bulk dispensation records. Check your connection or batch size.");
+      throw error;
     }
   };
 

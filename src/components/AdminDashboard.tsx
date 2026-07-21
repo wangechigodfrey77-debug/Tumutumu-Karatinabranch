@@ -22,7 +22,7 @@ interface AdminDashboardProps {
   whitelist: WhitelistUser[];
   expenses: Expense[];
   auditLogs?: AuditLog[];
-  onAddWhitelist: (user: WhitelistUser) => void;
+  onAddWhitelist: (user: WhitelistUser, password?: string) => void;
   onRemoveWhitelist: (email: string) => void;
   onAddDuty: (duty: DutyAllocation) => void;
   onRemoveDuty: (dutyId: string) => void;
@@ -121,6 +121,7 @@ export function AdminDashboard({
   const [wlEmail, setWlEmail] = useState<string>('');
   const [wlName, setWlName] = useState<string>('');
   const [wlRole, setWlRole] = useState<UserRole>('Doctor');
+  const [wlPassword, setWlPassword] = useState<string>('');
 
   // New Duty state
   const [dutyEmail, setDutyEmail] = useState<string>('');
@@ -419,10 +420,11 @@ export function AdminDashboard({
       email: wlEmail.trim().toLowerCase(),
       name: wlName.trim(),
       role: wlRole,
-    });
+    }, wlPassword.trim());
 
     setWlEmail('');
     setWlName('');
+    setWlPassword('');
     alert(`Whitelisted secure login approved for: ${wlName}`);
   };
 
@@ -1597,7 +1599,6 @@ export function AdminDashboard({
                   className="w-full bg-stone-50 border border-stone-200 rounded p-2 focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
-
               <div>
                 <label id="lbl-wl-role" className="block font-medium text-stone-500 mb-1">Roster Role Category</label>
                 <select
@@ -1614,7 +1615,17 @@ export function AdminDashboard({
                   <option value="Admin">Administrator (Roster Coordinator / CFO)</option>
                 </select>
               </div>
-
+              <div>
+                <label id="lbl-wl-password" className="block font-medium text-stone-500 mb-1">Temporary Password (Optional)</label>
+                <input
+                  id="inp-wl-password"
+                  type="text"
+                  placeholder="Leave empty for SSO only"
+                  value={wlPassword}
+                  onChange={(e) => setWlPassword(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded p-2 focus:ring-1 focus:ring-emerald-500"
+                />
+              </div>
               <button
                 id="btn-add-whitelist-submit"
                 type="submit"
@@ -1624,7 +1635,6 @@ export function AdminDashboard({
               </button>
             </form>
           </div>
-
           <div className="bg-white p-6 rounded-xl border border-stone-200 lg:col-span-2 space-y-4">
             <h3 className="text-sm font-semibold text-stone-800">Tumutumu Secure Google Whitelisted Accounts List</h3>
             <p className="text-stone-500 text-xs">

@@ -57,8 +57,8 @@ import {
   saveExpense,
   deleteExpense
 } from './dbService';
-import { auth, googleProvider, setOAuthAccessToken, getOAuthAccessToken } from './firebase';
-import { signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
+import { auth, secondaryAuth, googleProvider, setOAuthAccessToken, getOAuthAccessToken } from './firebase';
+import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
 import { WhitelistUser, Patient, LabTest, LabCatalogItem, MedicationDispense, PharmacyItem, DutyAllocation, LeaveRequest, Message, Appointment, MedicalRecord, Expense, AuditLog, PatientVitals } from './types';
 
 
@@ -90,10 +90,13 @@ export default function App() {
   // Authenticated states
   const [currentUser, setCurrentUser] = useState<WhitelistUser | null>(null);
   const [inputEmail, setInputEmail] = useState<string>('');
+  const [loginPassword, setLoginPassword] = useState<string>('');
   const [loginError, setLoginError] = useState<string>('');
   const [sessionEmail, setSessionEmail] = useState<string>('');
   const [firebaseUser, setFirebaseUser] = useState<any>(null);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState<boolean>(false);
+  const [isWhitelistLoaded, setIsWhitelistLoaded] = useState<boolean>(false);
 
   // Primary Workspace tab
   const [activeTab, setActiveTab] = useState<string>('records');
@@ -175,7 +178,10 @@ export default function App() {
       initDb();
 
       // Setup real-time sync listeners for all collections
-      const unsubWhitelist = listenWhitelist(setWhitelist, (err) => console.error("Whitelist sync error: ", err));
+      const unsubWhitelist = listenWhitelist((data) => {
+        setWhitelist(data);
+        setIsWhitelistLoaded(true);
+      }, (err) => console.error("Whitelist sync error: ", err));
       const unsubPatients = listenPatients(setPatients, (err) => console.error("Patients sync error: ", err));
       const unsubLabTests = listenLabTests(setLabTests, (err) => console.error("LabTests sync error: ", err));
       const unsubLabCatalog = listenLabCatalog(setLabCatalog, (err) => console.error("LabCatalog sync error: ", err));
@@ -204,6 +210,7 @@ export default function App() {
       };
     } else {
       console.log("No Firebase logged-in user detected.");
+      setIsWhitelistLoaded(false);
       setWhitelist([]);
       setPatients([]);
       setLabTests([]);
@@ -221,10 +228,10 @@ export default function App() {
 
   // Reactive role mapper triggered when session email or whitelist changes
   useEffect(() => {
-    if (sessionEmail) {
+    if (sessionEmail && isWhitelistLoaded) {
       handleSignOn(sessionEmail);
     }
-  }, [sessionEmail, whitelist]);
+  }, [sessionEmail, whitelist, isWhitelistLoaded]);
 
   // Login handler carrying secure role resolution
   const handleSignOn = (emailAddress: string) => {
@@ -270,6 +277,44 @@ export default function App() {
       } else {
         setLoginError(`Google Sign-In failed: ${err?.message || String(err)}`);
       }
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isLoggingIn) return;
+    setIsLoggingIn(true);
+    try {
+      setLoginError('');
+      const result = await signInWithEmailAndPassword(auth, inputEmail, loginPassword);
+      const email = result.user.email;
+      if (email) {
+        setSessionEmail(email);
+      }
+    } catch (err: any) {
+      console.error("Email Login Error:", err);
+      setLoginError(`Login failed: ${err?.message || String(err)}`);
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!inputEmail) {
+      setLoginError('Please enter your email address in the field above to reset your password.');
+      return;
+    }
+    if (isLoggingIn) return;
+    setIsLoggingIn(true);
+    try {
+      setLoginError('');
+      await sendPasswordResetEmail(auth, inputEmail);
+      setLoginError('Password reset email sent! Please check your inbox.');
+    } catch (err: any) {
+      console.error("Forgot Password Error:", err);
+      setLoginError(`Failed to send reset email: ${err?.message || String(err)}`);
     } finally {
       setIsLoggingIn(false);
     }
@@ -469,8 +514,17 @@ export default function App() {
     }
   };
 
-  const handleAddWhitelist = async (user: WhitelistUser) => {
+  const handleAddWhitelist = async (user: WhitelistUser, password?: string) => {
     try {
+      if (password) {
+        try {
+          await createUserWithEmailAndPassword(secondaryAuth, user.email, password);
+          await secondaryAuth.signOut();
+        } catch (authErr: any) {
+          console.error("Failed to create user with email/password", authErr);
+          alert(`Could not create authentication for ${user.email}: ${authErr?.message}. Proceeding to whitelist only.`);
+        }
+      }
       await saveWhitelistUser(user);
       await logMutation('ADD_WHITELIST', `Whitelisted new hospital staff user email: ${user.email}. Name: ${user.name}, Role: ${user.role}`);
     } catch (error) {
@@ -604,6 +658,61 @@ export default function App() {
       {/* 2. SECURITY WHITELIST GATE (IF LOGGED OUT) */}
       {!currentUser ? (
         <div className="flex-1 flex flex-col items-center justify-center p-6 bg-stone-100">
+          
+          {showForgotPasswordModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+              <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl border border-stone-200">
+                <h3 className="text-lg font-bold text-stone-900 mb-2">Reset Password</h3>
+                <p className="text-xs text-stone-500 mb-4">Enter your email address and we will send you a link to reset your password.</p>
+                
+                {loginError && loginError.includes('Password reset') && (
+                  <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs p-3 rounded-lg mb-4">
+                    {loginError}
+                  </div>
+                )}
+                {loginError && !loginError.includes('Password reset') && (
+                  <div className="bg-rose-50 border border-rose-200 text-rose-800 text-xs p-3 rounded-lg mb-4">
+                    {loginError}
+                  </div>
+                )}
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-stone-600 mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      value={inputEmail}
+                      onChange={(e) => setInputEmail(e.target.value)}
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2.5 focus:ring-1 focus:ring-emerald-500 text-sm"
+                      placeholder="admin@tumutumu.org"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowForgotPasswordModal(false);
+                        setLoginError('');
+                      }}
+                      className="flex-1 bg-white hover:bg-stone-50 text-stone-700 border border-stone-300 py-2.5 rounded-xl font-medium text-xs transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      disabled={isLoggingIn}
+                      className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 py-2.5 rounded-xl font-medium text-xs shadow-sm transition-all disabled:opacity-50"
+                    >
+                      {isLoggingIn ? 'Sending...' : 'Send Link'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="w-full max-w-md bg-white rounded-2xl border border-stone-200 shadow-sm p-8 space-y-6">
             <div className="text-center space-y-2">
               <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-100">
@@ -616,11 +725,64 @@ export default function App() {
             </div>
 
             {/* Custom Whitelist security logs */}
-            {loginError && (
+            {loginError && !showForgotPasswordModal && (
               <div id="login-blacklist-warning" className="bg-rose-50 border border-rose-200 text-rose-800 text-xs p-3 rounded-lg leading-normal">
                 {loginError}
               </div>
             )}
+            
+            <form onSubmit={handleEmailSignIn} className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-stone-600 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={inputEmail}
+                  onChange={(e) => setInputEmail(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2.5 focus:ring-1 focus:ring-emerald-500 text-sm"
+                  placeholder="admin@tumutumu.org"
+                />
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-medium text-stone-600">Password</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLoginError('');
+                      setShowForgotPasswordModal(true);
+                    }}
+                    className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+                <input
+                  type="password"
+                  required
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2.5 focus:ring-1 focus:ring-emerald-500 text-sm"
+                  placeholder="••••••••"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isLoggingIn}
+                className="w-full bg-emerald-600 text-white hover:bg-emerald-700 py-3 rounded-xl font-semibold text-xs shadow-sm transition-all"
+              >
+                {isLoggingIn ? 'Signing In...' : 'Sign In with Email'}
+              </button>
+            </form>
+
+            <div className="relative flex items-center justify-center pt-2 pb-1">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-stone-200"></div>
+              </div>
+              <div className="relative bg-white px-4 text-[10px] font-medium text-stone-400 uppercase tracking-wider">
+                Or Continue With
+              </div>
+            </div>
 
             {/* Primary Google Auth Pop-up Button */}
             <button

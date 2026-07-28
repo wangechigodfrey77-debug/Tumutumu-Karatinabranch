@@ -4,8 +4,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Search, Stethoscope, FileText, Calendar, DollarSign, History, ShieldAlert, Download, Heart } from 'lucide-react';
-import { Patient, MedicalRecord, Appointment, UserRole, PharmacyItem, LabTest, LabCatalogItem } from '../types';
+import { UserPlus, Search, Stethoscope, FileText, Calendar, DollarSign, History, ShieldAlert, Download, Heart, Pill, Film } from 'lucide-react';
+import { Patient, MedicalRecord, Appointment, UserRole, PharmacyItem, LabTest, LabCatalogItem, ImagingRequestItem } from '../types';
+import { ImagingModal } from './ImagingModal';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -167,8 +168,19 @@ export function RecordsReceptionView({
 
   // Structured Medications Prescription Builder States
   const [selectedMedicationId, setSelectedMedicationId] = useState<string>('');
+  const [drugSearchQuery, setDrugSearchQuery] = useState<string>('');
   const [prescribeQty, setPrescribeQty] = useState<string | number>(1);
   const [prescribeDosage, setPrescribeDosage] = useState<string>('');
+
+  const filteredStockForPrescription = React.useMemo(() => {
+    if (!drugSearchQuery.trim()) return stock;
+    const q = drugSearchQuery.toLowerCase().trim();
+    return stock.filter(item => 
+      item.name.toLowerCase().includes(q) || 
+      item.id.toLowerCase().includes(q) ||
+      (item.category && item.category.toLowerCase().includes(q))
+    );
+  }, [stock, drugSearchQuery]);
   const [activePrescriptionsList, setActivePrescriptionsList] = useState<{
     itemId: string;
     name: string;
@@ -277,6 +289,14 @@ export function RecordsReceptionView({
     setActiveLabTestsList(prev => prev.filter((_, idx) => idx !== index));
   };
 
+  // Structured Imaging Request Builder States (X-Ray, Ultrasound, CT Scan, MRI)
+  const [isImagingModalOpen, setIsImagingModalOpen] = useState<boolean>(false);
+  const [activeImagingRequestsList, setActiveImagingRequestsList] = useState<ImagingRequestItem[]>([]);
+
+  const handleRemoveImagingFromOrder = (index: number) => {
+    setActiveImagingRequestsList(prev => prev.filter((_, idx) => idx !== index));
+  };
+
   // New Appointment Form State
   const [apptPatientId, setApptPatientId] = useState<string>('');
   const [apptSearchTerm, setApptSearchTerm] = useState<string>('');
@@ -357,9 +377,11 @@ export function RecordsReceptionView({
 
     const hasPrescriptions = activePrescriptionsList.length > 0;
     const hasLabTests = activeLabTestsList.length > 0;
+    const hasImaging = activeImagingRequestsList.length > 0;
     const rxTotal = activePrescriptionsList.reduce((sum, item) => sum + (item.quantity * (Number(item.price) * 1.33)), 0);
     const labTotal = activeLabTestsList.reduce((sum, item) => sum + item.fee, 0);
-    const computedInvoiceAmount = (hasPrescriptions || hasLabTests) ? (rxTotal + labTotal) : undefined;
+    const imagingTotal = activeImagingRequestsList.reduce((sum, item) => sum + (Number(item.fee) || 0), 0);
+    const computedInvoiceAmount = (hasPrescriptions || hasLabTests || hasImaging) ? (rxTotal + labTotal + imagingTotal) : undefined;
 
     const clinicalRecord: MedicalRecord = {
       id: `MR-${Math.floor(Math.random() * 10000)}`,
@@ -372,7 +394,8 @@ export function RecordsReceptionView({
       doctorEmail: userEmail,
       ...(hasPrescriptions ? { prescribedItems: activePrescriptionsList } : {}),
       ...(hasLabTests ? { labTestsRequested: activeLabTestsList } : {}),
-      ...((hasPrescriptions || hasLabTests) ? {
+      ...(hasImaging ? { imagingRequested: activeImagingRequestsList } : {}),
+      ...((hasPrescriptions || hasLabTests || hasImaging) ? {
         billingStatus: 'Unpaid' as const,
         invoiceAmount: computedInvoiceAmount
       } : {})
@@ -418,8 +441,9 @@ export function RecordsReceptionView({
     setPrescribeDosage('');
     setActiveLabTestsList([]);
     setSelectedLabTestName('');
-    alert((hasPrescriptions || hasLabTests)
-      ? `Clinical consult recorded! A combined cashier invoice of Ksh ${computedInvoiceAmount?.toLocaleString()} (Rx: Ksh ${rxTotal}, Labs: Ksh ${labTotal}) has been queued under Appointments & Billing.`
+    setActiveImagingRequestsList([]);
+    alert((hasPrescriptions || hasLabTests || hasImaging)
+      ? `Clinical consult recorded! A combined cashier invoice of Ksh ${computedInvoiceAmount?.toLocaleString()} (Rx: Ksh ${rxTotal}, Labs: Ksh ${labTotal}, Imaging: Ksh ${imagingTotal}) has been queued under Appointments & Billing.`
       : 'Medical record added successfully to safe EHR file.'
     );
   };
@@ -1424,6 +1448,35 @@ export function RecordsReceptionView({
                               <p className="bg-white p-1.5 rounded border border-stone-100 mt-1">{rec.notes || 'No extra notes.'}</p>
                             </div>
                           </div>
+
+                          {/* Requested Imaging Orders Display */}
+                          {rec.imagingRequested && rec.imagingRequested.length > 0 && (
+                            <div className="bg-slate-900 text-white rounded-lg p-2.5 space-y-1.5 text-xs">
+                              <span className="text-[10px] uppercase font-bold text-slate-300 tracking-wider flex items-center gap-1">
+                                📸 Requested Radiology & Imaging ({rec.imagingRequested.length})
+                              </span>
+                              <div className="space-y-1">
+                                {rec.imagingRequested.map((imgItem, iIdx) => (
+                                  <div key={iIdx} className="bg-slate-800/80 p-2 rounded border border-slate-700 flex justify-between items-center text-xs">
+                                    <div className="flex items-center gap-2">
+                                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
+                                        imgItem.modality === 'X-Ray' ? 'bg-blue-500 text-white' :
+                                        imgItem.modality === 'Ultrasound' ? 'bg-purple-500 text-white' :
+                                        imgItem.modality === 'CT Scan' ? 'bg-amber-500 text-white' : 'bg-teal-500 text-white'
+                                      }`}>
+                                        {imgItem.modality}
+                                      </span>
+                                      <span className="font-semibold text-slate-100">{imgItem.bodyPart}</span>
+                                      {imgItem.clinicalIndication && (
+                                        <span className="text-slate-400 text-[11px] italic font-normal">({imgItem.clinicalIndication})</span>
+                                      )}
+                                    </div>
+                                    <span className="font-mono text-emerald-400 font-bold">Ksh {(Number(imgItem.fee) || 0).toLocaleString()}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -1490,22 +1543,80 @@ export function RecordsReceptionView({
                           ></textarea>
 
                           {/* Quick selection dropdown helper from Pharmacy Stock */}
-                          <div className="mt-3 bg-stone-50 border border-stone-200/60 p-3 rounded-lg space-y-2">
-                            <span className="text-[10px] uppercase tracking-wider font-semibold text-stone-600 block">Available Pharmacy Stock Helper</span>
+                          <div className="mt-3 bg-stone-50 border border-stone-200/60 p-3 rounded-lg space-y-2.5">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] uppercase tracking-wider font-semibold text-stone-600 flex items-center gap-1">
+                                <Pill className="w-3.5 h-3.5 text-emerald-600" /> Available Pharmacy Stock Helper
+                              </span>
+                              {drugSearchQuery && (
+                                <span className="text-[9px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                  {filteredStockForPrescription.length} of {stock.length} drugs match
+                                </span>
+                              )}
+                            </div>
                             
+                            {/* Search Drug Bar for Doctors */}
+                            <div className="relative">
+                              <input
+                                type="text"
+                                id="inp-search-prescribe-drug"
+                                value={drugSearchQuery}
+                                onChange={(e) => setDrugSearchQuery(e.target.value)}
+                                placeholder="Search drug by name or category (e.g. Amoxicillin, Panadol, Cipro)..."
+                                className="w-full bg-white border border-stone-200 rounded-md py-1.5 pl-8 pr-8 text-[11px] outline-hidden focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 placeholder:text-stone-400 font-normal"
+                              />
+                              <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-2.5" />
+                              {drugSearchQuery && (
+                                <button
+                                  type="button"
+                                  id="btn-clear-drug-search"
+                                  onClick={() => setDrugSearchQuery('')}
+                                  className="absolute right-2.5 top-2 text-stone-400 hover:text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold cursor-pointer"
+                                  title="Clear search"
+                                >
+                                  ✕
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Quick Select Chips when search query matches 1-8 items */}
+                            {drugSearchQuery.trim() && filteredStockForPrescription.length > 0 && filteredStockForPrescription.length <= 8 && (
+                              <div className="flex flex-wrap gap-1 bg-white p-2 rounded-md border border-stone-100">
+                                <span className="text-[9px] text-stone-400 self-center mr-1 font-medium">Quick Select:</span>
+                                {filteredStockForPrescription.slice(0, 6).map(item => (
+                                  <button
+                                    key={item.id}
+                                    type="button"
+                                    onClick={() => setSelectedMedicationId(item.id)}
+                                    className={`text-[10px] px-2 py-0.5 rounded transition-all cursor-pointer ${
+                                      selectedMedicationId === item.id
+                                        ? 'bg-emerald-600 text-white font-semibold shadow-2xs'
+                                        : 'bg-stone-50 hover:bg-emerald-50 text-stone-700 border border-stone-200 hover:border-emerald-300'
+                                    }`}
+                                  >
+                                    {item.name} ({item.stockQuantity} in stock)
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                               <div className="sm:col-span-2">
-                                <label className="block text-[9px] font-medium text-stone-400">Drug Name</label>
+                                <label className="block text-[9px] font-medium text-stone-400">Drug Selection</label>
                                 <select
                                   id="select-prescribe-drug"
                                   value={selectedMedicationId}
                                   onChange={(e) => setSelectedMedicationId(e.target.value)}
                                   className="w-full bg-white border border-stone-200 rounded-md p-1.5 text-[11px] outline-hidden"
                                 >
-                                  <option value="">-- Choose Stock Drug --</option>
-                                  {stock.map(item => (
+                                  <option value="">
+                                    {filteredStockForPrescription.length === 0
+                                      ? `-- No drugs match "${drugSearchQuery}" --`
+                                      : `-- Choose Stock Drug (${filteredStockForPrescription.length} available) --`}
+                                  </option>
+                                  {filteredStockForPrescription.map(item => (
                                     <option key={item.id} value={item.id} disabled={item.stockQuantity <= 0}>
-                                      {item.name} (Qty: {item.stockQuantity} Left) - Ksh {(Number(item.price) * 1.33).toLocaleString()}/unit
+                                      {item.name} ({item.stockQuantity <= 0 ? 'OUT OF STOCK' : `Qty: ${item.stockQuantity} Left`}) - Ksh {(Number(item.price) * 1.33).toLocaleString()}/unit
                                     </option>
                                   ))}
                                 </select>
@@ -1643,6 +1754,70 @@ export function RecordsReceptionView({
                                 </div>
                                 <div className="text-right text-[10px] font-semibold text-indigo-900 pr-1">
                                   Lab Fees Total: Ksh {activeLabTestsList.reduce((sum, item) => sum + item.fee, 0).toLocaleString()}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Structured Radiology & Imaging Diagnostic Request Builder (X-Ray, Ultrasound, CT Scan, MRI) */}
+                          <div className="mt-3 bg-slate-900 text-white p-3 rounded-lg space-y-2 border border-slate-800">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] uppercase tracking-wider font-semibold text-emerald-400 flex items-center gap-1.5">
+                                <Film className="w-3.5 h-3.5 text-emerald-400" /> Order Radiology & Imaging Diagnostics
+                              </span>
+                              {activeImagingRequestsList.length > 0 && (
+                                <span className="text-[9px] font-bold text-slate-200 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+                                  {activeImagingRequestsList.length} Order{activeImagingRequestsList.length === 1 ? '' : 's'} Queued
+                                </span>
+                              )}
+                            </div>
+
+                            <button
+                              type="button"
+                              id="btn-open-imaging-modal"
+                              onClick={() => setIsImagingModalOpen(true)}
+                              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 px-3 rounded-md transition-all flex items-center justify-center gap-2 cursor-pointer border border-emerald-500 shadow-xs"
+                            >
+                              <span>📸</span>
+                              <span>
+                                {activeImagingRequestsList.length > 0
+                                  ? `Modify Imaging Orders (${activeImagingRequestsList.length} Attached)`
+                                  : 'Open Imaging Request Modal (X-Ray, Ultrasound, CT Scan, MRI)'}
+                              </span>
+                            </button>
+
+                            {activeImagingRequestsList.length > 0 && (
+                              <div className="mt-2 border-t border-slate-800 pt-2 space-y-1.5">
+                                <span className="text-[9px] font-medium text-slate-400 block">Attached Imaging Procedures:</span>
+                                <div className="space-y-1 max-h-[110px] overflow-y-auto">
+                                  {activeImagingRequestsList.map((item, index) => (
+                                    <div key={index} className="flex justify-between items-center text-[10px] bg-slate-800 p-1.5 rounded border border-slate-700 font-mono">
+                                      <div className="flex items-center gap-1.5 truncate pr-2">
+                                        <span className={`px-1.5 py-0.2 rounded text-[8px] font-bold uppercase ${
+                                          item.modality === 'X-Ray' ? 'bg-blue-500 text-white' :
+                                          item.modality === 'Ultrasound' ? 'bg-purple-500 text-white' :
+                                          item.modality === 'CT Scan' ? 'bg-amber-500 text-white' : 'bg-teal-500 text-white'
+                                        }`}>
+                                          {item.modality}
+                                        </span>
+                                        <span className="truncate text-slate-200 font-semibold">{item.bodyPart}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        <span className="text-emerald-400 font-bold">Ksh {item.fee.toLocaleString()}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleRemoveImagingFromOrder(index)}
+                                          className="text-slate-400 hover:text-rose-400 font-sans px-1"
+                                          title="Remove imaging order"
+                                        >
+                                          ✕
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="text-right text-[10px] font-bold text-emerald-400 pr-1">
+                                  Imaging Fees Total: Ksh {activeImagingRequestsList.reduce((sum, item) => sum + (Number(item.fee) || 0), 0).toLocaleString()}
                                 </div>
                               </div>
                             )}
@@ -2405,6 +2580,20 @@ export function RecordsReceptionView({
             )}
           </div>
         </div>
+      )}
+
+      {/* Imaging Request Modal for Doctors */}
+      {curSelectedPatient && (
+        <ImagingModal
+          isOpen={isImagingModalOpen}
+          onClose={() => setIsImagingModalOpen(false)}
+          patientName={curSelectedPatient.name}
+          patientId={curSelectedPatient.id}
+          existingRequests={activeImagingRequestsList}
+          onConfirmImagingRequests={(requests) => {
+            setActiveImagingRequestsList(requests);
+          }}
+        />
       )}
     </div>
   );

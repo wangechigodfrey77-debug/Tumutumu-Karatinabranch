@@ -29,6 +29,15 @@ export interface PatientVitals {
   recordedByEmail: string;
 }
 
+export interface ImagingRequestItem {
+  imagingId: string;
+  modality: 'X-Ray' | 'Ultrasound' | 'CT Scan' | 'MRI';
+  bodyPart: string;
+  clinicalIndication?: string;
+  urgency?: 'Routine' | 'Urgent' | 'Emergency';
+  fee: number;
+}
+
 export interface MedicalRecord {
   id: string;
   date: string;
@@ -50,6 +59,7 @@ export interface MedicalRecord {
     testName: string;
     fee: number;
   }[];
+  imagingRequested?: ImagingRequestItem[];
   billingStatus?: 'Unpaid' | 'Paid' | 'Dispensed';
   invoiceAmount?: number;
   isArchived?: boolean;

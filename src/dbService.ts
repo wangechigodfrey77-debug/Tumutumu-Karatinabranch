@@ -34,6 +34,7 @@ import { rawJunePatients } from './extractedJunePatientsData';
 import { rawLabTests } from './extractedLabTestsData';
 import { rawJuneLabTests } from './extractedJuneLabTestsData';
 import { rawExtractedDispenses } from './extractedDispensesData';
+import { rawJulyDispenses } from './extractedJulyDispensesData';
 
 // -------------------------------------------------------------
 // SEED DATABASE ON BOOTSTRAP if empty.
@@ -129,6 +130,9 @@ export async function seedDatabaseIfEmpty() {
 
   // 7. Seed actual May 2026 Pharmacy Dispense records (1,004 reports totaling 267,280.00 Ksh)
   await seedMay2026PharmacyDispenses();
+
+  // 7.1. Seed actual July 2026 Pharmacy Dispense records
+  await seedJuly2026PharmacyDispenses();
 }
 
 
@@ -566,6 +570,35 @@ export async function seedMay2026PharmacyDispenses() {
       console.warn('Seeding May 2026 Pharmacy Dispenses was skipped: insufficient Firestore write permissions.');
     } else {
       console.error('Failed to seed May 2026 Pharmacy Dispenses:', err?.message || err);
+    }
+  }
+}
+
+export async function seedJuly2026PharmacyDispenses() {
+  try {
+    const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
+    const hasJuly = dispSnap.docs.some(d => (d.data() as MedicationDispense).dispenseDate?.startsWith('2026-07'));
+    if (!hasJuly) {
+      console.log(`Seeding July 2026 Pharmacy Dispenses: Seeding ${rawJulyDispenses.length} records...`);
+      const batchSize = 450;
+      for (let i = 0; i < rawJulyDispenses.length; i += batchSize) {
+        const batch = writeBatch(db);
+        const chunk = rawJulyDispenses.slice(i, i + batchSize);
+        chunk.forEach(disp => {
+          const docRef = doc(db, 'medicationDispenses', disp.id);
+          batch.set(docRef, disp);
+        });
+        await batch.commit();
+        console.log(`Committed Firestore July pharmacy dispense batch of size ${chunk.length}`);
+      }
+    } else {
+      console.log('July 2026 Pharmacy Dispenses are already aligned in Firestore.');
+    }
+  } catch (err: any) {
+    if (err?.message?.toLowerCase().includes('permission') || err?.code === 'permission-denied') {
+      console.warn('Seeding July 2026 Pharmacy Dispenses was skipped: insufficient Firestore write permissions.');
+    } else {
+      console.error('Failed to seed July 2026 Pharmacy Dispenses:', err?.message || err);
     }
   }
 }

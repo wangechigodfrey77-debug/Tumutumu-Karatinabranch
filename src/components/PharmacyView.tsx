@@ -9,6 +9,7 @@ import { MedicationDispense, PharmacyItem, Patient, MedicalRecord } from '../typ
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { archiveDailyPharmacyData, getSystemConfigLastReset, saveSystemConfigLastReset, clearUploadedDispenses } from '../dbService';
+import { rawJulyDispenses } from '../extractedJulyDispensesData';
 
 interface PharmacyViewProps {
   stock: PharmacyItem[];
@@ -807,6 +808,28 @@ export function PharmacyView({
         setDispenseUploadFeedback({ success: true, message: `Successfully deleted ${count} uploaded records.` });
       } catch (err: any) {
         setDispenseUploadFeedback({ success: false, message: `Failed to clear records: ${err.message}` });
+      } finally {
+        setIsParsingDispenses(false);
+      }
+    }
+  };
+
+  const handleUploadJuly = async () => {
+    if (onBulkDispenseMedication) {
+      setIsParsingDispenses(true);
+      try {
+        await onBulkDispenseMedication(rawJulyDispenses);
+        setDispenseUploadFeedback({
+          success: true,
+          message: `Successfully uploaded ${rawJulyDispenses.length} July 2026 prescription records!`
+        });
+        setPeriodFilter('search-month');
+        setSearchMonthVal('2026-07');
+      } catch (err: any) {
+        setDispenseUploadFeedback({
+          success: false,
+          message: `Failed to upload July prescriptions: ${err?.message || err}`
+        });
       } finally {
         setIsParsingDispenses(false);
       }
@@ -2547,18 +2570,32 @@ export function PharmacyView({
 
       {/* Bulk Dispense Records Loader */}
       <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm leading-relaxed space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <h3 className="text-sm font-semibold text-stone-800 flex items-center gap-2">
             <FileSpreadsheet className="w-4.5 h-4.5 text-indigo-600" />
             Bulk Dispense Records Loader
           </h3>
-          <button
-            onClick={handleClearUploads}
-            disabled={isParsingDispenses}
-            className="px-3 py-1 bg-red-50 text-red-600 text-[11px] font-medium rounded border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50"
-          >
-            Clear Previous Uploads
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-upload-july-prescriptions"
+              onClick={handleUploadJuly}
+              disabled={isParsingDispenses}
+              className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              Upload July 2026 Prescriptions
+            </button>
+            <button
+              type="button"
+              id="btn-clear-uploads"
+              onClick={handleClearUploads}
+              disabled={isParsingDispenses}
+              className="px-3 py-1 bg-red-50 text-red-600 text-[11px] font-medium rounded border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              Clear Previous Uploads
+            </button>
+          </div>
         </div>
         <p className="text-[11px] text-stone-500">
           Upload a CSV file containing dispensing records. The system will automatically validate and save them as individual dispense entries.

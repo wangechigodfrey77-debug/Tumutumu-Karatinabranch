@@ -19,10 +19,13 @@ import {
   SlidersHorizontal,
   Search,
   Printer,
-  X
+  X,
+  Download
 } from 'lucide-react';
 import { LabTest, Patient, LabCatalogItem } from '../types';
 import { defaultLabCatalog } from '../mockData';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface LabViewProps {
   labTests: LabTest[];
@@ -141,8 +144,49 @@ export function LabView({
     }
   };
 
-  // Tab state: 'history' (Ledger) vs 'catalog' (Manage/Import catalog) vs 'orders' (Doctor Orders)
-  const [activePanelTab, setActivePanelTab] = useState<'history' | 'catalog' | 'orders'>('history');
+  // Tab state: 'history' (Ledger) vs 'catalog' (Manage/Import catalog) vs 'orders' (Doctor Orders) vs 'report' (Lab Report)
+  const [activePanelTab, setActivePanelTab] = useState<'history' | 'catalog' | 'orders' | 'report'>('history');
+
+  const handleDownloadLabReportPDF = () => {
+    const doc = new jsPDF();
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("PCEA TUMUTUMU HOSPITAL", 14, 20);
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.text("Department of Pathology & Laboratory Medicine - Comprehensive Lab Test Report", 14, 28);
+    doc.text(`Generated on: ${new Date().toLocaleString()} | Total Tests Conducted: ${labTests.length}`, 14, 35);
+
+    const testMap: Record<string, { count: number; totalFee: number }> = {};
+    labTests.forEach(t => {
+      const name = t.testName || 'Unknown Test';
+      if (!testMap[name]) testMap[name] = { count: 0, totalFee: 0 };
+      testMap[name].count += 1;
+      testMap[name].totalFee += Number(t.fee || 0);
+    });
+
+    const tableData = Object.entries(testMap).map(([testName, data], index) => [
+      index + 1,
+      testName,
+      data.count,
+      `Ksh ${data.totalFee.toLocaleString()}`,
+      `${((data.count / (labTests.length || 1)) * 100).toFixed(1)}%`
+    ]);
+
+    const totalRevenue = Object.values(testMap).reduce((sum, d) => sum + d.totalFee, 0);
+
+    autoTable(doc, {
+      startY: 42,
+      head: [['#', 'Diagnostic Test Panel / Procedure', 'Number of Tests (Count)', 'Total Revenue (Ksh)', 'Share (%)']],
+      body: tableData,
+      foot: [['', 'TOTAL CUMULATIVE TESTS & REVENUE', labTests.length, `Ksh ${totalRevenue.toLocaleString()}`, '100.0%']],
+      theme: 'striped',
+      headStyles: { fillColor: [16, 185, 129] },
+      footStyles: { fillColor: [243, 244, 246], textColor: [17, 24, 39], fontStyle: 'bold' }
+    });
+
+    doc.save(`TumuTumu_Hospital_Lab_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
 
   // Manual catalog addition form state
   const [newCatalogName, setNewCatalogName] = useState<string>('');
@@ -752,6 +796,19 @@ export function LabView({
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                 Manage Test Menu Catalog ({activeCatalog.length})
               </button>
+              <button
+                id="subtab-lab-report"
+                type="button"
+                onClick={() => setActivePanelTab('report')}
+                className={`py-1.5 px-3 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  activePanelTab === 'report'
+                    ? 'bg-emerald-50 text-emerald-700 font-bold border border-emerald-100/70'
+                    : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
+                Lab Report & Breakdown
+              </button>
             </div>
             <div className="text-[10px] font-mono text-stone-400 uppercase tracking-widest flex items-center gap-1">
               <SlidersHorizontal className="w-3 h-3" /> Labs Control Plane
@@ -884,6 +941,115 @@ export function LabView({
                     )}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          ) : activePanelTab === 'report' ? (
+            <div className="space-y-6 animate-fade-in">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-stone-50 p-4 rounded-xl border border-stone-200">
+                <div>
+                  <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-emerald-600" />
+                    Laboratory Diagnostic Tests Summary & Breakdown Report
+                  </h4>
+                  <p className="text-[11px] text-stone-500 mt-1">
+                    Detailed breakdown of all laboratory tests performed, test counts, total revenue, and share of diagnostics.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleDownloadLabReportPDF}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-3.5 rounded-lg text-xs flex items-center gap-2 shadow-xs transition-all cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Download Lab Report (PDF)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="bg-white hover:bg-stone-100 text-stone-700 font-semibold py-2 px-3.5 rounded-lg text-xs border border-stone-200 flex items-center gap-2 transition-all cursor-pointer"
+                  >
+                    <Printer className="w-3.5 h-3.5" />
+                    Print Report
+                  </button>
+                </div>
+              </div>
+
+              {/* Stat Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white p-4 rounded-xl border border-stone-200 shadow-2xs">
+                  <span className="text-[10px] uppercase font-mono text-stone-400 font-bold block">Total Tests Conducted</span>
+                  <div className="text-2xl font-black text-stone-900 font-mono mt-1">{labTests.length}</div>
+                </div>
+                <div className="bg-white p-4 rounded-xl border border-stone-200 shadow-2xs">
+                  <span className="text-[10px] uppercase font-mono text-stone-400 font-bold block">Cumulative Diagnostic Revenue</span>
+                  <div className="text-2xl font-black text-emerald-800 font-mono mt-1">
+                    Ksh {labTests.reduce((sum, t) => sum + Number(t.fee || 0), 0).toLocaleString()}
+                  </div>
+                </div>
+                <div className="bg-white p-4 rounded-xl border border-stone-200 shadow-2xs">
+                  <span className="text-[10px] uppercase font-mono text-stone-400 font-bold block">Unique Test Panels</span>
+                  <div className="text-2xl font-black text-indigo-800 font-mono mt-1">
+                    {new Set(labTests.map(t => t.testName)).size}
+                  </div>
+                </div>
+              </div>
+
+              {/* Breakdown Table */}
+              <div className="bg-white rounded-xl border border-stone-200 shadow-2xs overflow-hidden">
+                <div className="px-4 py-3 bg-stone-50 border-b border-stone-200 font-bold text-xs uppercase tracking-wider text-stone-700">
+                  Test Panel Breakdown & Number of Tests Done
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-stone-50/50 text-stone-500 font-mono uppercase text-[9px] tracking-wider border-b border-stone-100">
+                      <tr>
+                        <th className="py-2.5 px-4">#</th>
+                        <th className="py-2.5 px-4">Diagnostic Test Panel / Procedure</th>
+                        <th className="py-2.5 px-4 text-center">Number of Tests (Count)</th>
+                        <th className="py-2.5 px-4 text-right">Total Revenue (Ksh)</th>
+                        <th className="py-2.5 px-4 text-right">Share (%)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100 text-stone-700">
+                      {(() => {
+                        const testMap: Record<string, { count: number; totalFee: number }> = {};
+                        labTests.forEach(t => {
+                          const name = t.testName || 'Unknown Test';
+                          if (!testMap[name]) testMap[name] = { count: 0, totalFee: 0 };
+                          testMap[name].count += 1;
+                          testMap[name].totalFee += Number(t.fee || 0);
+                        });
+                        const entries = Object.entries(testMap).sort((a, b) => b[1].count - a[1].count);
+                        const totalCount = labTests.length || 1;
+
+                        if (entries.length === 0) {
+                          return (
+                            <tr>
+                              <td colSpan={5} className="py-8 text-center text-stone-400 font-medium">No laboratory tests recorded yet.</td>
+                            </tr>
+                          );
+                        }
+
+                        return entries.map(([testName, data], index) => (
+                          <tr key={index} className="hover:bg-stone-50/60 transition-colors">
+                            <td className="py-3 px-4 font-mono text-stone-400">{index + 1}</td>
+                            <td className="py-3 px-4 font-bold text-stone-900">{testName}</td>
+                            <td className="py-3 px-4 text-center font-mono font-bold text-emerald-800 bg-emerald-50/30">
+                              {data.count}
+                            </td>
+                            <td className="py-3 px-4 text-right font-mono font-semibold text-stone-800">
+                              Ksh {data.totalFee.toLocaleString()}
+                            </td>
+                            <td className="py-3 px-4 text-right font-mono text-stone-600">
+                              {((data.count / totalCount) * 100).toFixed(1)}%
+                            </td>
+                          </tr>
+                        ));
+                      })()}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           ) : (

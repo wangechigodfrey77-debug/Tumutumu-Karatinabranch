@@ -84,7 +84,15 @@ export function GoogleSheetsView({
       }
     } catch (err: any) {
       console.error("Sheets OAuth connection failed:", err);
-      setErrorDetails(err?.message || "Google Authentication rejected or timed out.");
+      if (err?.code === 'auth/popup-closed-by-user' || err?.message?.includes('popup-closed-by-user')) {
+        setErrorDetails("Google Authorization cancelled: The sign-in popup was closed before completing. Please click Connect to try again.");
+      } else if (err?.code === 'auth/cancelled-popup-request' || err?.message?.includes('cancelled-popup-request')) {
+        setErrorDetails("Sign-In popup request was cancelled. Please try again.");
+      } else if (err?.code === 'auth/popup-blocked' || err?.message?.includes('popup-blocked')) {
+        setErrorDetails("Popup blocked by browser. Please allow popups or open the app in a new browser tab.");
+      } else {
+        setErrorDetails(err?.message || "Google Authentication rejected or timed out.");
+      }
     } finally {
       setIsConnecting(false);
     }

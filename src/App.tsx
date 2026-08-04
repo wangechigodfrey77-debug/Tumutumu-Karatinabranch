@@ -273,7 +273,11 @@ export default function App() {
     } catch (err: any) {
       console.error("Google SSO SSO Error:", err);
       if (err?.code === 'auth/cancelled-popup-request' || err?.message?.includes('cancelled-popup-request')) {
-        setLoginError('Google Sign-In Popup was cancelled or blocked by iframe browser constraints. Please open the app in a new browser tab using the button below.');
+        setLoginError('Google Sign-In popup was cancelled or restricted by browser iframe constraints. Please open the app in a new browser tab using the button below.');
+      } else if (err?.code === 'auth/popup-closed-by-user' || err?.message?.includes('popup-closed-by-user')) {
+        setLoginError('Sign-In cancelled: The Google Sign-In popup window was closed before authorization completed. Please click "Sign In with Google Account" again to retry.');
+      } else if (err?.code === 'auth/popup-blocked' || err?.message?.includes('popup-blocked')) {
+        setLoginError('Google Sign-In popup was blocked by your browser. Please allow popups or open the app in a new browser tab.');
       } else {
         setLoginError(`Google Sign-In failed: ${err?.message || String(err)}`);
       }

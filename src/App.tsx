@@ -292,10 +292,34 @@ export default function App() {
     setIsLoggingIn(true);
     try {
       setLoginError('');
-      const result = await signInWithEmailAndPassword(auth, inputEmail, loginPassword);
-      const email = result.user.email;
-      if (email) {
-        setSessionEmail(email);
+      try {
+        const result = await signInWithEmailAndPassword(auth, inputEmail, loginPassword);
+        const email = result.user.email;
+        if (email) {
+          setSessionEmail(email);
+        }
+      } catch (loginErr: any) {
+        const code = loginErr?.code || '';
+        const msg = loginErr?.message || '';
+        if (code === 'auth/invalid-credential' || code === 'auth/user-not-found' || msg.includes('invalid-credential') || msg.includes('user-not-found')) {
+          const normalized = inputEmail.trim().toLowerCase();
+          const found = whitelist.find(w => w.email.toLowerCase() === normalized);
+          if (found) {
+            // Auto-create auth account for whitelisted user
+            const createResult = await createUserWithEmailAndPassword(auth, inputEmail, loginPassword);
+            const email = createResult.user.email;
+            if (email) {
+              setSessionEmail(email);
+              return;
+            }
+          } else {
+            throw new Error(`Account not found or email "${inputEmail}" is not whitelisted by the Hospital Admin.`);
+          }
+        }
+        if (code === 'auth/wrong-password' || msg.includes('wrong-password')) {
+          throw new Error('Incorrect password. Please check your password or click "Forgot Password".');
+        }
+        throw loginErr;
       }
     } catch (err: any) {
       console.error("Email Login Error:", err);

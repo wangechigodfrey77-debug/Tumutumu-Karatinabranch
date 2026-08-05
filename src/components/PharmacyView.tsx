@@ -950,11 +950,11 @@ export function PharmacyView({
                      }
 
                      const newDispense: MedicationDispense = {
-                        id: `DSP-TXT-${Date.now()}-${addedCount}-${Math.floor(Math.random() * 1000)}`,
+                        id: `DISP-JUN-TXT-${Date.now()}-${addedCount}-${Math.floor(Math.random() * 1000)}`,
                         medicationName: medicationName,
                         patientName: patientName,
                         patientId: patientId,
-                        dispenseDate: '2026-06-15',
+                        dispenseDate: `2026-06-${String((addedCount % 30) + 1).padStart(2, '0')}`,
                         dispensedBy: dispensedBy,
                         quantity: parseFloat(qty),
                         pricePerUnit: parseFloat(price.replace(/,/g, '')),

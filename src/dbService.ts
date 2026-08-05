@@ -34,6 +34,7 @@ import { rawJunePatients } from './extractedJunePatientsData';
 import { rawLabTests } from './extractedLabTestsData';
 import { rawJuneLabTests } from './extractedJuneLabTestsData';
 import { rawExtractedDispenses } from './extractedDispensesData';
+import { rawJuneDispenses } from './extractedJuneDispensesData';
 import { rawJulyDispenses } from './extractedJulyDispensesData';
 
 // -------------------------------------------------------------
@@ -130,6 +131,9 @@ export async function seedDatabaseIfEmpty() {
 
   // 7. Seed actual May 2026 Pharmacy Dispense records (1,004 reports totaling 267,280.00 Ksh)
   await seedMay2026PharmacyDispenses();
+
+  // 7.2. Seed actual June 2026 Pharmacy Dispense records
+  await seedJune2026PharmacyDispenses();
 
   // 7.1. Seed actual July 2026 Pharmacy Dispense records
   await seedJuly2026PharmacyDispenses();
@@ -570,6 +574,35 @@ export async function seedMay2026PharmacyDispenses() {
       console.warn('Seeding May 2026 Pharmacy Dispenses was skipped: insufficient Firestore write permissions.');
     } else {
       console.error('Failed to seed May 2026 Pharmacy Dispenses:', err?.message || err);
+    }
+  }
+}
+
+export async function seedJune2026PharmacyDispenses() {
+  try {
+    const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
+    const hasJune = dispSnap.docs.some(d => (d.data() as MedicationDispense).dispenseDate?.startsWith('2026-06'));
+    if (!hasJune) {
+      console.log(`Seeding June 2026 Pharmacy Dispenses: Seeding ${rawJuneDispenses.length} records...`);
+      const batchSize = 450;
+      for (let i = 0; i < rawJuneDispenses.length; i += batchSize) {
+        const batch = writeBatch(db);
+        const chunk = rawJuneDispenses.slice(i, i + batchSize);
+        chunk.forEach(disp => {
+          const docRef = doc(db, 'medicationDispenses', disp.id);
+          batch.set(docRef, disp);
+        });
+        await batch.commit();
+        console.log(`Committed Firestore June pharmacy dispense batch of size ${chunk.length}`);
+      }
+    } else {
+      console.log('June 2026 Pharmacy Dispenses are already aligned in Firestore.');
+    }
+  } catch (err: any) {
+    if (err?.message?.toLowerCase().includes('permission') || err?.code === 'permission-denied') {
+      console.warn('Seeding June 2026 Pharmacy Dispenses was skipped: insufficient Firestore write permissions.');
+    } else {
+      console.error('Failed to seed June 2026 Pharmacy Dispenses:', err?.message || err);
     }
   }
 }
@@ -1204,6 +1237,17 @@ export async function clearUploadedDispenses() {
   let opsInCurrentBatch = 0;
 
   snap.forEach((d) => {
+    const data = d.data() as MedicationDispense;
+    if (
+      data.dispenseDate?.startsWith('2026-05') ||
+      data.dispenseDate?.startsWith('2026-06') ||
+      data.dispenseDate?.startsWith('2026-07') ||
+      d.id.includes('DISP-MAY-') ||
+      d.id.includes('DISP-JUN-') ||
+      d.id.includes('DISP-JUL-')
+    ) {
+      return;
+    }
     if (d.id.includes('DSP-TXT-') || d.id.includes('DSP-CSV-')) {
       currentBatch.delete(d.ref);
       opsInCurrentBatch++;

@@ -10,6 +10,8 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { archiveDailyPharmacyData, getSystemConfigLastReset, saveSystemConfigLastReset, clearUploadedDispenses } from '../dbService';
 import { rawJulyDispenses } from '../extractedJulyDispensesData';
+import { rawJuneDispenses } from '../extractedJuneDispensesData';
+import { rawExtractedDispenses } from '../extractedDispensesData';
 
 interface PharmacyViewProps {
   stock: PharmacyItem[];
@@ -829,6 +831,50 @@ export function PharmacyView({
         setDispenseUploadFeedback({
           success: false,
           message: `Failed to upload July prescriptions: ${err?.message || err}`
+        });
+      } finally {
+        setIsParsingDispenses(false);
+      }
+    }
+  };
+
+  const handleUploadJune = async () => {
+    if (onBulkDispenseMedication) {
+      setIsParsingDispenses(true);
+      try {
+        await onBulkDispenseMedication(rawJuneDispenses);
+        setDispenseUploadFeedback({
+          success: true,
+          message: `Successfully uploaded ${rawJuneDispenses.length} June 2026 prescription records!`
+        });
+        setPeriodFilter('search-month');
+        setSearchMonthVal('2026-06');
+      } catch (err: any) {
+        setDispenseUploadFeedback({
+          success: false,
+          message: `Failed to upload June prescriptions: ${err?.message || err}`
+        });
+      } finally {
+        setIsParsingDispenses(false);
+      }
+    }
+  };
+
+  const handleUploadMay = async () => {
+    if (onBulkDispenseMedication) {
+      setIsParsingDispenses(true);
+      try {
+        await onBulkDispenseMedication(rawExtractedDispenses);
+        setDispenseUploadFeedback({
+          success: true,
+          message: `Successfully uploaded ${rawExtractedDispenses.length} May 2026 prescription records!`
+        });
+        setPeriodFilter('search-month');
+        setSearchMonthVal('2026-05');
+      } catch (err: any) {
+        setDispenseUploadFeedback({
+          success: false,
+          message: `Failed to upload May prescriptions: ${err?.message || err}`
         });
       } finally {
         setIsParsingDispenses(false);
@@ -2575,7 +2621,27 @@ export function PharmacyView({
             <FileSpreadsheet className="w-4.5 h-4.5 text-indigo-600" />
             Bulk Dispense Records Loader
           </h3>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              id="btn-upload-may-prescriptions"
+              onClick={handleUploadMay}
+              disabled={isParsingDispenses}
+              className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-semibold rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              Upload May 2026 Prescriptions
+            </button>
+            <button
+              type="button"
+              id="btn-upload-june-prescriptions"
+              onClick={handleUploadJune}
+              disabled={isParsingDispenses}
+              className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-semibold rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              Upload June 2026 Prescriptions
+            </button>
             <button
               type="button"
               id="btn-upload-july-prescriptions"

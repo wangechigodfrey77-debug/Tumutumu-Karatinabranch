@@ -1,0 +1,198 @@
+lab List - Page: 1
+P.C.E.A TumuTumu Hospital
+Laboratory Results : Printed On : 2026-08-06
+Date Patient No Name Lab No Age Sex Test Parameter Result Tested By
+2026-07-01 OP003328/26 Paracidia Wanjiru Maina 100399 1.00 - KRT THYROID
+FUNCTION TEST
+FINE CARE
+Ft4 20.08 Catherine Wanjiru
+2026-07-01 OP003328/26 Paracidia Wanjiru Maina 100399 1.00 - KRT THYROID
+FUNCTION TEST
+FINE CARE
+Ft3 4.13 Catherine Wanjiru
+2026-07-01 OP003328/26 Paracidia Wanjiru Maina 100399 1.00 - KRT THYROID
+FUNCTION TEST
+FINE CARE
+Tsh 4.13 Catherine Wanjiru
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Bilirubin 0 Rosemary kombo
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Glucose 0 Rosemary kombo
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Nitrite 0 Rosemary kombo
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Urobilinogen 0 Rosemary kombo
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Specific Gravity 1.030 Rosemary kombo
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Leucoytes 2+ Rosemary kombo
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Ketones 3+ Rosemary kombo
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Protein 3+ Rosemary kombo
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Blood 4+ Rosemary kombo
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Ph 6.0 Rosemary kombo
+
+lab List - Page: 2
+P.C.E.A TumuTumu Hospital
+Laboratory Results : Printed On : 2026-08-06
+Date Patient No Name Lab No Age Sex Test Parameter Result Tested By
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Appearance Bloody Rosemary kombo
+2026-07-02 WLKN0001415
+1
+Lucy Gathoni Gatheru 100445 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Microscopy Pus Cells Seen
+15-20/Hpf,Red
+Cells Seen
+>100/Hpf,Yeas
+t Cells Seen
+,Motile
+Bacteria Seen
++
+Rosemary kombo
+2026-07-02 OP00205305 Ngatia Nyaguthii Emily 100453 1.00 - KRT RANDOM BLOOD
+SUGAR
+Random Blood Sugar 4.8 Rosemary kombo
+2026-07-02 OP00205305 Ngatia Nyaguthii Emily 100454 1.00 - KRT Stool O/C Color - Rosemary kombo
+2026-07-02 OP00205305 Ngatia Nyaguthii Emily 100454 1.00 - KRT Stool O/C Mucus Absent Rosemary kombo
+2026-07-02 OP00205305 Ngatia Nyaguthii Emily 100454 1.00 - KRT Stool O/C Cyst Cysts Of
+E.Histolytica
+Seen
+Rosemary kombo
+2026-07-02 OP00205305 Ngatia Nyaguthii Emily 100454 1.00 - KRT Stool O/C Consistency Formed Stool Rosemary kombo
+2026-07-02 OP00205305 Ngatia Nyaguthii Emily 100454 1.00 - KRT Stool O/C Pus Cell No Pus Cells
+Seen
+Rosemary kombo
+2026-07-02 OP00205305 Ngatia Nyaguthii Emily 100455 1.00 - KRT H.PYLORI TEST
+(STOOL)
+H.Pylori Negative Rosemary kombo
+2026-07-02 OP008444/24 Alvin Mararo Nyaguthii 100460 1.00 - KRT H.PYLORI TEST
+(STOOL)
+H.Pylori Positive Rosemary kombo
+2026-07-02 OP008444/24 Alvin Mararo Nyaguthii 100461 1.00 - KRT Stool O/C Color - Rosemary kombo
+2026-07-02 OP008444/24 Alvin Mararo Nyaguthii 100461 1.00 - KRT Stool O/C Mucus Absent Rosemary kombo
+2026-07-02 OP008444/24 Alvin Mararo Nyaguthii 100461 1.00 - KRT Stool O/C Consistency Loose Stool Rosemary kombo
+2026-07-02 OP008444/24 Alvin Mararo Nyaguthii 100461 1.00 - KRT Stool O/C Cyst No Cysts Seen Rosemary kombo
+2026-07-02 OP008444/24 Alvin Mararo Nyaguthii 100461 1.00 - KRT Stool O/C Pus Cell No Pus Cells
+Seen
+Rosemary kombo
+2026-07-02 OP003345/26 Angie Shicheyi Matana 100463 1.00 Female KRT RANDOM BLOOD
+SUGAR
+Random Blood Sugar 4.0 Rosemary kombo
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100505 1.00 - KRT RANDOM BLOOD
+SUGAR
+Random Blood Sugar 5.3 Simon Maina
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100523 1.00 - KRT URINALYSIS
+(INC MICRO AND
+DIPSTICK)
+Bilirubin 0 Simon Maina
+
+lab List - Page: 3
+P.C.E.A TumuTumu Hospital
+Laboratory Results : Printed On : 2026-08-06
+Date Patient No Name Lab No Age Sex Test Parameter Result Tested By
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100523 1.00 - KRT URINALYSIS
+(INC MICRO AND
+DIPSTICK)
+Glucose 0 Simon Maina
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100523 1.00 - KRT URINALYSIS
+(INC MICRO AND
+DIPSTICK)
+Ketones 0 Simon Maina
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100523 1.00 - KRT URINALYSIS
+(INC MICRO AND
+DIPSTICK)
+Leucoytes 0 Simon Maina
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100523 1.00 - KRT URINALYSIS
+(INC MICRO AND
+DIPSTICK)
+Nitrite 0 Simon Maina
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100523 1.00 - KRT URINALYSIS
+(INC MICRO AND
+DIPSTICK)
+Protein 0 Simon Maina
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100523 1.00 - KRT URINALYSIS
+(INC MICRO AND
+DIPSTICK)
+Urobilinogen 0 Simon Maina
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100523 1.00 - KRT URINALYSIS
+(INC MICRO AND
+DIPSTICK)
+Specific Gravity 1.015 Simon Maina
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100523 1.00 - KRT URINALYSIS
+(INC MICRO AND
+DIPSTICK)
+Microscopy 5-10 Epithelial
+Cells/Hpf 3-4
+Pus Cells/Hpf
+Simon Maina
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100523 1.00 - KRT URINALYSIS
+(INC MICRO AND
+DIPSTICK)
+Ph 7.0 Simon Maina
+2026-07-03 OP002490/23 Monicah Gathoni Mwai 100523 1.00 - KRT URINALYSIS
+(INC MICRO AND
+DIPSTICK)
+Appearance Amber Cloudy Simon Maina
+2026-07-03 OP00138578 Maina Wanjiru Esther 100530 1.00 - KRT ESR Esr 40 Simon Maina
+2026-07-03 OP003364/26 Esther Wangechi Mbauni 100531 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Bilirubin 0 Simon Maina
+2026-07-03 OP003364/26 Esther Wangechi Mbauni 100531 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Blood 0 Simon Maina
+2026-07-03 OP003364/26 Esther Wangechi Mbauni 100531 1.00 - KRT
+URINALYSIS(MICRO
+& DSTICK)
+Glucose 0 Simon Maina

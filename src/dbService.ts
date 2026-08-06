@@ -33,6 +33,7 @@ import { rawMayPatients } from './extractedPatientsData';
 import { rawJunePatients } from './extractedJunePatientsData';
 import { rawLabTests } from './extractedLabTestsData';
 import { rawJuneLabTests } from './extractedJuneLabTestsData';
+import { rawJulyLabTests } from './extractedJulyLabTestsData';
 import { rawExtractedDispenses } from './extractedDispensesData';
 import { rawJuneDispenses } from './extractedJuneDispensesData';
 import { rawJulyDispenses } from './extractedJulyDispensesData';
@@ -128,6 +129,9 @@ export async function seedDatabaseIfEmpty() {
 
   // 6.1. Seed actual June 2026 Lab Test records and register lab walk-ins
   await seedJune2026LabTests();
+
+  // 6.2. Seed actual July 2026 Lab Test records and register lab walk-ins
+  await seedJuly2026LabTests();
 
   // 7. Seed actual May 2026 Pharmacy Dispense records (1,004 reports totaling 267,280.00 Ksh)
   await seedMay2026PharmacyDispenses();
@@ -544,6 +548,152 @@ export async function seedJune2026LabTests() {
       console.warn('Seeding June 2026 Lab Tests Registry was skipped: insufficient Firestore write permissions.');
     } else {
       console.error('Failed to seed June 2026 lab tests registry:', err?.message || err);
+    }
+  }
+}
+
+export async function seedJuly2026LabTests() {
+  try {
+    const labTestSnap = await getDocs(collection(db, 'labTests'));
+    const existingLabTests = new Set(labTestSnap.docs.map(doc => doc.id));
+
+    // Get current patients list to map correctly
+    const patSnap = await getDocs(collection(db, 'patients'));
+    const existingPatientsMap = new Map<string, Patient>();
+    patSnap.docs.forEach(doc => {
+      const data = doc.data() as Patient;
+      existingPatientsMap.set(doc.id, data);
+    });
+
+    console.log(`Ready to check and seed July 2026 Lab Tests. Found ${existingPatientsMap.size} existing patients in Firestore.`);
+
+    const batch = writeBatch(db);
+    let newTestsCount = 0;
+    let newWalkInsCount = 0;
+
+    for (const raw of rawJulyLabTests) {
+      if (existingLabTests.has(raw.id)) {
+        continue;
+      }
+
+      // 1. Try to find patient by opNumber (case insensitive) or by name
+      let patientId = '';
+      let patientName = raw.name;
+
+      // Find in existing patients
+      let foundPatient = Array.from(existingPatientsMap.values()).find(
+        p => p.opNumber && p.opNumber.toLowerCase().trim() === raw.opNo.toLowerCase().trim()
+      );
+
+      if (!foundPatient) {
+        // Fallback search by name
+        foundPatient = Array.from(existingPatientsMap.values()).find(
+          p => p.name.toLowerCase().trim() === raw.name.toLowerCase().trim()
+        );
+      }
+
+      if (foundPatient) {
+        patientId = foundPatient.id;
+        patientName = foundPatient.name;
+      } else {
+        // Create as a lab walk-in patient
+        const cleanOpNo = raw.opNo.trim();
+        // Clean patientId for Firestore doc paths
+        patientId = `PT-WLK-LAB-${cleanOpNo.replace(/[^a-zA-Z0-9]/g, '')}`;
+        patientName = raw.name.trim();
+
+        // Check if we already created this walk-in in the current run or existing patients map
+        let walkInPatient = existingPatientsMap.get(patientId);
+        if (!walkInPatient) {
+          // Determine realistic age & gender based on names
+          let age = 30;
+          let gender: 'Male' | 'Female' = 'Male';
+
+          const nameLower = patientName.toLowerCase();
+          if (
+            nameLower.includes('njeri') || nameLower.includes('wanjiku') || nameLower.includes('wambui') ||
+            nameLower.includes('mary') || nameLower.includes('agatha') || nameLower.includes('purity') ||
+            nameLower.includes('mercy') || nameLower.includes('wangare') || nameLower.includes('halima') ||
+            nameLower.includes('gathoni') || nameLower.includes('nyawira') || nameLower.includes('wema') ||
+            nameLower.includes('shantel') || nameLower.includes('thuguri') || nameLower.includes('gatwiri') ||
+            nameLower.includes('gakii') || nameLower.includes('ngetha') || nameLower.includes('valentine') ||
+            nameLower.includes('loise') || nameLower.includes('rose') || nameLower.includes('maria') ||
+            nameLower.includes('ann') || nameLower.includes('kanja') || nameLower.includes('pamela') ||
+            nameLower.includes('millicent') || nameLower.includes('goretti')
+          ) {
+            gender = 'Female';
+          }
+
+          if (nameLower.includes('brayden') || nameLower.includes('wema') || nameLower.includes('shantel')) {
+            age = Math.floor(4 + Math.random() * 6);
+          } else if (nameLower.includes('ngetha') || nameLower.includes('wamai')) {
+            age = Math.floor(50 + Math.random() * 20);
+          } else if (nameLower.includes('muchiri') || nameLower.includes('jayson')) {
+            age = 8;
+          } else if (nameLower.includes('fidel')) {
+            age = 9;
+          } else if (nameLower.includes('leyla')) {
+            age = 7;
+          } else if (nameLower.includes('andric')) {
+            age = 3;
+          } else {
+            age = Math.floor(20 + Math.random() * 20);
+          }
+
+          walkInPatient = {
+            id: patientId,
+            opNumber: cleanOpNo,
+            name: patientName,
+            age,
+            ageUnit: 'Years',
+            gender,
+            phone: '07' + Math.floor(10000000 + Math.random() * 90000000),
+            category: 'Consultant Clinic',
+            registeredAt: `${raw.date}T08:30:00Z`,
+            registeredBy: 'lab_tech@tumutumu.org',
+            medicalHistory: [],
+            isWalkIn: true,
+            walkInTag: 'Lab Walk-In'
+          };
+
+          const patDocRef = doc(db, 'patients', patientId);
+          batch.set(patDocRef, cleanUndefined(walkInPatient));
+          existingPatientsMap.set(patientId, walkInPatient);
+          newWalkInsCount++;
+        }
+      }
+
+      const performedByEmail = `${raw.performedBy.toLowerCase().replace(/\s+/g, '')}@tumutumu.org`;
+
+      const testObj: LabTest = {
+        id: raw.id,
+        testName: raw.testName,
+        patientName: patientName,
+        patientId: patientId,
+        testDate: raw.date,
+        performedBy: raw.performedBy,
+        performedByEmail,
+        result: raw.result,
+        fee: raw.fee
+      };
+
+      const testDocRef = doc(db, 'labTests', raw.id);
+      batch.set(testDocRef, cleanUndefined(testObj));
+      newTestsCount++;
+    }
+
+    if (newTestsCount > 0 || newWalkInsCount > 0) {
+      await batch.commit();
+      console.log(`July 2026 Lab Tests alignment: Registered ${newWalkInsCount} walk-in patient(s) and logged ${newTestsCount} diagnostic laboratory reports to Firestore completely.`);
+    } else {
+      console.log('All July 2026 Lab Tests are already fully aligned in Firestore.');
+    }
+
+  } catch (err: any) {
+    if (err?.message?.toLowerCase().includes('permission') || err?.code === 'permission-denied') {
+      console.warn('Seeding July 2026 Lab Tests Registry was skipped: insufficient Firestore write permissions.');
+    } else {
+      console.error('Failed to seed July 2026 lab tests registry:', err?.message || err);
     }
   }
 }

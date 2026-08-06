@@ -83,15 +83,21 @@ export function GoogleSheetsView({
         throw new Error("Could not extract access token from Google sign-in credentials.");
       }
     } catch (err: any) {
-      console.error("Sheets OAuth connection failed:", err);
-      if (err?.code === 'auth/popup-closed-by-user' || err?.message?.includes('popup-closed-by-user')) {
+      const code = err?.code || '';
+      const msg = err?.message || String(err);
+      if (code === 'auth/popup-closed-by-user' || msg.includes('popup-closed-by-user') || code === 'auth/cancelled-popup-request' || msg.includes('cancelled-popup-request')) {
+        console.warn("Google Sheets OAuth popup closed or cancelled by user:", err);
+      } else {
+        console.error("Sheets OAuth connection failed:", err);
+      }
+      if (code === 'auth/popup-closed-by-user' || msg.includes('popup-closed-by-user')) {
         setErrorDetails("Google Authorization cancelled: The sign-in popup was closed before completing. Please click Connect to try again.");
-      } else if (err?.code === 'auth/cancelled-popup-request' || err?.message?.includes('cancelled-popup-request')) {
+      } else if (code === 'auth/cancelled-popup-request' || msg.includes('cancelled-popup-request')) {
         setErrorDetails("Sign-In popup request was cancelled. Please try again.");
-      } else if (err?.code === 'auth/popup-blocked' || err?.message?.includes('popup-blocked')) {
+      } else if (code === 'auth/popup-blocked' || msg.includes('popup-blocked')) {
         setErrorDetails("Popup blocked by browser. Please allow popups or open the app in a new browser tab.");
       } else {
-        setErrorDetails(err?.message || "Google Authentication rejected or timed out.");
+        setErrorDetails(msg || "Google Authentication rejected or timed out.");
       }
     } finally {
       setIsConnecting(false);

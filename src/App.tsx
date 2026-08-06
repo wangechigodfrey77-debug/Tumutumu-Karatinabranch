@@ -58,7 +58,7 @@ import {
   deleteExpense
 } from './dbService';
 import { auth, secondaryAuth, googleProvider, setOAuthAccessToken, getOAuthAccessToken } from './firebase';
-import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
 import { WhitelistUser, Patient, LabTest, LabCatalogItem, MedicationDispense, PharmacyItem, DutyAllocation, LeaveRequest, Message, Appointment, MedicalRecord, Expense, AuditLog, PatientVitals } from './types';
 
 
@@ -136,6 +136,20 @@ export default function App() {
         console.log("Local storage sandbox data wiped successfully.");
       } catch (err) {
         console.warn("Storage cleanup warning: ", err);
+      }
+
+      // Check redirect result if user used redirect sign-in
+      try {
+        const redirectRes = await getRedirectResult(auth);
+        if (redirectRes && redirectRes.user && redirectRes.user.email) {
+          const cred = GoogleAuthProvider.credentialFromResult(redirectRes);
+          if (cred?.accessToken) {
+            setOAuthAccessToken(cred.accessToken);
+          }
+          setSessionEmail(redirectRes.user.email);
+        }
+      } catch (redirErr) {
+        console.warn("Redirect result check note:", redirErr);
       }
 
       // Always force sign out on reload to ensure fresh login from landing page
@@ -256,11 +270,15 @@ export default function App() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = async (useRedirect = false) => {
     if (isLoggingIn) return;
     setIsLoggingIn(true);
     try {
       setLoginError('');
+      if (useRedirect) {
+        await signInWithRedirect(auth, googleProvider);
+        return;
+      }
       const result = await signInWithPopup(auth, googleProvider);
       const credential = GoogleAuthProvider.credentialFromResult(result);
       if (credential?.accessToken) {
@@ -271,18 +289,22 @@ export default function App() {
         setSessionEmail(email);
       }
     } catch (err: any) {
-      console.error("Google SSO SSO Error:", err);
-      if (err?.code === 'auth/cancelled-popup-request' || err?.message?.includes('cancelled-popup-request')) {
-        setLoginError('Google Sign-In popup was cancelled or restricted by browser iframe constraints. Please open the app in a new browser tab using the button below.');
-      } else if (err?.code === 'auth/popup-closed-by-user' || err?.message?.includes('popup-closed-by-user')) {
-        setLoginError('Sign-In cancelled: The Google Sign-In popup window was closed before authorization completed. Please click "Sign In with Google Account" again to retry.');
-      } else if (err?.code === 'auth/popup-blocked' || err?.message?.includes('popup-blocked')) {
-        setLoginError('Google Sign-In popup was blocked by your browser. Please allow popups or open the app in a new browser tab.');
+      const code = err?.code || '';
+      const msg = err?.message || String(err);
+      if (code === 'auth/cancelled-popup-request' || msg.includes('cancelled-popup-request') || code === 'auth/popup-closed-by-user' || msg.includes('popup-closed-by-user')) {
+        console.warn("Google Sign-In popup closed or cancelled by user:", err);
+        setLoginError('Sign-In popup was closed or restricted by iframe popup constraints. Please use "Sign In with Google (Redirect)" or open the app in a new tab.');
+      } else if (code === 'auth/popup-blocked' || msg.includes('popup-blocked')) {
+        console.warn("Google Sign-In popup blocked:", err);
+        setLoginError('Google Sign-In popup was blocked by your browser. Please use Google Sign-In with Redirect or open in a new tab.');
       } else {
-        setLoginError(`Google Sign-In failed: ${err?.message || String(err)}`);
+        console.error("Google SSO Error:", err);
+        setLoginError(`Google Sign-In failed: ${msg}. Try using Google Sign-In with Redirect.`);
       }
     } finally {
-      setIsLoggingIn(false);
+      if (!useRedirect) {
+        setIsLoggingIn(false);
+      }
     }
   };
 
@@ -815,7 +837,7 @@ export default function App() {
             {/* Primary Google Auth Pop-up Button */}
             <button
               id="google-sso-popup-btn"
-              onClick={handleGoogleSignIn}
+              onClick={() => handleGoogleSignIn(false)}
               disabled={isLoggingIn}
               type="button"
               className="w-full bg-stone-900 text-white hover:bg-stone-800 border border-stone-700 py-3 rounded-xl flex items-center justify-center gap-2.5 text-xs font-semibold cursor-pointer shadow-xs transition-transform transform active:scale-98 disabled:opacity-50"
@@ -838,7 +860,22 @@ export default function App() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
                </svg>
-               {isLoggingIn ? 'Contacting Google Auth...' : 'Sign In with Google Account'}
+               {isLoggingIn ? 'Contacting Google Auth...' : 'Sign In with Google (Popup)'}
+            </button>
+
+            {/* Alternative Google Auth Redirect Button for iframe/popup restrictions */}
+            <button
+              id="google-sso-redirect-btn"
+              onClick={() => handleGoogleSignIn(true)}
+              disabled={isLoggingIn}
+              type="button"
+              className="w-full bg-white text-stone-700 hover:bg-stone-50 border border-stone-300 py-2.5 rounded-xl flex items-center justify-center gap-2.5 text-xs font-semibold cursor-pointer shadow-2xs transition-all"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="#ea4335" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#4285f4" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Sign In with Google (Redirect - Recommended for Iframe)
             </button>
 
             {isIframe && (

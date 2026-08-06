@@ -8,7 +8,7 @@ import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, Trendin
 import { MedicationDispense, PharmacyItem, Patient, MedicalRecord } from '../types';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { archiveDailyPharmacyData, getSystemConfigLastReset, saveSystemConfigLastReset, clearUploadedDispenses } from '../dbService';
+import { archiveDailyPharmacyData, getSystemConfigLastReset, saveSystemConfigLastReset, clearUploadedDispenses, clearMonthDispenses } from '../dbService';
 import { rawJulyDispenses } from '../extractedJulyDispensesData';
 import { rawJuneDispenses } from '../extractedJuneDispensesData';
 import { rawExtractedDispenses } from '../extractedDispensesData';
@@ -820,10 +820,11 @@ export function PharmacyView({
     if (onBulkDispenseMedication) {
       setIsParsingDispenses(true);
       try {
+        await clearMonthDispenses('2026-07');
         await onBulkDispenseMedication(rawJulyDispenses);
         setDispenseUploadFeedback({
           success: true,
-          message: `Successfully uploaded ${rawJulyDispenses.length} July 2026 prescription records!`
+          message: `Successfully uploaded ${rawJulyDispenses.length} July 2026 prescription records (Total: Ksh 388,660.20)!`
         });
         setPeriodFilter('search-month');
         setSearchMonthVal('2026-07');

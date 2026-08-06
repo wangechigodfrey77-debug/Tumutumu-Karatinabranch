@@ -607,12 +607,34 @@ export async function seedJune2026PharmacyDispenses() {
   }
 }
 
+export async function clearMonthDispenses(monthPrefix: string) {
+  try {
+    const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
+    const monthDocs = dispSnap.docs.filter(d => {
+      const data = d.data() as MedicationDispense;
+      return data.dispenseDate?.startsWith(monthPrefix) || d.id.includes(monthPrefix.replace('2026-', ''));
+    });
+    for (let i = 0; i < monthDocs.length; i += 450) {
+      const batch = writeBatch(db);
+      const chunk = monthDocs.slice(i, i + 450);
+      chunk.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+    }
+    console.log(`Cleared ${monthDocs.length} records for month ${monthPrefix}`);
+  } catch (err) {
+    console.warn(`Failed to clear month dispenses for ${monthPrefix}`, err);
+  }
+}
+
 export async function seedJuly2026PharmacyDispenses() {
   try {
     const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
     const julyDocs = dispSnap.docs.filter(d => (d.data() as MedicationDispense).dispenseDate?.startsWith('2026-07'));
-    if (julyDocs.length < 500) {
-      console.log(`Seeding July 2026 Pharmacy Dispenses: Seeding ${rawJulyDispenses.length} records...`);
+    const currentTotal = julyDocs.reduce((acc, d) => acc + ((d.data() as MedicationDispense).totalCost || 0), 0);
+
+    if (julyDocs.length !== rawJulyDispenses.length || Math.abs(currentTotal - 388660.20) > 1.0) {
+      console.log(`Re-aligning July 2026 Pharmacy Dispenses: clearing old records (${julyDocs.length}) and seeding ${rawJulyDispenses.length} records (Target total: 388,660.20)...`);
+      await clearMonthDispenses('2026-07');
       const batchSize = 450;
       for (let i = 0; i < rawJulyDispenses.length; i += batchSize) {
         const batch = writeBatch(db);
@@ -625,7 +647,7 @@ export async function seedJuly2026PharmacyDispenses() {
         console.log(`Committed Firestore July pharmacy dispense batch of size ${chunk.length}`);
       }
     } else {
-      console.log(`July 2026 Pharmacy Dispenses are already fully aligned in Firestore (${julyDocs.length} records).`);
+      console.log(`July 2026 Pharmacy Dispenses are already fully aligned in Firestore (${julyDocs.length} records, total: ${currentTotal}).`);
     }
   } catch (err: any) {
     if (err?.message?.toLowerCase().includes('permission') || err?.code === 'permission-denied') {

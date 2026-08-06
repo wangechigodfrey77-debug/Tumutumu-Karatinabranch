@@ -60,7 +60,7 @@ export function AdminDashboard({
   const [selectedFinDate, setSelectedFinDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
 
   // Periodic Audit Reports Filter Selection States
-  const [reportTarget, setReportTarget] = useState<'cash' | 'insurance' | 'lab' | 'pharmacy'>('cash');
+  const [reportTarget, setReportTarget] = useState<'cash' | 'insurance' | 'cash_and_insurance' | 'lab' | 'pharmacy'>('cash');
   const [reportPeriodType, setReportPeriodType] = useState<'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'>('daily');
   const [reportCustomDate, setReportCustomDate] = useState<string>('2026-06-15');
   const [reportCustomMonth, setReportCustomMonth] = useState<string>('2026-06');
@@ -322,6 +322,31 @@ export function AdminDashboard({
         p.registeredAt ? p.registeredAt.substring(0, 10) : 'N/A'
       ]);
       metricsSummary = `Total Insurance Patients: ${filtered.length} outpatient registries`;
+
+    } else if (reportTarget === 'cash_and_insurance') {
+      targetLabel = 'CASH & HEALTH INSURANCE PATIENTS (COMBINED)';
+      pdfThemeColor = [16, 185, 129]; // emerald-600
+      doc.setDrawColor(16, 185, 129);
+
+      const filtered = patients.filter(p => (p.paymentMode === 'Cash' || p.paymentMode === 'Insurance') && isWithinPeriod(p.registeredAt));
+      tableHeaders = [['Patient ID', 'OP-Number', 'Patient Name', 'Age / Sex', 'Payment Mode', 'Insurance / Details', 'Clinic Department', 'Date Registered']];
+      tableRows = filtered.map(p => [
+        p.id,
+        p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`,
+        p.name,
+        `${p.age} ${p.ageUnit === 'Months' ? 'Mos' : 'Yrs'} / ${p.gender}`,
+        p.paymentMode || 'Cash',
+        p.paymentMode === 'Insurance' ? (p.insuranceCompany || 'Insurance') : 'Cash Outpatient',
+        p.category === 'General Consultation' 
+          ? 'General OPD' 
+          : p.category === 'Consultant Clinic'
+            ? `Consultant (${p.consultantSubCategory || 'N/A'})`
+            : p.category,
+        p.registeredAt ? p.registeredAt.substring(0, 10) : 'N/A'
+      ]);
+      const cashCount = filtered.filter(p => p.paymentMode === 'Cash').length;
+      const insCount = filtered.filter(p => p.paymentMode === 'Insurance').length;
+      metricsSummary = `Total Patients: ${filtered.length} | Cash: ${cashCount} | Insurance: ${insCount}`;
 
     } else if (reportTarget === 'lab') {
       targetLabel = 'LABORATORY DIAGNOSIS SERVICES';
@@ -760,6 +785,7 @@ export function AdminDashboard({
                   >
                     <option value="cash">💵 Cash-Paying Outpatients</option>
                     <option value="insurance">🛡️ Insurance-Covered Patients</option>
+                    <option value="cash_and_insurance">💵 & 🛡️ Cash & Insurance Patients (Combined Report)</option>
                     <option value="lab">🧪 Laboratory Tests Conducted</option>
                     <option value="pharmacy">💊 Pharmacy Prescriptions Dispensed</option>
                   </select>

@@ -22,7 +22,8 @@ import {
   Heart,
   Briefcase,
   Layers2,
-  ExternalLink
+  ExternalLink,
+  Server
 } from 'lucide-react';
 
 import { 
@@ -71,6 +72,7 @@ import { StaffDutiesLeaveView } from './components/StaffDutiesLeaveView';
 import { CommunicationCenter } from './components/CommunicationCenter';
 import { BoardReportView } from './components/BoardReportView';
 import { TriageView } from './components/TriageView';
+import { CloudScalabilityWorkbench } from './components/CloudScalabilityWorkbench';
 
 export default function App() {
   // Database States
@@ -991,6 +993,21 @@ export default function App() {
                 </span>
               </button>
 
+              {/* Cloud Scalability & Architecture Hub - Super Admin Only */}
+              {((sessionEmail || currentUser?.email || firebaseUser?.email) === 'gmaurice101@gmail.com') && (
+                <button
+                  id="tab-scalability"
+                  onClick={() => setActiveTab('scalability')}
+                  className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between transition-all ${
+                    activeTab === 'scalability' ? 'bg-indigo-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Server className="w-4 h-4 text-indigo-400" /> Cloud Scalability Engine
+                  </span>
+                </button>
+              )}
+
               <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider px-3 block pt-4 pb-2">
                 Executive Desk
               </span>
@@ -1157,6 +1174,10 @@ export default function App() {
                 expenses={expenses}
                 stock={stock}
               />
+            )}
+
+            {activeTab === 'scalability' && ((sessionEmail || currentUser?.email || firebaseUser?.email) === 'gmaurice101@gmail.com') && (
+              <CloudScalabilityWorkbench />
             )}
           </main>
         </div>

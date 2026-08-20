@@ -4,9 +4,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Search, Stethoscope, FileText, Calendar, DollarSign, History, ShieldAlert, Download, Heart, Pill, Film } from 'lucide-react';
+import { UserPlus, Search, Stethoscope, FileText, Calendar, DollarSign, History, ShieldAlert, Download, Heart, Pill, Film, BarChart3, ShieldCheck, FileSpreadsheet, Trash2, Edit3, AlertTriangle, CheckCircle2, X } from 'lucide-react';
 import { Patient, MedicalRecord, Appointment, UserRole, PharmacyItem, LabTest, LabCatalogItem, ImagingRequestItem } from '../types';
 import { ImagingModal } from './ImagingModal';
+import { MonthlyReportModal } from './MonthlyReportModal';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -63,6 +64,80 @@ export function RecordsReceptionView({
   // Tabs: Register Patient, Manage Records, Appointments & Billing, View Patient Card
   const [activeSubTab, setActiveSubTab] = useState<'register' | 'history' | 'appointments' | 'card'>('register');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isMonthlyReportModalOpen, setIsMonthlyReportModalOpen] = useState<boolean>(false);
+
+  // Deletion & Editing State (for correcting wrong clinic/insurance input or removing duplicate/mistaken patients)
+  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
+  const [editCategory, setEditCategory] = useState<'General Consultation' | 'Consultant Clinic' | 'Walk-in Lab' | 'Walk-in Pharmacy' | 'Outpatient Procedure'>('General Consultation');
+  const [editSubCategory, setEditSubCategory] = useState<'Surgical' | 'Pediatrics' | 'MOPC' | 'Obs/Gyn'>('Surgical');
+  const [editPaymentMode, setEditPaymentMode] = useState<'Cash' | 'Insurance'>('Cash');
+  const [editInsuranceCompany, setEditInsuranceCompany] = useState<string>('NHIF / SHA');
+  const [editName, setEditName] = useState<string>('');
+  const [editPhone, setEditPhone] = useState<string>('');
+  const [editAge, setEditAge] = useState<number>(30);
+  const [editAgeUnit, setEditAgeUnit] = useState<'Years' | 'Months'>('Years');
+  const [editGender, setEditGender] = useState<'Male' | 'Female' | 'Other'>('Male');
+
+  const handleOpenEditPatient = (pat: Patient) => {
+    setPatientToEdit(pat);
+    setEditName(pat.name || '');
+    setEditPhone(pat.phone || '');
+    setEditAge(pat.age || 30);
+    setEditAgeUnit(pat.ageUnit || 'Years');
+    setEditGender(pat.gender || 'Male');
+    setEditCategory((pat.category as any) || 'General Consultation');
+    setEditSubCategory((pat.consultantSubCategory as any) || 'Surgical');
+    setEditPaymentMode((pat.paymentMode as any) || 'Cash');
+    setEditInsuranceCompany(pat.insuranceCompany || 'NHIF / SHA');
+  };
+
+  const handleSaveEditPatient = () => {
+    if (!patientToEdit) return;
+    const updatedPat: Patient = {
+      ...patientToEdit,
+      name: editName.trim() || patientToEdit.name,
+      phone: editPhone.trim() || patientToEdit.phone,
+      age: Number(editAge) || patientToEdit.age,
+      ageUnit: editAgeUnit,
+      gender: editGender,
+      category: editCategory,
+      consultantSubCategory: editCategory === 'Consultant Clinic' ? editSubCategory : undefined,
+      paymentMode: editPaymentMode,
+      insuranceCompany: editPaymentMode === 'Insurance' ? editInsuranceCompany : undefined,
+    };
+    onAddPatient(updatedPat);
+    if (selectedCardPatient?.id === patientToEdit.id) {
+      setSelectedCardPatient(updatedPat);
+    }
+    if (curSelectedPatient?.id === patientToEdit.id) {
+      setCurSelectedPatient(updatedPat);
+    }
+    setToastMessage(`Patient ${updatedPat.name} updated successfully!`);
+    setPatientToEdit(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!patientToDelete || !onDeletePatient) return;
+    try {
+      setIsDeleting(true);
+      await onDeletePatient(patientToDelete.id);
+      if (selectedCardPatient?.id === patientToDelete.id) {
+        setSelectedCardPatient(null);
+      }
+      if (curSelectedPatient?.id === patientToDelete.id) {
+        setCurSelectedPatient(null);
+      }
+      setToastMessage(`Patient record for ${patientToDelete.name} (${patientToDelete.id}) permanently deleted.`);
+      setPatientToDelete(null);
+    } catch (error) {
+      console.error("Delete patient error", error);
+      alert("Failed to delete patient record.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   useEffect(() => {
     if (toastMessage) {
@@ -691,23 +766,43 @@ export function RecordsReceptionView({
       )}
       {/* Dashboard Header */}
       {isReception && (
-        <div className="bg-white p-4 rounded-xl border border-stone-200 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-4 rounded-xl border border-stone-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-sm font-semibold text-stone-800">Registration Desk Daily Summary</h2>
-            <p className="text-xs text-stone-500">Total revenue collected from registration today.</p>
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-stone-800">Registration Desk Daily & Monthly Reports</h2>
+              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded">
+                Active EMR Reception
+              </span>
+            </div>
+            <p className="text-xs text-stone-500 mt-0.5">
+              Live outpatient metrics, specialist clinics analytics, insurance breakdowns and official reports.
+            </p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <span className="block text-xl font-bold text-emerald-800">Ksh {totalCollectedToday.toLocaleString()}</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="text-left md:text-right">
+              <span className="block text-xl font-bold text-emerald-800 font-mono">Ksh {totalCollectedToday.toLocaleString()}</span>
               <span className="text-[10px] text-stone-400 font-semibold uppercase">Total Collected Today</span>
             </div>
-            <button
-              onClick={handleDownloadReport}
-              className="flex items-center gap-2 bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-semibold hover:bg-emerald-700 transition-all"
-            >
-              <Download className="w-3.5 h-3.5" />
-              Download Daily Report
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                id="btn-download-daily-report"
+                onClick={handleDownloadReport}
+                className="flex items-center gap-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-300 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer"
+                title="Download Daily PDF Summary for Today"
+              >
+                <Download className="w-3.5 h-3.5 text-stone-500" />
+                Daily Report
+              </button>
+              <button
+                id="btn-download-monthly-report"
+                onClick={() => setIsMonthlyReportModalOpen(true)}
+                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shadow-xs cursor-pointer"
+                title="Open and Download Comprehensive Monthly Report (Specialist Clinics, Insurance breakdown, General OPD, Total patients)"
+              >
+                <Calendar className="w-3.5 h-3.5 text-emerald-100" />
+                Download Monthly Report
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -734,12 +829,12 @@ export function RecordsReceptionView({
       </div>
 
       {/* Sub Tabs */}
-      <div className="bg-white border border-stone-200 rounded-xl p-1 flex gap-1">
+      <div className="bg-white border border-stone-200 rounded-xl p-1 flex flex-wrap sm:flex-nowrap gap-1">
         <button
           id="subtab-register"
           onClick={() => setActiveSubTab('register')}
           className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-            activeSubTab === 'register' ? 'bg-emerald-600 text-white' : 'text-stone-500 hover:text-stone-800'
+            activeSubTab === 'register' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-stone-500 hover:text-stone-800'
           }`}
         >
           <UserPlus className="w-3.5 h-3.5" />
@@ -749,7 +844,7 @@ export function RecordsReceptionView({
           id="subtab-history"
           onClick={() => setActiveSubTab('history')}
           className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-            activeSubTab === 'history' ? 'bg-emerald-600 text-white' : 'text-stone-500 hover:text-stone-800'
+            activeSubTab === 'history' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-stone-500 hover:text-stone-800'
           }`}
         >
           <FileText className="w-3.5 h-3.5" />
@@ -759,11 +854,20 @@ export function RecordsReceptionView({
           id="subtab-appointments"
           onClick={() => setActiveSubTab('appointments')}
           className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-            activeSubTab === 'appointments' ? 'bg-emerald-600 text-white' : 'text-stone-500 hover:text-stone-800'
+            activeSubTab === 'appointments' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-stone-500 hover:text-stone-800'
           }`}
         >
           <Calendar className="w-3.5 h-3.5" />
           Appointments & Billing Desk
+        </button>
+        <button
+          id="subtab-monthly-report-trigger"
+          onClick={() => setIsMonthlyReportModalOpen(true)}
+          className="py-2 px-3 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 cursor-pointer shadow-3xs"
+          title="Open Monthly Report Workbench (Specialist Clinics, Insurances, General OPD & Totals)"
+        >
+          <BarChart3 className="w-3.5 h-3.5 text-purple-600" />
+          Monthly Report Desk
         </button>
       </div>
 
@@ -1050,8 +1154,17 @@ export function RecordsReceptionView({
                   id="btn-download-pdf-register"
                   onClick={handleDownloadPDF}
                   className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded px-2.5 py-1.5 text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-3xs transition-all"
+                  title="Download Current Filtered Register PDF"
                 >
-                  <Download className="w-3.5 h-3.5" /> Download PDF Register
+                  <Download className="w-3.5 h-3.5" /> Filtered Register PDF
+                </button>
+                <button
+                  id="btn-open-monthly-report-register"
+                  onClick={() => setIsMonthlyReportModalOpen(true)}
+                  className="bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded px-2.5 py-1.5 text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-3xs transition-all"
+                  title="Generate & Download Comprehensive Monthly Report"
+                >
+                  <Calendar className="w-3.5 h-3.5" /> Download Monthly Report
                 </button>
                 <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 rounded-lg px-3 py-1.5 transition-all shadow-3xs w-full sm:w-64">
                   <Search className="w-3.5 h-3.5 text-stone-400 shrink-0" />
@@ -1163,6 +1276,7 @@ export function RecordsReceptionView({
                     <th className="py-2.5">Phone Contact</th>
                     <th className="py-2.5">Inpatient Category</th>
                     <th className="py-2.5">Current Status</th>
+                    <th className="py-2.5 text-right px-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100 text-stone-700">
@@ -1227,11 +1341,33 @@ export function RecordsReceptionView({
                           <option value="Discharged">Discharged</option>
                         </select>
                       </td>
+                      <td className="py-2.5 text-right px-2 whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            id={`btn-quick-edit-p-${p.id}`}
+                            title="Edit Patient Clinic or Insurance"
+                            onClick={() => handleOpenEditPatient(p)}
+                            className="p-1.5 text-stone-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                          {onDeletePatient && (
+                            <button
+                              id={`btn-delete-p-${p.id}`}
+                              title="Delete Patient (Wrong Clinic / Wrong Insurance / Typo)"
+                              onClick={() => setPatientToDelete(p)}
+                              className="p-1.5 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                   {filteredPatients.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-stone-400">No patients recorded in filters.</td>
+                      <td colSpan={8} className="py-8 text-center text-stone-400">No patients recorded in filters.</td>
                     </tr>
                   )}
                 </tbody>
@@ -1318,7 +1454,7 @@ export function RecordsReceptionView({
                       </p>
                     )}
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex flex-col items-end gap-1.5">
                     <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full block ${
                       curSelectedPatient.category === 'General Consultation' 
                         ? 'bg-blue-100 text-blue-900' 
@@ -1332,6 +1468,26 @@ export function RecordsReceptionView({
                           ? `Consult: ${curSelectedPatient.consultantSubCategory}`
                           : curSelectedPatient.category}
                     </span>
+                    <div className="flex items-center gap-1 mt-1">
+                      <button
+                        onClick={() => handleOpenEditPatient(curSelectedPatient)}
+                        className="text-[10px] bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium px-2 py-1 rounded flex items-center gap-1 transition-colors"
+                        title="Edit Patient Clinic, Insurance, or Info"
+                      >
+                        <Edit3 className="w-3 h-3 text-stone-500" />
+                        Edit Info
+                      </button>
+                      {onDeletePatient && (
+                        <button
+                          onClick={() => setPatientToDelete(curSelectedPatient)}
+                          className="text-[10px] bg-red-50 hover:bg-red-100 text-red-700 font-medium px-2 py-1 rounded flex items-center gap-1 transition-colors border border-red-200"
+                          title="Delete Patient Record"
+                        >
+                          <Trash2 className="w-3 h-3 text-red-500" />
+                          Delete
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -2468,20 +2624,24 @@ export function RecordsReceptionView({
                     <span className="text-[9px] text-slate-400 font-mono mt-2 block">
                       Reg: {new Date(selectedCardPatient.registeredAt || Date.now()).toLocaleDateString()}
                     </span>
-                    {userRole === 'Admin' && onDeletePatient && (
+                    <div className="flex flex-col gap-1.5 mt-2">
                       <button
-                        onClick={() => {
-                          if (confirm(`Are you sure you want to permanently delete patient ${selectedCardPatient.name}?`)) {
-                            onDeletePatient(selectedCardPatient.id);
-                            setSelectedCardPatient(null);
-                          }
-                        }}
-                        className="bg-red-900/50 hover:bg-red-800 text-white text-[10px] px-3 py-1.5 rounded-md flex items-center gap-1 transition mt-2 w-full justify-center"
+                        onClick={() => handleOpenEditPatient(selectedCardPatient)}
+                        className="bg-slate-800 hover:bg-slate-700 text-stone-200 text-[10px] px-3 py-1.5 rounded-md flex items-center gap-1 transition w-full justify-center border border-slate-700"
                       >
-                        <ShieldAlert className="w-3 h-3" />
-                        Purge Record
+                        <Edit3 className="w-3 h-3 text-emerald-400" />
+                        Edit Info / Clinic
                       </button>
-                    )}
+                      {onDeletePatient && (
+                        <button
+                          onClick={() => setPatientToDelete(selectedCardPatient)}
+                          className="bg-red-900/50 hover:bg-red-800 text-white text-[10px] px-3 py-1.5 rounded-md flex items-center gap-1 transition w-full justify-center border border-red-800"
+                        >
+                          <ShieldAlert className="w-3 h-3" />
+                          Delete Patient Record
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -2594,6 +2754,346 @@ export function RecordsReceptionView({
             setActiveImagingRequestsList(requests);
           }}
         />
+      )}
+
+      {/* Monthly Report Modal for Reception Desk */}
+      <MonthlyReportModal
+        isOpen={isMonthlyReportModalOpen}
+        onClose={() => setIsMonthlyReportModalOpen(false)}
+        patients={allPatients}
+        appointments={appointments}
+        userName={userName}
+        userEmail={userEmail}
+        onDeletePatient={onDeletePatient}
+      />
+
+      {/* MODAL: DELETE PATIENT CONFIRMATION (For wrong clinic / wrong insurance / mistakes) */}
+      {patientToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/70 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl max-w-md w-full border border-red-200 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150">
+            {/* Header */}
+            <div className="bg-red-600 px-6 py-4 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-red-700 rounded-lg">
+                  <Trash2 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold">Delete Patient Record</h3>
+                  <p className="text-xs text-red-100">Permanent removal from Outpatient EMR</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setPatientToDelete(null)}
+                className="text-red-100 hover:text-white p-1 rounded-lg hover:bg-red-700/50 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4 text-stone-700 text-xs">
+              <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-2.5 text-amber-800">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <p className="leading-relaxed">
+                  Use this to remove a patient entry if they were registered under the <strong>wrong clinic</strong>, <strong>wrong insurance scheme</strong>, or registered as a duplicate.
+                </p>
+              </div>
+
+              {/* Patient Record Summary */}
+              <div className="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2 font-mono">
+                <div className="flex justify-between items-center text-[11px]">
+                  <span className="text-stone-400 font-sans">Patient Name:</span>
+                  <span className="font-bold text-stone-900 font-sans text-xs">{patientToDelete.name}</span>
+                </div>
+                <div className="flex justify-between items-center text-[11px]">
+                  <span className="text-stone-400 font-sans">OP-Number:</span>
+                  <span className="font-bold text-emerald-700">{patientToDelete.opNumber || `OP-${patientToDelete.id}`}</span>
+                </div>
+                <div className="flex justify-between items-center text-[11px]">
+                  <span className="text-stone-400 font-sans">Patient ID:</span>
+                  <span className="text-stone-600">{patientToDelete.id}</span>
+                </div>
+                <div className="flex justify-between items-center text-[11px]">
+                  <span className="text-stone-400 font-sans">Clinic / Category:</span>
+                  <span className="font-semibold text-blue-800 font-sans">
+                    {patientToDelete.category} {patientToDelete.consultantSubCategory ? `(${patientToDelete.consultantSubCategory})` : ''}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-[11px]">
+                  <span className="text-stone-400 font-sans">Payment Mode:</span>
+                  <span className="font-semibold text-purple-800 font-sans">
+                    {patientToDelete.paymentMode || 'Cash'} {patientToDelete.insuranceCompany ? `(${patientToDelete.insuranceCompany})` : ''}
+                  </span>
+                </div>
+              </div>
+
+              <div className="text-[11px] text-stone-500 bg-stone-100 p-2.5 rounded-lg">
+                💡 <em>Need to fix the clinic or insurance instead of deleting?</em> Click below to edit without losing this patient's OP number.
+              </div>
+            </div>
+
+            {/* Footer actions */}
+            <div className="bg-stone-50 px-6 py-4 border-t border-stone-200 flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const pat = patientToDelete;
+                  setPatientToDelete(null);
+                  handleOpenEditPatient(pat);
+                }}
+                className="px-3 py-2 text-stone-700 bg-white hover:bg-stone-100 border border-stone-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              >
+                <Edit3 className="w-3.5 h-3.5 text-blue-600" />
+                Edit Clinic / Insurance Instead
+              </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPatientToDelete(null)}
+                  disabled={isDeleting}
+                  className="px-3 py-2 text-stone-600 hover:text-stone-800 rounded-lg text-xs font-semibold hover:bg-stone-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  id="btn-confirm-delete-patient"
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={handleConfirmDelete}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  {isDeleting ? 'Deleting...' : 'Delete Record'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: EDIT PATIENT CLINIC, INSURANCE, OR DETAILS */}
+      {patientToEdit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/70 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl max-w-lg w-full border border-stone-200 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-slate-800 rounded-lg border border-slate-700">
+                  <Edit3 className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold">Edit Patient Registration</h3>
+                  <p className="text-xs text-slate-300">
+                    Fix clinic assignment, insurance provider, or patient information
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setPatientToEdit(null)}
+                className="text-stone-300 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Scrollable Form Body */}
+            <div className="p-6 space-y-4 overflow-y-auto grow text-xs">
+              {/* OP / ID Banner */}
+              <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 flex justify-between items-center text-[11px] font-mono">
+                <div>
+                  <span className="text-emerald-700 font-sans">Patient: </span>
+                  <strong className="text-emerald-950">{patientToEdit.name}</strong>
+                </div>
+                <div>
+                  <span className="text-emerald-700 font-sans">OP-No: </span>
+                  <strong className="text-emerald-800">{patientToEdit.opNumber || `OP-${patientToEdit.id}`}</strong>
+                </div>
+              </div>
+
+              {/* Patient Basic Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-bold text-stone-700 mb-1">Patient Full Name</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2 text-xs font-semibold text-stone-900 focus:ring-2 focus:ring-emerald-500 outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-stone-700 mb-1">Phone Contact</label>
+                  <input
+                    type="text"
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2 text-xs font-semibold text-stone-900 focus:ring-2 focus:ring-emerald-500 outline-hidden"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[11px] font-bold text-stone-700 mb-1">Age</label>
+                  <input
+                    type="number"
+                    value={editAge}
+                    onChange={(e) => setEditAge(Number(e.target.value))}
+                    min={0}
+                    className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2 text-xs font-semibold text-stone-900 focus:ring-2 focus:ring-emerald-500 outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-stone-700 mb-1">Age Unit</label>
+                  <select
+                    value={editAgeUnit}
+                    onChange={(e) => setEditAgeUnit(e.target.value as any)}
+                    className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2 text-xs font-semibold text-stone-900 focus:ring-2 focus:ring-emerald-500 outline-hidden"
+                  >
+                    <option value="Years">Years</option>
+                    <option value="Months">Months</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-stone-700 mb-1">Gender</label>
+                  <select
+                    value={editGender}
+                    onChange={(e) => setEditGender(e.target.value as any)}
+                    className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2 text-xs font-semibold text-stone-900 focus:ring-2 focus:ring-emerald-500 outline-hidden"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Clinic / Specialty Assignment */}
+              <div className="pt-2 border-t border-stone-100">
+                <label className="block text-[11px] font-bold text-stone-800 mb-1.5 flex items-center gap-1.5">
+                  <Stethoscope className="w-3.5 h-3.5 text-blue-600" />
+                  Clinic / Service Category
+                </label>
+                <select
+                  id="select-edit-category"
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value as any)}
+                  className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2 text-xs font-bold text-blue-900 focus:ring-2 focus:ring-blue-500 outline-hidden"
+                >
+                  <option value="General Consultation">🏥 General Consultation (OPD)</option>
+                  <option value="Consultant Clinic">👨‍⚕️ Specialist / Consultant Clinic</option>
+                  <option value="Walk-in Lab">🧪 Walk-in Lab</option>
+                  <option value="Walk-in Pharmacy">💊 Walk-in Pharmacy</option>
+                  <option value="Outpatient Procedure">🩺 Outpatient Procedure</option>
+                </select>
+
+                {editCategory === 'Consultant Clinic' && (
+                  <div className="mt-2.5 p-3 bg-blue-50/60 rounded-lg border border-blue-200">
+                    <label className="block text-[11px] font-bold text-blue-950 mb-1">
+                      Specific Specialist Clinic
+                    </label>
+                    <select
+                      id="select-edit-subcategory"
+                      value={editSubCategory}
+                      onChange={(e) => setEditSubCategory(e.target.value as any)}
+                      className="w-full bg-white border border-blue-300 rounded-lg p-2 text-xs font-semibold text-blue-900 focus:ring-2 focus:ring-blue-500 outline-hidden"
+                    >
+                      <option value="Surgical">Surgical Clinic</option>
+                      <option value="Pediatrics">Pediatrics Clinic</option>
+                      <option value="MOPC">Medical Outpatient Clinic (MOPC)</option>
+                      <option value="Obs/Gyn">Obstetrics & Gynecology (Obs/Gyn)</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* Payment Mode & Insurance Assignment */}
+              <div className="pt-2 border-t border-stone-100">
+                <label className="block text-[11px] font-bold text-stone-800 mb-1.5 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+                  Payment Coverage & Insurance
+                </label>
+                <div className="grid grid-cols-2 gap-3 mb-2.5">
+                  <label className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
+                    editPaymentMode === 'Cash' ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold' : 'bg-stone-50 border-stone-200 text-stone-600'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="editPaymentMode"
+                      value="Cash"
+                      checked={editPaymentMode === 'Cash'}
+                      onChange={() => setEditPaymentMode('Cash')}
+                      className="text-amber-600"
+                    />
+                    <span>💵 Cash Basis</span>
+                  </label>
+
+                  <label className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
+                    editPaymentMode === 'Insurance' ? 'bg-purple-50 border-purple-300 text-purple-900 font-bold' : 'bg-stone-50 border-stone-200 text-stone-600'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="editPaymentMode"
+                      value="Insurance"
+                      checked={editPaymentMode === 'Insurance'}
+                      onChange={() => setEditPaymentMode('Insurance')}
+                      className="text-purple-600"
+                    />
+                    <span>🛡️ Health Insurance</span>
+                  </label>
+                </div>
+
+                {editPaymentMode === 'Insurance' && (
+                  <div className="p-3 bg-purple-50/60 rounded-lg border border-purple-200">
+                    <label className="block text-[11px] font-bold text-purple-950 mb-1">
+                      Select Insurance Scheme / Provider
+                    </label>
+                    <select
+                      id="select-edit-insurance-company"
+                      value={editInsuranceCompany}
+                      onChange={(e) => setEditInsuranceCompany(e.target.value)}
+                      className="w-full bg-white border border-purple-300 rounded-lg p-2 text-xs font-semibold text-purple-900 focus:ring-2 focus:ring-purple-500 outline-hidden"
+                    >
+                      <option value="NHIF / SHA">NHIF / SHA (Social Health Authority)</option>
+                      <option value="Jubilee Insurance">Jubilee Insurance</option>
+                      <option value="AAR Insurance">AAR Insurance</option>
+                      <option value="Britam">Britam</option>
+                      <option value="CIC Insurance">CIC Insurance</option>
+                      <option value="APA Insurance">APA Insurance</option>
+                      <option value="First Assurance">First Assurance</option>
+                      <option value="Madison Insurance">Madison Insurance</option>
+                      <option value="UAP Old Mutual">UAP Old Mutual</option>
+                      <option value="Minet Kenya">Minet Kenya</option>
+                      <option value="Corporate / Employer Scheme">Corporate / Employer Scheme</option>
+                      <option value="Other Private Insurance">Other Private Insurance</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-stone-50 px-6 py-4 border-t border-stone-200 flex items-center justify-end gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setPatientToEdit(null)}
+                className="px-3 py-2 text-stone-600 hover:text-stone-800 rounded-lg text-xs font-semibold hover:bg-stone-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                id="btn-save-edit-patient"
+                type="button"
+                onClick={handleSaveEditPatient}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

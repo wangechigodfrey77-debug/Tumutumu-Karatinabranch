@@ -1633,6 +1633,7 @@ export function AdminDashboard({
                   onChange={(e) => setWlRole(e.target.value as any)}
                   className="w-full bg-stone-50 border border-stone-200 rounded p-2 focus:ring-1 focus:ring-emerald-500"
                 >
+                  <option value="Supervisor">Overall Supervisor (Executive Director / Facility Boss)</option>
                   <option value="Doctor">Doctor (Clinical Officer / consultant)</option>
                   <option value="Reception">Reception & Records coordinator</option>
                   <option value="Triage">Triage Nurse / Officer (Vitals & physiological details)</option>

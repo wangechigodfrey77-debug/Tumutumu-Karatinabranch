@@ -72,6 +72,7 @@ import { StaffDutiesLeaveView } from './components/StaffDutiesLeaveView';
 import { CommunicationCenter } from './components/CommunicationCenter';
 import { BoardReportView } from './components/BoardReportView';
 import { TriageView } from './components/TriageView';
+import { SupervisorView } from './components/SupervisorView';
 import { CloudScalabilityWorkbench } from './components/CloudScalabilityWorkbench';
 
 export default function App() {
@@ -264,6 +265,7 @@ export default function App() {
       else if (foundUser.role === 'Triage') setActiveTab('triage');
       else if (foundUser.role === 'Lab') setActiveTab('lab');
       else if (foundUser.role === 'Pharmacy') setActiveTab('pharmacy');
+      else if (foundUser.role === 'Supervisor') setActiveTab('supervisor');
       else setActiveTab('admin');
     } else {
       setLoginError(
@@ -782,7 +784,7 @@ export default function App() {
                 {loginError}
               </div>
             )}
-            
+
             <form onSubmit={handleEmailSignIn} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-stone-600 mb-1">Email Address</label>
@@ -1012,6 +1014,21 @@ export default function App() {
                 Executive Desk
               </span>
 
+              {/* Overall Supervisor Executive Hub */}
+              {(currentUser.role === 'Supervisor' || currentUser.role === 'Admin') && (
+                <button
+                  id="tab-supervisor"
+                  onClick={() => setActiveTab('supervisor')}
+                  className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between transition-all ${
+                    activeTab === 'supervisor' ? 'bg-amber-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Building className="w-4 h-4 text-amber-400" /> Facility Executive Overview
+                  </span>
+                </button>
+              )}
+
               {/* Admin Panel */}
               {currentUser.role === 'Admin' ? (
                 <>
@@ -1039,11 +1056,11 @@ export default function App() {
                     </span>
                   </button>
                 </>
-              ) : (
+              ) : currentUser.role !== 'Supervisor' ? (
                 <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 text-[10px] text-slate-500 italic leading-snug">
                   📌 Admin executive menus are locked securely for your account email level. Consult Superintendent if you require role upgrades.
                 </div>
-              )}
+              ) : null}
             </nav>
 
             <div className="p-4 bg-slate-950 border-t border-slate-800 text-[10px] text-slate-500 flex flex-col gap-2 font-mono">
@@ -1136,6 +1153,24 @@ export default function App() {
                 currentUserName={currentUser.name}
                 currentUserRole={currentUser.role}
                 onSendMessage={handleSendMessage}
+              />
+            )}
+
+            {activeTab === 'supervisor' && (currentUser.role === 'Supervisor' || currentUser.role === 'Admin') && (
+              <SupervisorView
+                patients={patients}
+                appointments={appointments}
+                labTests={labTests}
+                dispenses={dispenses}
+                stock={stock}
+                expenses={expenses}
+                duties={duties}
+                leaves={leaves}
+                onAddExpense={handleAddExpense}
+                onRemoveExpense={handleRemoveExpense}
+                userName={currentUser.name}
+                userEmail={currentUser.email}
+                userRole={currentUser.role}
               />
             )}
 

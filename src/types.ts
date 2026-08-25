@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type UserRole = 'Admin' | 'Reception' | 'Doctor' | 'Lab' | 'Pharmacy' | 'Triage';
+export type UserRole = 'Admin' | 'Reception' | 'Doctor' | 'Lab' | 'Pharmacy' | 'Triage' | 'Supervisor';
 
 export interface WhitelistUser {
   email: string;

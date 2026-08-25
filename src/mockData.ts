@@ -44,6 +44,7 @@ const saveStored = <T>(key: string, data: T) => {
 export const defaultWhitelist: WhitelistUser[] = [
   { email: 'gmaurice101@gmail.com', name: 'Dr. Maurice G. (Admin)', role: 'Admin' },
   { email: 'admin@tumutumu.org', name: 'Dr. Beatrice Wanjiku', role: 'Admin' },
+  { email: 'supervisor@tumutumu.org', name: 'Elder Grace Muthoni (Overall Supervisor)', role: 'Supervisor' },
   { email: 'reception@tumutumu.org', name: 'Mary Wangari (Records)', role: 'Reception' },
   { email: 'triage@tumutumu.org', name: 'John Kamau (Triage)', role: 'Triage' },
   { email: 'doctor@tumutumu.org', name: 'Dr. James Kinyua', role: 'Doctor' },

@@ -7,7 +7,7 @@
       "properties": {
         "email": { "type": "string", "description": "The registered email address." },
         "name": { "type": "string", "description": "Display name of the user." },
-        "role": { "type": "string", "enum": ["Admin", "Reception", "Triage", "Doctor", "Lab", "Pharmacy"], "description": "Access control role of the staff member." }
+        "role": { "type": "string", "enum": ["Admin", "Reception", "Triage", "Doctor", "Lab", "Pharmacy", "Supervisor"], "description": "Access control role of the staff member." }
       },
       "required": ["email", "name", "role"]
     },

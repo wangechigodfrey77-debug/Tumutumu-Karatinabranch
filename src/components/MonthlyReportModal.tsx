@@ -26,6 +26,7 @@ import {
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Patient, Appointment } from '../types';
+import { normalizeInsuranceCompany } from '../insuranceUtils';
 
 export interface MonthlyReportModalProps {
   isOpen: boolean;
@@ -203,8 +204,7 @@ export function MonthlyReportModal({
     // Insurance Providers Breakdown
     const insuranceMap = new Map<string, Patient[]>();
     insurancePatients.forEach(p => {
-      const companyRaw = (p.insuranceCompany || '').trim();
-      const providerKey = companyRaw ? companyRaw : 'NHIF / SHA (Default)';
+      const providerKey = normalizeInsuranceCompany(p.insuranceCompany);
       if (!insuranceMap.has(providerKey)) {
         insuranceMap.set(providerKey, []);
       }
@@ -467,7 +467,7 @@ export function MonthlyReportModal({
           ? `Specialist: ${p.consultantSubCategory || 'N/A'}`
           : p.category;
       const payment = p.paymentMode || 'Cash';
-      const insCompany = p.paymentMode === 'Insurance' ? (p.insuranceCompany || 'NHIF/SHA') : '-';
+      const insCompany = p.paymentMode === 'Insurance' ? normalizeInsuranceCompany(p.insuranceCompany) : '-';
 
       return [dateStr, p.id, op, p.name, ageSex, clinic, payment, insCompany];
     });
@@ -552,7 +552,8 @@ export function MonthlyReportModal({
     reportData.monthPatients.forEach(p => {
       const d = p.registeredAt ? p.registeredAt.substring(0, 10) : '';
       const op = p.opNumber || '';
-      csv += `"${d}","${p.id}","${op}","${p.name.replace(/"/g, '""')}",${p.age},"${p.ageUnit || 'Years'}","${p.gender}","${p.category || ''}","${p.consultantSubCategory || ''}","${p.paymentMode || 'Cash'}","${(p.insuranceCompany || '').replace(/"/g, '""')}","${p.phone || ''}"\n`;
+      const insCompany = p.paymentMode === 'Insurance' ? normalizeInsuranceCompany(p.insuranceCompany) : '';
+      csv += `"${d}","${p.id}","${op}","${p.name.replace(/"/g, '""')}",${p.age},"${p.ageUnit || 'Years'}","${p.gender}","${p.category || ''}","${p.consultantSubCategory || ''}","${p.paymentMode || 'Cash'}","${insCompany.replace(/"/g, '""')}","${p.phone || ''}"\n`;
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -1129,7 +1130,7 @@ export function MonthlyReportModal({
                             )}
                           </td>
                           <td className="py-2 px-2.5 text-stone-600 font-medium">
-                            {p.paymentMode === 'Insurance' ? (p.insuranceCompany || 'NHIF/SHA') : '-'}
+                            {p.paymentMode === 'Insurance' ? normalizeInsuranceCompany(p.insuranceCompany) : '-'}
                           </td>
                           {onDeletePatient && (
                             <td className="py-2 px-2.5 text-right">

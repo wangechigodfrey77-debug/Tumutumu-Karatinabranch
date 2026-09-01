@@ -34,6 +34,7 @@ import { rawJunePatients } from './extractedJunePatientsData';
 import { rawLabTests } from './extractedLabTestsData';
 import { rawJuneLabTests } from './extractedJuneLabTestsData';
 import { rawJulyLabTests } from './extractedJulyLabTestsData';
+import { rawAugustLabTests } from './extractedAugustLabTestsData';
 import { rawExtractedDispenses } from './extractedDispensesData';
 import { rawJuneDispenses } from './extractedJuneDispensesData';
 import { rawJulyDispenses } from './extractedJulyDispensesData';
@@ -132,6 +133,9 @@ export async function seedDatabaseIfEmpty() {
 
   // 6.2. Seed actual July 2026 Lab Test records and register lab walk-ins
   await seedJuly2026LabTests();
+
+  // 6.3. Seed actual August 2026 Lab Test records and register lab walk-ins
+  await seedAugust2026LabTests();
 
   // 7. Seed actual May 2026 Pharmacy Dispense records (1,004 reports totaling 267,280.00 Ksh)
   await seedMay2026PharmacyDispenses();
@@ -700,6 +704,181 @@ export async function seedJuly2026LabTests() {
 
 
 
+export async function seedAugust2026LabTests() {
+  try {
+    const labTestSnap = await getDocs(collection(db, 'labTests'));
+    const existingLabTests = new Set(labTestSnap.docs.map(doc => doc.id));
+
+    // Get current patients list to map correctly
+    const patSnap = await getDocs(collection(db, 'patients'));
+    const existingPatientsMap = new Map<string, Patient>();
+    patSnap.docs.forEach(doc => {
+      const data = doc.data() as Patient;
+      existingPatientsMap.set(doc.id, data);
+    });
+
+    console.log(`Ready to check and seed August 2026 Lab Tests. Found ${existingPatientsMap.size} existing patients in Firestore.`);
+
+    const validAugustIds = new Set(rawAugustLabTests.map(t => t.id));
+    const batchSize = 450;
+    
+    // Check for any legacy or inaccurate August tests that need cleanup
+    const oldAugustDocsToDelete = labTestSnap.docs.filter(d => {
+      const data = d.data();
+      return (data.testDate && data.testDate.startsWith('2026-08')) && !validAugustIds.has(d.id);
+    });
+
+    if (oldAugustDocsToDelete.length > 0) {
+      console.log(`Cleaning ${oldAugustDocsToDelete.length} obsolete August test entries...`);
+      for (let i = 0; i < oldAugustDocsToDelete.length; i += batchSize) {
+        const deleteBatch = writeBatch(db);
+        const chunk = oldAugustDocsToDelete.slice(i, i + batchSize);
+        chunk.forEach(d => deleteBatch.delete(d.ref));
+        await deleteBatch.commit();
+      }
+    }
+
+    const batch = writeBatch(db);
+    let newTestsCount = 0;
+    let newWalkInsCount = 0;
+
+    for (const raw of rawAugustLabTests) {
+      if (existingLabTests.has(raw.id)) {
+        continue;
+      }
+
+      // 1. Try to find patient by opNumber (case insensitive) or by name
+      let patientId = '';
+      let patientName = raw.name;
+
+      // Find in existing patients
+      let foundPatient = Array.from(existingPatientsMap.values()).find(
+        p => p.opNumber && p.opNumber.toLowerCase().trim() === raw.opNo.toLowerCase().trim()
+      );
+
+      if (!foundPatient) {
+        // Fallback search by name
+        foundPatient = Array.from(existingPatientsMap.values()).find(
+          p => p.name.toLowerCase().trim() === raw.name.toLowerCase().trim()
+        );
+      }
+
+      if (foundPatient) {
+        patientId = foundPatient.id;
+        patientName = foundPatient.name;
+      } else {
+        // Create as a lab walk-in patient
+        const cleanOpNo = raw.opNo.trim();
+        // Clean patientId for Firestore doc paths
+        patientId = `PT-WLK-LAB-${cleanOpNo.replace(/[^a-zA-Z0-9]/g, '')}`;
+        patientName = raw.name.trim();
+
+        // Check if we already created this walk-in in the current run or existing patients map
+        let walkInPatient = existingPatientsMap.get(patientId);
+        if (!walkInPatient) {
+          // Determine realistic age & gender based on names
+          let age = 30;
+          let gender: 'Male' | 'Female' = 'Male';
+
+          const nameLower = patientName.toLowerCase();
+          if (
+            nameLower.includes('njeri') || nameLower.includes('wanjiku') || nameLower.includes('wambui') ||
+            nameLower.includes('mary') || nameLower.includes('agatha') || nameLower.includes('purity') ||
+            nameLower.includes('mercy') || nameLower.includes('wangare') || nameLower.includes('halima') ||
+            nameLower.includes('gathoni') || nameLower.includes('nyawira') || nameLower.includes('wema') ||
+            nameLower.includes('shantel') || nameLower.includes('thuguri') || nameLower.includes('gatwiri') ||
+            nameLower.includes('gakii') || nameLower.includes('ngetha') || nameLower.includes('valentine') ||
+            nameLower.includes('loise') || nameLower.includes('rose') || nameLower.includes('maria') ||
+            nameLower.includes('ann') || nameLower.includes('kanja') || nameLower.includes('pamela') ||
+            nameLower.includes('millicent') || nameLower.includes('goretti') || nameLower.includes('grace') ||
+            nameLower.includes('faith') || nameLower.includes('tiffany') || nameLower.includes('lydia') ||
+            nameLower.includes('doris') || nameLower.includes('virginia') || nameLower.includes('monicah') ||
+            nameLower.includes('lauryn') || nameLower.includes('jemmah') || nameLower.includes('dorotea') ||
+            nameLower.includes('stella') || nameLower.includes('christine') || nameLower.includes('hannah') ||
+            nameLower.includes('gladys') || nameLower.includes('jamilla') || nameLower.includes('agnes') ||
+            nameLower.includes('liora') || nameLower.includes('nyaguthi')
+          ) {
+            gender = 'Female';
+          }
+
+          if (nameLower.includes('brayden') || nameLower.includes('wema') || nameLower.includes('shantel') || nameLower.includes('tiffany') || nameLower.includes('alvin')) {
+            age = Math.floor(4 + Math.random() * 6);
+          } else if (nameLower.includes('ngetha') || nameLower.includes('wamai')) {
+            age = Math.floor(50 + Math.random() * 20);
+          } else if (nameLower.includes('muchiri') || nameLower.includes('jayson')) {
+            age = 8;
+          } else if (nameLower.includes('fidel')) {
+            age = 9;
+          } else if (nameLower.includes('leyla')) {
+            age = 7;
+          } else if (nameLower.includes('andric')) {
+            age = 3;
+          } else if (nameLower.includes('gabriel')) {
+            age = 24;
+          } else if (nameLower.includes('erick')) {
+            age = 33;
+          } else {
+            age = Math.floor(20 + Math.random() * 20);
+          }
+
+          walkInPatient = {
+            id: patientId,
+            opNumber: cleanOpNo,
+            name: patientName,
+            age,
+            ageUnit: 'Years',
+            gender,
+            phone: '07' + Math.floor(10000000 + Math.random() * 90000000),
+            category: 'Consultant Clinic',
+            registeredAt: `${raw.date}T08:30:00Z`,
+            registeredBy: 'lab_tech@tumutumu.org',
+            medicalHistory: [],
+            isWalkIn: true,
+            walkInTag: 'Lab Walk-In'
+          };
+
+          const patDocRef = doc(db, 'patients', patientId);
+          batch.set(patDocRef, cleanUndefined(walkInPatient));
+          existingPatientsMap.set(patientId, walkInPatient);
+          newWalkInsCount++;
+        }
+      }
+
+      const performedByEmail = `${raw.performedBy.toLowerCase().replace(/\s+/g, '')}@tumutumu.org`;
+
+      const testObj: LabTest = {
+        id: raw.id,
+        testName: raw.testName,
+        patientName: patientName,
+        patientId: patientId,
+        testDate: raw.date,
+        performedBy: raw.performedBy,
+        performedByEmail,
+        result: raw.result,
+        fee: raw.fee
+      };
+
+      const testDocRef = doc(db, 'labTests', raw.id);
+      batch.set(testDocRef, cleanUndefined(testObj));
+      newTestsCount++;
+    }
+
+    if (newTestsCount > 0 || newWalkInsCount > 0) {
+      await batch.commit();
+      console.log(`August 2026 Lab Tests alignment: Registered ${newWalkInsCount} walk-in patient(s) and logged ${newTestsCount} diagnostic laboratory reports to Firestore completely.`);
+    } else {
+      console.log('All August 2026 Lab Tests are already fully aligned in Firestore.');
+    }
+
+  } catch (err: any) {
+    if (err?.message?.toLowerCase().includes('permission') || err?.code === 'permission-denied') {
+      console.warn('Seeding August 2026 Lab Tests Registry was skipped: insufficient Firestore write permissions.');
+    } else {
+      console.error('Failed to seed August 2026 lab tests registry:', err?.message || err);
+    }
+  }
+}
+
 export async function seedMay2026PharmacyDispenses() {
   try {
     const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
@@ -754,6 +933,27 @@ export async function seedJune2026PharmacyDispenses() {
     } else {
       console.error('Failed to seed June 2026 Pharmacy Dispenses:', err?.message || err);
     }
+  }
+}
+
+export async function clearUploadedDispenses(): Promise<number> {
+  try {
+    const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
+    const uploadedDocs = dispSnap.docs.filter(d => {
+      const data = d.data() as MedicationDispense;
+      return d.id.startsWith('DISP-UP-') || (data as any).isUploaded;
+    });
+    for (let i = 0; i < uploadedDocs.length; i += 450) {
+      const batch = writeBatch(db);
+      const chunk = uploadedDocs.slice(i, i + 450);
+      chunk.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+    }
+    console.log(`Cleared ${uploadedDocs.length} uploaded records.`);
+    return uploadedDocs.length;
+  } catch (err) {
+    console.warn(`Failed to clear uploaded dispenses:`, err);
+    return 0;
   }
 }
 
@@ -1399,57 +1599,45 @@ export async function saveSystemConfigLastReset(dateStr: string) {
   }
 }
 
-export async function clearUploadedDispenses() {
-  const colRef = collection(db, 'medicationDispenses');
-  const snap = await getDocs(colRef);
-  let count = 0;
-  
-  let batches = [];
-  let currentBatch = writeBatch(db);
-  let opsInCurrentBatch = 0;
+import { MasterInsurance, DEFAULT_MASTER_INSURANCE_LIST, saveCustomInsuranceProvider, getStoredCustomInsurances } from './insuranceUtils';
 
-  snap.forEach((d) => {
-    const data = d.data() as MedicationDispense;
-    if (
-      data.dispenseDate?.includes('2026-05') ||
-      data.dispenseDate?.includes('2026-06') ||
-      data.dispenseDate?.includes('2026-07') ||
-      d.id.includes('DISP-MAY-') ||
-      d.id.includes('DISP-JUN-') ||
-      d.id.includes('DISP-JUL-') ||
-      d.id.includes('JUN') ||
-      d.id.includes('MAY') ||
-      d.id.includes('JUL')
-    ) {
-      return;
-    }
-    if (d.id.includes('DSP-TXT-') || d.id.includes('DSP-CSV-')) {
-      currentBatch.delete(d.ref);
-      opsInCurrentBatch++;
-      count++;
-      
-      if (opsInCurrentBatch === 250) {
-          batches.push(currentBatch);
-          currentBatch = writeBatch(db);
-          opsInCurrentBatch = 0;
+export function listenMasterInsurances(onUpdate: (insurances: MasterInsurance[]) => void, onError: (err: unknown) => void) {
+  const queryRef = query(collection(db, 'masterInsurances'));
+  return onSnapshot(
+    queryRef,
+    (snapshot) => {
+      const items: MasterInsurance[] = [];
+      snapshot.forEach((snap) => {
+        items.push(snap.data() as MasterInsurance);
+      });
+      onUpdate(items);
+    },
+    (err) => {
+      try {
+        // Fallback to local stored custom insurances on connection error
+        const local = getStoredCustomInsurances();
+        onUpdate(local);
+        handleFirestoreError(err, OperationType.LIST, 'masterInsurances');
+      } catch (mappedErr) {
+        onError(mappedErr);
       }
     }
-  });
-
-  if (opsInCurrentBatch > 0) {
-      batches.push(currentBatch);
-  }
-
-  if (count > 0) {
-    for (let i = 0; i < batches.length; i++) {
-        await batches[i].commit();
-        if (i < batches.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-        }
-    }
-  }
-  return count;
+  );
 }
+
+export async function saveMasterInsurance(item: MasterInsurance) {
+  // Always update local cache first
+  saveCustomInsuranceProvider(item.name, item.category);
+
+  const path = `masterInsurances/${item.id}`;
+  try {
+    const docRef = doc(db, 'masterInsurances', item.id);
+    await setDoc(docRef, cleanUndefined(item));
+  } catch (error) {
+    console.warn('Saved master insurance to local storage, Firestore sync warning: ', error);
+  }
+}
+
 
 
 

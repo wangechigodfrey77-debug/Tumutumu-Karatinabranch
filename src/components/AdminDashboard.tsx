@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { ShieldAlert, Users, CalendarPlus, CheckSquare, Trash, BarChart3, TrendingUp, Sparkles, Building, Layers, Landmark, Calendar, Plus, X, FileSpreadsheet, History, Download } from 'lucide-react';
 import { Patient, LabTest, MedicationDispense, DutyAllocation, LeaveRequest, WhitelistUser, UserRole, Expense, PharmacyItem, AuditLog, Appointment } from '../types';
+import { normalizeInsuranceCompany } from '../insuranceUtils';
 import { RevenueChart } from './RevenueChart';
 import { GoogleSheetsView } from './GoogleSheetsView';
 import { jsPDF } from 'jspdf';
@@ -55,53 +56,183 @@ export function AdminDashboard({
   currentUserEmail,
 }: AdminDashboardProps) {
   const [activeAdminSub, setActiveAdminSub] = useState<'rosters' | 'whitelist' | 'leaves' | 'finances' | 'sheets' | 'audit'>('finances');
-  const [financePeriodView, setFinancePeriodView] = useState<'monthly' | 'daily'>('monthly');
+  const [financePeriodView, setFinancePeriodView] = useState<'daily' | 'monthly' | 'yearly' | 'all'>('monthly');
   const [selectedFinMonth, setSelectedFinMonth] = useState<string>('All');
+  const [selectedFinYear, setSelectedFinYear] = useState<string>('2026');
   const [selectedFinDate, setSelectedFinDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
 
   // Periodic Audit Reports Filter Selection States
   const [reportTarget, setReportTarget] = useState<'cash' | 'insurance' | 'cash_and_insurance' | 'lab' | 'pharmacy'>('cash');
   const [reportPeriodType, setReportPeriodType] = useState<'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'>('daily');
-  const [reportCustomDate, setReportCustomDate] = useState<string>('2026-06-15');
-  const [reportCustomMonth, setReportCustomMonth] = useState<string>('2026-06');
+  const [reportCustomDate, setReportCustomDate] = useState<string>('2026-08-15');
+  const [reportCustomMonth, setReportCustomMonth] = useState<string>('2026-08');
   const [reportCustomYear, setReportCustomYear] = useState<string>('2026');
-  const [reportCustomQuarter, setReportCustomQuarter] = useState<string>('2');
+  const [reportCustomQuarter, setReportCustomQuarter] = useState<string>('3');
 
-  // Gather available months dynamically from appointments, labTests, dispenses, and expenses
+  // Gather available months dynamically from appointments, labTests, dispenses, patients, and expenses
   const availableMonths = React.useMemo(() => {
     const months = new Set<string>();
     appointments.forEach(a => {
-      if (a.date) months.add(a.date.substring(0, 7));
+      const d = a.date || (a as any).createdAt;
+      if (d) months.add(d.substring(0, 7));
     });
     labTests.forEach(t => {
-      if (t.testDate) months.add(t.testDate.substring(0, 7));
+      const d = t.requestedAt || t.completedAt || t.testDate || (t as any).createdAt;
+      if (d) months.add(d.substring(0, 7));
     });
     dispenses.forEach(d => {
-      if (d.dispenseDate) months.add(d.dispenseDate.substring(0, 7));
+      const dt = d.dispensedAt || d.dispenseDate || (d as any).createdAt;
+      if (dt) months.add(dt.substring(0, 7));
     });
     expenses.forEach(e => {
-      if (e.date) months.add(e.date.substring(0, 7));
+      const d = e.date || (e as any).createdAt;
+      if (d) months.add(d.substring(0, 7));
     });
-    return Array.from(months).filter(m => m && m.length === 7).sort();
-  }, [appointments, labTests, dispenses, expenses]);
+    patients.forEach(p => {
+      const d = p.registeredAt || (p as any).createdAt;
+      if (d) months.add(d.substring(0, 7));
+    });
+    return Array.from(months).filter(m => m && m.length === 7).sort().reverse();
+  }, [appointments, labTests, dispenses, expenses, patients]);
 
-  // Gather available dates dynamically from appointments, labTests, dispenses, and expenses
+  // Gather available years dynamically
+  const availableYears = React.useMemo(() => {
+    const years = new Set<string>(['2026', '2025', '2024']);
+    availableMonths.forEach(m => {
+      if (m.length >= 4) years.add(m.substring(0, 4));
+    });
+    return Array.from(years).sort().reverse();
+  }, [availableMonths]);
+
+  // Gather available dates dynamically from appointments, labTests, dispenses, patients, and expenses
   const availableDates = React.useMemo(() => {
     const dates = new Set<string>();
     appointments.forEach(a => {
-      if (a.date) dates.add(a.date.substring(0, 10));
+      const d = a.date || (a as any).createdAt;
+      if (d) dates.add(d.substring(0, 10));
     });
     labTests.forEach(t => {
-      if (t.testDate) dates.add(t.testDate.substring(0, 10));
+      const d = t.requestedAt || t.completedAt || t.testDate || (t as any).createdAt;
+      if (d) dates.add(d.substring(0, 10));
     });
     dispenses.forEach(d => {
-      if (d.dispenseDate) dates.add(d.dispenseDate.substring(0, 10));
+      const dt = d.dispensedAt || d.dispenseDate || (d as any).createdAt;
+      if (dt) dates.add(dt.substring(0, 10));
     });
     expenses.forEach(e => {
-      if (e.date) dates.add(e.date.substring(0, 10));
+      const d = e.date || (e as any).createdAt;
+      if (d) dates.add(d.substring(0, 10));
+    });
+    patients.forEach(p => {
+      const d = p.registeredAt || (p as any).createdAt;
+      if (d) dates.add(d.substring(0, 10));
     });
     return Array.from(dates).filter(d => d && d.length === 10).sort().reverse();
-  }, [appointments, labTests, dispenses, expenses]);
+  }, [appointments, labTests, dispenses, expenses, patients]);
+
+  // Date filtering helper for CFO finances
+  const isDateInFinPeriod = React.useCallback((dateStr?: string) => {
+    if (!dateStr) return false;
+    const cleanDate = dateStr.substring(0, 10);
+    if (financePeriodView === 'daily') {
+      return cleanDate === selectedFinDate;
+    }
+    if (financePeriodView === 'monthly') {
+      return selectedFinMonth === 'All' ? true : cleanDate.startsWith(selectedFinMonth);
+    }
+    if (financePeriodView === 'yearly') {
+      return cleanDate.startsWith(selectedFinYear);
+    }
+    return true; // 'all'
+  }, [financePeriodView, selectedFinDate, selectedFinMonth, selectedFinYear]);
+
+  // Compute departmental financial statistics with full parity to Executive Overview
+  const filteredAppts = React.useMemo(() => {
+    return appointments.filter(a =>
+      isDateInFinPeriod(a.date || (a as any).createdAt) &&
+      (a.billingStatus === 'Paid' || a.status === 'Completed' || (Number(a.billingAmount) || 0) > 0)
+    );
+  }, [appointments, isDateInFinPeriod]);
+
+  const filteredLab = React.useMemo(() => {
+    return labTests.filter(t => isDateInFinPeriod(t.requestedAt || t.completedAt || t.testDate || (t as any).createdAt));
+  }, [labTests, isDateInFinPeriod]);
+
+  const filteredDispenses = React.useMemo(() => {
+    return dispenses.filter(d => isDateInFinPeriod(d.dispensedAt || d.dispenseDate || (d as any).createdAt));
+  }, [dispenses, isDateInFinPeriod]);
+
+  const filteredPatientsForCounts = React.useMemo(() => {
+    return patients.filter(p => isDateInFinPeriod(p.registeredAt || (p as any).createdAt));
+  }, [patients, isDateInFinPeriod]);
+
+  const filteredExpenses = React.useMemo(() => {
+    return expenses.filter(e => isDateInFinPeriod(e.date || (e as any).createdAt));
+  }, [expenses, isDateInFinPeriod]);
+
+  // Distinguish Pharma vs Non-Pharma
+  const pharmaDispenses = React.useMemo(() => {
+    return filteredDispenses.filter(d => {
+      const matched = stock?.find(s => s.name === d.medicationName);
+      if (!matched) return true;
+      const cat = matched.category;
+      return cat !== 'Non-Pharmaceutical' && cat !== 'Surgicals & Non-Pharmaceuticals';
+    });
+  }, [filteredDispenses, stock]);
+
+  const nonPharmaDispenses = React.useMemo(() => {
+    return filteredDispenses.filter(d => {
+      const matched = stock?.find(s => s.name === d.medicationName);
+      if (!matched) return false;
+      const cat = matched.category;
+      return cat === 'Non-Pharmaceutical' || cat === 'Surgicals & Non-Pharmaceuticals';
+    });
+  }, [filteredDispenses, stock]);
+
+  const patientRevenue = React.useMemo(() => {
+    return filteredAppts.reduce((sum, a) => sum + (Number(a.billingAmount) || 0), 0);
+  }, [filteredAppts]);
+
+  const labRevenue = React.useMemo(() => {
+    return filteredLab.reduce((sum, item) => sum + (Number(item.fee) || 0), 0);
+  }, [filteredLab]);
+
+  const pharmaRevenue = React.useMemo(() => {
+    return pharmaDispenses.reduce((sum, item) => sum + (Number(item.totalCost) || 0), 0);
+  }, [pharmaDispenses]);
+
+  const nonPharmaRevenue = React.useMemo(() => {
+    return nonPharmaDispenses.reduce((sum, item) => sum + (Number(item.totalCost) || 0), 0);
+  }, [nonPharmaDispenses]);
+  
+  const pharmacyRevenue = pharmaRevenue + nonPharmaRevenue;
+  const totalCombinedRevenue = patientRevenue + labRevenue + pharmacyRevenue;
+  const totalExpenses = React.useMemo(() => {
+    return filteredExpenses.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+  }, [filteredExpenses]);
+  const netBalance = totalCombinedRevenue - totalExpenses;
+  const profitMargin = totalCombinedRevenue > 0 ? (netBalance / totalCombinedRevenue) * 100 : 0;
+
+  // General patient split matching Facility Executive Overview
+  const generalPatCount = filteredPatientsForCounts.filter(p => p.category === 'General Consultation' || (!p.category && !p.consultantSubCategory)).length;
+  const specialistPatCount = filteredPatientsForCounts.filter(p => p.category === 'Consultant Clinic' || !!p.consultantSubCategory).length;
+
+  const surgicalCount = filteredPatientsForCounts.filter(p => 
+    p.consultantSubCategory === 'Surgical' || 
+    (p.category === 'Consultant Clinic' && (p.notes || '').toLowerCase().includes('surg'))
+  ).length;
+  const pediatricsCount = filteredPatientsForCounts.filter(p => 
+    p.consultantSubCategory === 'Pediatrics' || 
+    (p.category === 'Consultant Clinic' && (p.notes || '').toLowerCase().includes('ped'))
+  ).length;
+  const mopcCount = filteredPatientsForCounts.filter(p => 
+    p.consultantSubCategory === 'MOPC' || 
+    (p.category === 'Consultant Clinic' && (p.notes || '').toLowerCase().includes('mopc'))
+  ).length;
+  const obsGynCount = filteredPatientsForCounts.filter(p => 
+    p.consultantSubCategory === 'Obs/Gyn' || 
+    (p.category === 'Consultant Clinic' && ((p.notes || '').toLowerCase().includes('gyn') || (p.notes || '').toLowerCase().includes('obs')))
+  ).length;
 
   // Filtering states for System Audit Logs mutations
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -136,62 +267,6 @@ export function AdminDashboard({
   const [expenseAmount, setExpenseAmount] = useState<string>('');
   const [expenseDate, setExpenseDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
   const [expenseDescription, setExpenseDescription] = useState<string>('');
-
-  // Compute departmental financial statistics
-  const filteredAppts = financePeriodView === 'daily'
-    ? appointments.filter(a => a.billingStatus === 'Paid' && a.date === selectedFinDate)
-    : (selectedFinMonth === 'All'
-        ? appointments.filter(a => a.billingStatus === 'Paid')
-        : appointments.filter(a => a.billingStatus === 'Paid' && a.date?.startsWith(selectedFinMonth)));
-
-  const filteredLab = financePeriodView === 'daily'
-    ? labTests.filter(t => t.testDate === selectedFinDate)
-    : (selectedFinMonth === 'All'
-        ? labTests
-        : labTests.filter(t => t.testDate?.startsWith(selectedFinMonth)));
-
-  const filteredDispenses = financePeriodView === 'daily'
-    ? dispenses.filter(d => d.dispenseDate === selectedFinDate)
-    : (selectedFinMonth === 'All'
-        ? dispenses
-        : dispenses.filter(d => d.dispenseDate?.startsWith(selectedFinMonth)));
-
-  const filteredPatientsForCounts = financePeriodView === 'daily'
-    ? patients.filter(p => p.registeredAt?.substring(0, 10) === selectedFinDate)
-    : (selectedFinMonth === 'All'
-        ? patients
-        : patients.filter(p => p.registeredAt?.startsWith(selectedFinMonth)));
-
-  // Distinguish Pharma vs Non-Pharma
-  const pharmaDispenses = filteredDispenses.filter(d => {
-    const matched = stock?.find(s => s.name === d.medicationName);
-    if (!matched) return true;
-    const cat = matched.category;
-    return cat !== 'Non-Pharmaceutical' && cat !== 'Surgicals & Non-Pharmaceuticals';
-  });
-  const nonPharmaDispenses = filteredDispenses.filter(d => {
-    const matched = stock?.find(s => s.name === d.medicationName);
-    if (!matched) return false;
-    const cat = matched.category;
-    return cat === 'Non-Pharmaceutical' || cat === 'Surgicals & Non-Pharmaceuticals';
-  });
-
-  const patientRevenue = filteredAppts.reduce((sum, a) => sum + (a.billingAmount || 0), 0);
-  const labRevenue = filteredLab.reduce((sum, item) => sum + (item.fee || 0), 0);
-  const pharmaRevenue = pharmaDispenses.reduce((sum, item) => sum + (item.totalCost || 0), 0);
-  const nonPharmaRevenue = nonPharmaDispenses.reduce((sum, item) => sum + (item.totalCost || 0), 0);
-  
-  const pharmacyRevenue = pharmaRevenue + nonPharmaRevenue;
-  const totalCombinedRevenue = patientRevenue + labRevenue + pharmacyRevenue;
-
-  // General patient split
-  const generalPatCount = filteredPatientsForCounts.filter((p) => p.category === 'General Consultation').length;
-  const specialistPatCount = filteredPatientsForCounts.filter((p) => p.category === 'Consultant Clinic').length;
-
-  const surgicalCount = filteredPatientsForCounts.filter((p) => p.consultantSubCategory === 'Surgical').length;
-  const pediatricsCount = filteredPatientsForCounts.filter((p) => p.consultantSubCategory === 'Pediatrics').length;
-  const mopcCount = filteredPatientsForCounts.filter((p) => p.consultantSubCategory === 'MOPC').length;
-  const obsGynCount = filteredPatientsForCounts.filter((p) => p.consultantSubCategory === 'Obs/Gyn').length;
 
   const handleGenerateReportPDF = () => {
     const isWithinPeriod = (rawDate: string | undefined): boolean => {
@@ -312,7 +387,7 @@ export function AdminDashboard({
         p.opNumber || `OP-${(p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06')}-${p.id.split('-')[1]}`,
         p.name,
         `${p.age} ${p.ageUnit === 'Months' ? 'Mos' : 'Yrs'} / ${p.gender}`,
-        p.insuranceCompany || 'N/A',
+        normalizeInsuranceCompany(p.insuranceCompany),
         p.phone || 'N/A',
         p.category === 'General Consultation' 
           ? 'General OPD' 
@@ -336,7 +411,7 @@ export function AdminDashboard({
         p.name,
         `${p.age} ${p.ageUnit === 'Months' ? 'Mos' : 'Yrs'} / ${p.gender}`,
         p.paymentMode || 'Cash',
-        p.paymentMode === 'Insurance' ? (p.insuranceCompany || 'Insurance') : 'Cash Outpatient',
+        p.paymentMode === 'Insurance' ? normalizeInsuranceCompany(p.insuranceCompany) : 'Cash Outpatient',
         p.category === 'General Consultation' 
           ? 'General OPD' 
           : p.category === 'Consultant Clinic'
@@ -542,59 +617,77 @@ export function AdminDashboard({
 
       {/* A. CFO FINANCIAL CONTROL & SATELLITE OPERATIONS DESK */}
       {activeAdminSub === 'finances' && (() => {
-        // Compute expenses statistics based on selectedFinanceMonth
-        const finalExpenses = financePeriodView === 'daily'
-          ? expenses.filter(e => e.date === selectedFinDate)
-          : (selectedFinMonth === 'All'
-              ? expenses
-              : expenses.filter(e => e.date?.startsWith(selectedFinMonth)));
+        // Group all filtered expenses dynamically by category
+        const categoryMap = new Map<string, number>();
+        filteredExpenses.forEach(e => {
+          const cat = e.category || 'General';
+          categoryMap.set(cat, (categoryMap.get(cat) || 0) + (Number(e.amount) || 0));
+        });
 
-        const totalExpenses = finalExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
-        const electricityExpenses = finalExpenses.filter(e => e.category === 'Electricity').reduce((sum, e) => sum + (e.amount || 0), 0);
-        const waterExpenses = finalExpenses.filter(e => e.category === 'Water').reduce((sum, e) => sum + (e.amount || 0), 0);
-        const securityExpenses = finalExpenses.filter(e => e.category === 'Security').reduce((sum, e) => sum + (e.amount || 0), 0);
-        const otherExpenses = finalExpenses.filter(e => !['Electricity', 'Water', 'Security'].includes(e.category)).reduce((sum, e) => sum + (e.amount || 0), 0);
+        const colorPalette = ['#f59e0b', '#0ea5e9', '#6366f1', '#10b981', '#ec4899', '#8b5cf6', '#f97316', '#14b8a6'];
+        const spendCategories = Array.from(categoryMap.entries()).map(([name, amount], idx) => ({
+          name,
+          amount,
+          color: colorPalette[idx % colorPalette.length]
+        })).sort((a, b) => b.amount - a.amount);
 
-        const netBalance = totalCombinedRevenue - totalExpenses;
-        const profitMargin = totalCombinedRevenue > 0 ? (netBalance / totalCombinedRevenue) * 100 : 0;
-
-        // Daily trend data aggregation
-        let trendDates: string[];
+        // Dynamic trend data aggregation based on selected period
+        let trendDates: string[] = [];
         if (financePeriodView === 'daily') {
           const baseDate = new Date(selectedFinDate);
-          trendDates = [];
           for (let i = 6; i >= 0; i--) {
             const d = new Date(baseDate);
             d.setDate(baseDate.getDate() - i);
             trendDates.push(d.toISOString().split('T')[0]);
           }
+        } else if (financePeriodView === 'monthly') {
+          if (selectedFinMonth === 'All') {
+            // Show recent available months or dates
+            const recentDates = availableDates.slice(0, 8).reverse();
+            trendDates = recentDates.length > 0 ? recentDates : ['2026-08-01', '2026-08-02', '2026-08-03', '2026-08-04', '2026-08-05'];
+          } else {
+            // Find all unique dates in the selected month
+            const monthDates = availableDates.filter(d => d.startsWith(selectedFinMonth)).sort();
+            trendDates = monthDates.length > 0 ? monthDates : Array.from({ length: 7 }, (_, i) => `${selectedFinMonth}-${String(i + 1).padStart(2, '0')}`);
+          }
+        } else if (financePeriodView === 'yearly') {
+          const yearDates = availableDates.filter(d => d.startsWith(selectedFinYear)).sort();
+          trendDates = yearDates.length > 0 ? yearDates.slice(-10) : [`${selectedFinYear}-01-01`, `${selectedFinYear}-06-01`, `${selectedFinYear}-12-01`];
         } else {
-          const trendPrefix = selectedFinMonth === 'All' ? '2026-06' : selectedFinMonth;
-          trendDates = ['01', '02', '03', '04', '05', '06', '07', '08'].map(day => `${trendPrefix}-${day}`);
+          trendDates = availableDates.slice(0, 10).reverse();
         }
+
         const dailyMetrics = trendDates.map(date => {
           // Patient consulting registration revenue from paid appointments on that day
           const patTodayRev = appointments
-            .filter(a => a.date === date && a.billingStatus === 'Paid')
-            .reduce((sum, a) => sum + (a.billingAmount || 0), 0);
+            .filter(a => (a.date === date || (a as any).createdAt?.startsWith(date)) && (a.billingStatus === 'Paid' || a.status === 'Completed' || (Number(a.billingAmount) || 0) > 0))
+            .reduce((sum, a) => sum + (Number(a.billingAmount) || 0), 0);
 
           // Lab tests today revenue
-          const labTodayRev = labTests.filter(t => t.testDate === date).reduce((sum, t) => sum + (t.fee || 0), 0);
+          const labTodayRev = labTests
+            .filter(t => (t.testDate === date || t.requestedAt?.startsWith(date) || t.completedAt?.startsWith(date) || (t as any).createdAt?.startsWith(date)))
+            .reduce((sum, t) => sum + (Number(t.fee) || 0), 0);
 
           // Pharmacy dispenses today revenue
-          const pharTodayRev = dispenses.filter(d => d.dispenseDate === date).reduce((sum, d) => sum + (d.totalCost || 0), 0);
+          const pharTodayRev = dispenses
+            .filter(d => (d.dispenseDate === date || d.dispensedAt?.startsWith(date) || (d as any).createdAt?.startsWith(date)))
+            .reduce((sum, d) => sum + (Number(d.totalCost) || 0), 0);
 
           const revenue = patTodayRev + labTodayRev + pharTodayRev;
-          const expense = expenses.filter(e => e.date === date).reduce((sum, e) => sum + (e.amount || 0), 0);
+          const expense = expenses
+            .filter(e => (e.date === date || (e as any).createdAt?.startsWith(date)))
+            .reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
           const profit = revenue - expense;
 
           return { date, revenue, expense, profit };
         });
 
         // Compute SVG graph points
-        // Width: 500, Height: 150 bounds
         const maxVal = Math.max(...dailyMetrics.map(m => Math.max(m.revenue, m.expense, Math.abs(m.profit))), 10000);
-        const getX = (index: number) => 40 + (index * 420) / (trendDates.length - 1);
+        const getX = (index: number) => {
+          if (trendDates.length <= 1) return 250;
+          return 40 + (index * 420) / (trendDates.length - 1);
+        };
         const getY = (val: number) => 130 - (val / maxVal) * 110; // Reserve padding top and bottom
 
         const revenuePoints = dailyMetrics.map((m, i) => `${getX(i)},${getY(m.revenue)}`).join(' ');
@@ -638,49 +731,73 @@ export function AdminDashboard({
                   CFO Financial Statement Period
                 </h4>
                 <p className="text-[11px] text-stone-500 mt-0.5">
-                  Filter global income, lab invoices, opex billing, and treasury ledger stats daily or monthly.
+                  Filter global income, lab invoices, opex billing, and treasury ledger stats daily, monthly, yearly or cumulative.
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-4 shrink-0">
+              <div className="flex flex-wrap items-center gap-3 shrink-0">
                 {/* Segmented Period Toggle */}
                 <div className="flex items-center bg-stone-200/60 p-1 rounded-lg border border-stone-200">
                   <button
                     id="btn-fin-view-monthly"
                     type="button"
                     onClick={() => setFinancePeriodView('monthly')}
-                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                    className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
                       financePeriodView === 'monthly'
                         ? 'bg-white text-stone-800 shadow-xs'
                         : 'text-stone-500 hover:text-stone-800'
                     }`}
                   >
-                    Monthly & Cumulative
+                    Monthly
                   </button>
                   <button
                     id="btn-fin-view-daily"
                     type="button"
                     onClick={() => setFinancePeriodView('daily')}
-                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                    className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
                       financePeriodView === 'daily'
                         ? 'bg-white text-stone-800 shadow-xs'
                         : 'text-stone-500 hover:text-stone-800'
                     }`}
                   >
-                    Daily Ledger
+                    Daily
+                  </button>
+                  <button
+                    id="btn-fin-view-yearly"
+                    type="button"
+                    onClick={() => setFinancePeriodView('yearly')}
+                    className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                      financePeriodView === 'yearly'
+                        ? 'bg-white text-stone-800 shadow-xs'
+                        : 'text-stone-500 hover:text-stone-800'
+                    }`}
+                  >
+                    Yearly
+                  </button>
+                  <button
+                    id="btn-fin-view-all"
+                    type="button"
+                    onClick={() => setFinancePeriodView('all')}
+                    className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                      financePeriodView === 'all'
+                        ? 'bg-white text-stone-800 shadow-xs'
+                        : 'text-stone-500 hover:text-stone-800'
+                    }`}
+                  >
+                    All-Time
                   </button>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {financePeriodView === 'monthly' ? (
+                  {financePeriodView === 'monthly' && (
                     <>
-                      <span className="text-xs font-semibold text-stone-600 font-mono">Select Month:</span>
+                      <span className="text-xs font-semibold text-stone-600 font-mono">Month:</span>
                       <select
                         id="select-finance-period-month"
                         value={selectedFinMonth}
                         onChange={(e) => setSelectedFinMonth(e.target.value)}
                         className="bg-white border border-stone-200 rounded-lg py-1.5 px-3 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 focus:border-amber-500 outline-none shadow-3xs cursor-pointer"
                       >
-                        <option value="All">All-Time Cumulative</option>
+                        <option value="All">All Months</option>
                         {availableMonths.map((m) => (
                           <option key={m} value={m}>
                             {new Date(m + "-02").toLocaleString("default", { month: "long", year: "numeric" })} ({m})
@@ -688,9 +805,11 @@ export function AdminDashboard({
                         ))}
                       </select>
                     </>
-                  ) : (
+                  )}
+
+                  {financePeriodView === 'daily' && (
                     <>
-                      <span className="text-xs font-semibold text-stone-600 font-mono">Select Day:</span>
+                      <span className="text-xs font-semibold text-stone-600 font-mono">Day:</span>
                       <div className="flex items-center gap-1">
                         <select
                           id="select-finance-period-day"
@@ -717,6 +836,24 @@ export function AdminDashboard({
                           className="bg-white border border-stone-200 rounded-lg p-1.5 text-xs text-stone-700 focus:ring-1 focus:ring-amber-500 outline-none cursor-pointer h-[32px] w-[34px] flex items-center justify-center font-mono"
                         />
                       </div>
+                    </>
+                  )}
+
+                  {financePeriodView === 'yearly' && (
+                    <>
+                      <span className="text-xs font-semibold text-stone-600 font-mono">Year:</span>
+                      <select
+                        id="select-finance-period-year"
+                        value={selectedFinYear}
+                        onChange={(e) => setSelectedFinYear(e.target.value)}
+                        className="bg-white border border-stone-200 rounded-lg py-1.5 px-3 text-xs font-semibold text-stone-700 focus:ring-1 focus:ring-amber-500 focus:border-amber-500 outline-none shadow-3xs cursor-pointer font-mono"
+                      >
+                        {availableYears.map((yr) => (
+                          <option key={yr} value={yr}>
+                            FY {yr}
+                          </option>
+                        ))}
+                      </select>
                     </>
                   )}
                 </div>
@@ -902,13 +1039,13 @@ export function AdminDashboard({
             <div className="bg-white border border-stone-200 p-5 rounded-xl shadow-xs">
               <h3 className="text-xs font-bold text-stone-700 uppercase tracking-wider mb-4 flex items-center gap-1.5">
                 <BarChart3 className="w-4 h-4 text-emerald-600" />
-                Treasury Revenue Streams Breakdown (Including Non-Pharmaceuticals)
+                Treasury Revenue Streams Breakdown (Clinical, Lab & Pharmacy)
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {/* Channel 1 */}
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs font-semibold text-stone-700">
-                    <span>Clinical Intake Consults</span>
+                    <span>Clinical Consultations</span>
                     <span>Ksh {patientRevenue.toLocaleString()}</span>
                   </div>
                   <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
@@ -981,25 +1118,35 @@ export function AdminDashboard({
               <div className="bg-white p-5 rounded-xl border border-stone-200 lg:col-span-1 space-y-4 shadow-xs">
                 <h3 className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
                   <BarChart3 className="w-4 h-4 text-emerald-600" />
-                  Revenue by Registration Category
+                  Revenue by Stream & Payment Type
                 </h3>
-                <RevenueChart appointments={filteredAppts} patients={patients} />
+                <RevenueChart 
+                  appointments={filteredAppts} 
+                  labTests={filteredLab}
+                  dispenses={filteredDispenses}
+                  patients={patients} 
+                />
               </div>
               
-              {/* Pie Chart & Cashflow Breakdown Component */}
+              {/* Dynamic Outflows Breakdown Component */}
               <div className="bg-white p-5 rounded-xl border border-stone-200 lg:col-span-2 space-y-4 shadow-xs">
-                <h3 className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <Landmark className="w-4 h-4 text-amber-600" />
-                  Branch Outflows Ledger Spends
-                </h3>
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <Landmark className="w-4 h-4 text-amber-600" />
+                    Branch Outflows Ledger Spends ({spendCategories.length} categories)
+                  </h3>
+                  <span className="text-xs font-bold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-100">
+                    Total: Ksh {totalExpenses.toLocaleString()}
+                  </span>
+                </div>
 
                 {totalExpenses === 0 ? (
                   <div className="h-44 flex flex-col items-center justify-center border border-dashed border-stone-200 rounded-lg bg-stone-50/60 p-4 text-center">
-                    <span className="text-stone-400 text-xs">No active expenses recorded on ledger.</span>
+                    <span className="text-stone-400 text-xs">No active expenses recorded on ledger for this period.</span>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {/* Ring Chart Simulation using Circular SVGs */}
+                    {/* Ring Chart using Circular SVG */}
                     <div className="flex justify-center py-2">
                       <svg width="120" height="120" viewBox="0 0 100 100" className="transform -rotate-90">
                         {/* Base Circle */}
@@ -1009,15 +1156,8 @@ export function AdminDashboard({
                           const c = 2 * Math.PI * r; // 251.3
                           let currentOffset = 0;
 
-                          const spendCategories = [
-                            { name: 'Electricity', amount: electricityExpenses, color: '#f59e0b' },
-                            { name: 'Water', amount: waterExpenses, color: '#0ea5e9' },
-                            { name: 'Security', amount: securityExpenses, color: '#6366f1' },
-                            { name: 'Other', amount: otherExpenses, color: '#10b981' }
-                          ].filter(cat => cat.amount > 0);
-
-                          return spendCategories.map((cat, i) => {
-                            const pct = cat.amount / totalExpenses;
+                          return spendCategories.map((cat) => {
+                            const pct = cat.amount / (totalExpenses || 1);
                             const dashArray = `${pct * c} ${c}`;
                             const strokeOffset = -currentOffset;
                             currentOffset += pct * c;
@@ -1042,64 +1182,27 @@ export function AdminDashboard({
                     </div>
 
                     {/* Spend Category Progress Meters */}
-                    <div className="space-y-2.5 text-xs text-stone-600">
-                      <div>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="flex items-center gap-1.5 font-semibold text-stone-700">
-                            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block shrink-0" />
-                            🔌 Electricity Power Tokens
-                          </span>
-                          <span className="font-bold text-stone-900">Ksh {electricityExpenses.toLocaleString()}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-stone-600">
+                      {spendCategories.map((cat) => (
+                        <div key={cat.name} className="p-2 bg-stone-50 rounded-lg border border-stone-100">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="flex items-center gap-1.5 font-semibold text-stone-700 truncate" title={cat.name}>
+                              <span className="w-2.5 h-2.5 rounded-full inline-block shrink-0" style={{ backgroundColor: cat.color }} />
+                              {cat.name}
+                            </span>
+                            <span className="font-bold text-stone-900 font-mono">Ksh {cat.amount.toLocaleString()}</span>
+                          </div>
+                          <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: `${(cat.amount / (totalExpenses || 1)) * 100}%`, backgroundColor: cat.color }} />
+                          </div>
                         </div>
-                        <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
-                          <div className="bg-amber-500 h-full" style={{ width: `${(electricityExpenses / (totalExpenses || 1)) * 100}%` }} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="flex items-center gap-1.5 font-semibold text-stone-700">
-                            <span className="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block shrink-0" />
-                            💧 Water & Utility Mains
-                          </span>
-                          <span className="font-bold text-stone-900">Ksh {waterExpenses.toLocaleString()}</span>
-                        </div>
-                        <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
-                          <div className="bg-sky-500 h-full" style={{ width: `${(waterExpenses / (totalExpenses || 1)) * 100}%` }} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="flex items-center gap-1.5 font-semibold text-stone-700">
-                            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block shrink-0" />
-                            🛡️ Guard Patrol & Security
-                          </span>
-                          <span className="font-bold text-stone-900">Ksh {securityExpenses.toLocaleString()}</span>
-                        </div>
-                        <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
-                          <div className="bg-indigo-500 h-full" style={{ width: `${(securityExpenses / (totalExpenses || 1)) * 100}%` }} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="flex items-center gap-1.5 font-semibold text-stone-700">
-                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shrink-0" />
-                            📦 Other Unscheduled Outflows
-                          </span>
-                          <span className="font-bold text-stone-900">Ksh {otherExpenses.toLocaleString()}</span>
-                        </div>
-                        <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
-                          <div className="bg-emerald-500 h-full" style={{ width: `${(otherExpenses / (totalExpenses || 1)) * 100}%` }} />
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Advanced SVG Daily Growth trend chart */}
+              {/* Advanced SVG Growth trend chart */}
               <div className="bg-white p-5 rounded-xl border border-stone-200 lg:col-span-2 space-y-4 shadow-xs">
                 <div className="flex flex-wrap justify-between items-center gap-2">
                   <h3 className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
@@ -1163,26 +1266,26 @@ export function AdminDashboard({
                 {/* Growth Analysis Summary list */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-center text-xs pt-1">
                   <div className="p-2 bg-stone-50 rounded-lg">
-                    <span className="text-[9px] text-stone-400 uppercase font-mono block">Average Daily Sales</span>
+                    <span className="text-[9px] text-stone-400 uppercase font-mono block">Period Mean Daily Intake</span>
                     <span className="font-bold text-stone-800">
-                      Ksh {Math.floor((totalCombinedRevenue || 1) / trendDates.length).toLocaleString()}
+                      Ksh {Math.floor((totalCombinedRevenue || 0) / (trendDates.length || 1)).toLocaleString()}
                     </span>
                   </div>
                   <div className="p-2 bg-stone-50 rounded-lg">
-                    <span className="text-[9px] text-stone-400 uppercase font-mono block">Max Growth Node</span>
+                    <span className="text-[9px] text-stone-400 uppercase font-mono block">Peak Daily Net</span>
                     <span className="font-bold text-emerald-700">
-                      Ksh {Math.max(...dailyMetrics.map(m => m.profit)).toLocaleString()}
+                      Ksh {Math.max(...dailyMetrics.map(m => m.profit), 0).toLocaleString()}
                     </span>
                   </div>
                   <div className="p-2 bg-stone-50 rounded-lg">
-                    <span className="text-[9px] text-stone-400 uppercase font-mono block">Expense Index Variance</span>
+                    <span className="text-[9px] text-stone-400 uppercase font-mono block">Mean Daily Outflow</span>
                     <span className="font-bold text-rose-600">
-                      Ksh {Math.floor((totalExpenses || 1) / trendDates.length).toLocaleString()}
+                      Ksh {Math.floor((totalExpenses || 0) / (trendDates.length || 1)).toLocaleString()}
                     </span>
                   </div>
                   <div className="p-2 bg-stone-50 rounded-lg">
-                    <span className="text-[9px] text-stone-400 uppercase font-mono block">EBITDA Indicator</span>
-                    <span className="font-bold text-indigo-700">Excellent (Stable)</span>
+                    <span className="text-[9px] text-stone-400 uppercase font-mono block">Net Margin Status</span>
+                    <span className="font-bold text-indigo-700">{profitMargin >= 20 ? 'Strong Surplus' : profitMargin >= 0 ? 'Balanced' : 'Deficit Outlay'}</span>
                   </div>
                 </div>
               </div>
@@ -1220,7 +1323,7 @@ export function AdminDashboard({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-100 text-stone-700">
-                    {expenses.map((exp) => (
+                    {filteredExpenses.map((exp) => (
                       <tr id={`expense-row-${exp.id}`} key={exp.id} className="hover:bg-stone-50/50">
                         <td className="py-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold border uppercase ${
@@ -1238,7 +1341,7 @@ export function AdminDashboard({
                         <td className="py-3.5 font-mono">{exp.date}</td>
                         <td className="py-3.5 max-w-[320px] truncate" title={exp.description}>{exp.description}</td>
                         <td className="py-3.5 text-stone-500 font-mono text-[10px]">{exp.recordedBy}</td>
-                        <td className="py-3.5 text-right font-bold text-stone-800">Ksh {exp.amount.toLocaleString()}</td>
+                        <td className="py-3.5 text-right font-bold text-stone-800 font-mono">Ksh {exp.amount.toLocaleString()}</td>
                         <td className="py-3.5 text-right">
                           <button
                             id={`btn-remove-expense-${exp.id}`}
@@ -1248,17 +1351,17 @@ export function AdminDashboard({
                                 alert('Expense record permanently purged.');
                               }
                             }}
-                            className="text-rose-600 hover:text-rose-900 font-mono text-[10px] font-bold transition-colors inline-flex items-center gap-0.5"
+                            className="text-rose-600 hover:text-rose-900 font-mono text-[10px] font-bold transition-colors inline-flex items-center gap-0.5 cursor-pointer"
                           >
                             <Trash className="w-3 h-3" /> Purge
                           </button>
                         </td>
                       </tr>
                     ))}
-                    {expenses.length === 0 && (
+                    {filteredExpenses.length === 0 && (
                       <tr>
                         <td colSpan={6} className="py-8 text-center text-stone-400 bg-stone-50/30 rounded-lg">
-                          No registered expenses on ledger sheet data. Click "Record Expense" to authorize operational outflows.
+                          No registered expenses found for the selected period. Click "Record Expense" to authorize operational outflows.
                         </td>
                       </tr>
                     )}

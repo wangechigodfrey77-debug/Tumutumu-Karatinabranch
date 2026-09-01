@@ -40,6 +40,8 @@ import {
   listenAppointments,
   listenExpenses,
   listenAuditLogs,
+  listenMasterInsurances,
+  saveMasterInsurance,
   saveAuditLog,
   saveWhitelistUser,
   removeWhitelistUser,
@@ -61,6 +63,7 @@ import {
 import { auth, secondaryAuth, googleProvider, setOAuthAccessToken, getOAuthAccessToken } from './firebase';
 import { signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, GoogleAuthProvider } from 'firebase/auth';
 import { WhitelistUser, Patient, LabTest, LabCatalogItem, MedicationDispense, PharmacyItem, DutyAllocation, LeaveRequest, Message, Appointment, MedicalRecord, Expense, AuditLog, PatientVitals } from './types';
+import { MasterInsurance } from './insuranceUtils';
 
 
 // Importing child modular workspaces
@@ -89,6 +92,7 @@ export default function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [masterInsurances, setMasterInsurances] = useState<MasterInsurance[]>([]);
 
   // Authenticated states
   const [currentUser, setCurrentUser] = useState<WhitelistUser | null>(null);
@@ -210,6 +214,7 @@ export default function App() {
       const unsubAppointments = listenAppointments(setAppointments, (err) => console.error("Appointments sync error: ", err));
       const unsubExpenses = listenExpenses(setExpenses, (err) => console.error("Expenses sync error: ", err));
       const unsubAuditLogs = listenAuditLogs(setAuditLogs, (err) => console.error("AuditLogs sync error: ", err));
+      const unsubMasterInsurances = listenMasterInsurances(setMasterInsurances, (err) => console.error("MasterInsurances sync error: ", err));
 
       return () => {
         unsubWhitelist();
@@ -224,6 +229,7 @@ export default function App() {
         unsubAppointments();
         unsubExpenses();
         unsubAuditLogs();
+        unsubMasterInsurances();
       };
     } else {
       console.log("No Firebase logged-in user detected.");
@@ -240,6 +246,7 @@ export default function App() {
       setAppointments([]);
       setExpenses([]);
       setAuditLogs([]);
+      setMasterInsurances([]);
     }
   }, [firebaseUser]);
 
@@ -1099,6 +1106,8 @@ export default function App() {
                 onAddLabTest={handleAddLabTest}
                 onUpdateLabTest={handleUpdateLabTest}
                 onDeletePatient={handleDeletePatient}
+                masterInsurances={masterInsurances}
+                onSaveMasterInsurance={saveMasterInsurance}
               />
             )}
 

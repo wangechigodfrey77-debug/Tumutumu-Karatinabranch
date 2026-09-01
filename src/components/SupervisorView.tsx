@@ -35,6 +35,7 @@ import {
   X
 } from 'lucide-react';
 import { Patient, Appointment, LabTest, MedicationDispense, PharmacyItem, Expense, DutyAllocation, LeaveRequest, UserRole } from '../types';
+import { normalizeInsuranceCompany } from '../insuranceUtils';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -247,22 +248,9 @@ export function SupervisorView({
     return stock.filter(item => item.stockQuantity <= (item.minThreshold || 10)).length;
   }, [stock]);
 
-  // C. Insurance Breakdown with REAL recorded patient revenues
+  // C. Insurance Breakdown with REAL recorded patient revenues and Master Normalization
   const insuranceBreakdown = useMemo(() => {
-    const map: Record<string, { count: number; realRevenue: number; patients: Patient[] }> = {
-      'NHIF / SHA': { count: 0, realRevenue: 0, patients: [] },
-      'Jubilee Insurance': { count: 0, realRevenue: 0, patients: [] },
-      'AAR Insurance': { count: 0, realRevenue: 0, patients: [] },
-      'Britam': { count: 0, realRevenue: 0, patients: [] },
-      'CIC Insurance': { count: 0, realRevenue: 0, patients: [] },
-      'APA Insurance': { count: 0, realRevenue: 0, patients: [] },
-      'First Assurance': { count: 0, realRevenue: 0, patients: [] },
-      'Madison Insurance': { count: 0, realRevenue: 0, patients: [] },
-      'UAP Old Mutual': { count: 0, realRevenue: 0, patients: [] },
-      'Minet Kenya': { count: 0, realRevenue: 0, patients: [] },
-      'Corporate / Employer Scheme': { count: 0, realRevenue: 0, patients: [] },
-      'Other Private Insurance': { count: 0, realRevenue: 0, patients: [] }
-    };
+    const map: Record<string, { count: number; realRevenue: number; patients: Patient[] }> = {};
 
     let totalInsured = 0;
     let totalCash = 0;
@@ -297,13 +285,13 @@ export function SupervisorView({
       if (p.paymentMode === 'Insurance') {
         totalInsured++;
         totalInsuredRevenue += pRev;
-        const company = p.insuranceCompany || 'NHIF / SHA';
-        if (!map[company]) {
-          map[company] = { count: 0, realRevenue: 0, patients: [] };
+        const canonicalCompany = normalizeInsuranceCompany(p.insuranceCompany);
+        if (!map[canonicalCompany]) {
+          map[canonicalCompany] = { count: 0, realRevenue: 0, patients: [] };
         }
-        map[company].count += 1;
-        map[company].realRevenue += pRev;
-        map[company].patients.push(p);
+        map[canonicalCompany].count += 1;
+        map[canonicalCompany].realRevenue += pRev;
+        map[canonicalCompany].patients.push(p);
       } else {
         totalCash++;
         totalCashRevenue += pRev;
@@ -317,23 +305,26 @@ export function SupervisorView({
         const amt = Number(a.billingAmount) || 0;
         if (a.paymentMode === 'Insurance') {
           totalInsuredRevenue += amt;
-          const company = a.insuranceCompany || 'NHIF / SHA';
-          if (!map[company]) {
-            map[company] = { count: 0, realRevenue: 0, patients: [] };
+          const canonicalCompany = normalizeInsuranceCompany(a.insuranceCompany);
+          if (!map[canonicalCompany]) {
+            map[canonicalCompany] = { count: 0, realRevenue: 0, patients: [] };
           }
-          map[company].realRevenue += amt;
+          map[canonicalCompany].realRevenue += amt;
         } else {
           totalCashRevenue += amt;
         }
       }
     });
 
-    const list: Array<{ company: string; count: number; realRevenue: number; patients: Patient[] }> = Object.entries(map).map(([company, data]) => ({
-      company,
-      count: data.count,
-      realRevenue: data.realRevenue,
-      patients: data.patients
-    }));
+    // Sort list by patient volume descending, then revenue descending
+    const list: Array<{ company: string; count: number; realRevenue: number; patients: Patient[] }> = Object.entries(map)
+      .map(([company, data]) => ({
+        company,
+        count: data.count,
+        realRevenue: data.realRevenue,
+        patients: data.patients
+      }))
+      .sort((a, b) => b.count - a.count || b.realRevenue - a.realRevenue);
 
     return {
       map,
@@ -1412,6 +1403,14 @@ export function SupervisorView({
                       </td>
                     </tr>
                   ))}
+
+                  {insuranceBreakdown.list.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="p-4 text-center text-stone-400 italic">
+                        No insurance claims recorded in this selected period.
+                      </td>
+                    </tr>
+                  )}
 
                   {/* Cash Row */}
                   <tr className="bg-amber-50/30">

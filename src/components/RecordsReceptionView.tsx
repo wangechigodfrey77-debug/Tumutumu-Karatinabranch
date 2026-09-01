@@ -4,8 +4,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Search, Stethoscope, FileText, Calendar, DollarSign, History, ShieldAlert, Download, Heart, Pill, Film, BarChart3, ShieldCheck, FileSpreadsheet, Trash2, Edit3, AlertTriangle, CheckCircle2, X } from 'lucide-react';
+import { UserPlus, Search, Stethoscope, FileText, Calendar, DollarSign, History, ShieldAlert, Download, Heart, Pill, Film, BarChart3, ShieldCheck, FileSpreadsheet, Trash2, Edit3, AlertTriangle, CheckCircle2, X, Plus, Shield } from 'lucide-react';
 import { Patient, MedicalRecord, Appointment, UserRole, PharmacyItem, LabTest, LabCatalogItem, ImagingRequestItem } from '../types';
+import { MasterInsurance, getFullMasterInsuranceList, saveCustomInsuranceProvider, normalizeInsuranceCompany } from '../insuranceUtils';
 import { ImagingModal } from './ImagingModal';
 import { MonthlyReportModal } from './MonthlyReportModal';
 import { jsPDF } from 'jspdf';
@@ -28,6 +29,8 @@ interface RecordsReceptionViewProps {
   onAddLabTest?: (test: LabTest) => void;
   onUpdateLabTest?: (test: LabTest) => void;
   onDeletePatient?: (patientId: string) => void;
+  masterInsurances?: MasterInsurance[];
+  onSaveMasterInsurance?: (item: MasterInsurance) => void;
 }
 
 export function RecordsReceptionView({
@@ -47,6 +50,8 @@ export function RecordsReceptionView({
   onAddLabTest,
   onUpdateLabTest,
   onDeletePatient,
+  masterInsurances,
+  onSaveMasterInsurance,
 }: RecordsReceptionViewProps) {
   const [globalSearch, setGlobalSearch] = useState('');
 
@@ -80,6 +85,76 @@ export function RecordsReceptionView({
   const [editAgeUnit, setEditAgeUnit] = useState<'Years' | 'Months'>('Years');
   const [editGender, setEditGender] = useState<'Male' | 'Female' | 'Other'>('Male');
 
+  // Master Insurance List & Quick Add State
+  const [masterInsuranceList, setMasterInsuranceList] = useState<MasterInsurance[]>(() => {
+    return masterInsurances && masterInsurances.length > 0 ? masterInsurances : getFullMasterInsuranceList();
+  });
+  const [isAddProviderModalOpen, setIsAddProviderModalOpen] = useState<boolean>(false);
+  const [newCustomProviderName, setNewCustomProviderName] = useState<string>('');
+  const [newCustomProviderCategory, setNewCustomProviderCategory] = useState<'Government / National' | 'Private Insurance' | 'Corporate / Staff' | 'Micro-Insurance / NGO'>('Private Insurance');
+  const [providerModalTarget, setProviderModalTarget] = useState<'registration' | 'edit'>('registration');
+
+  useEffect(() => {
+    if (masterInsurances && masterInsurances.length > 0) {
+      const merged = getFullMasterInsuranceList();
+      const map = new Map<string, MasterInsurance>();
+      merged.forEach(m => map.set(m.name.toLowerCase(), m));
+      masterInsurances.forEach(m => map.set(m.name.toLowerCase(), m));
+      setMasterInsuranceList(Array.from(map.values()));
+    }
+  }, [masterInsurances]);
+
+  // Group master insurances by scheme category
+  const groupedInsurances = React.useMemo(() => {
+    const groups: Record<string, MasterInsurance[]> = {
+      'Government / National Schemes': [],
+      'Private Health Insurers': [],
+      'Corporate & Staff Schemes': [],
+      'Micro-Insurance & Community': [],
+      'Custom Registered Schemes': []
+    };
+
+    masterInsuranceList.forEach(item => {
+      if (item.isCustom) {
+        groups['Custom Registered Schemes'].push(item);
+      } else if (item.category === 'Government / National') {
+        groups['Government / National Schemes'].push(item);
+      } else if (item.category === 'Corporate / Staff') {
+        groups['Corporate & Staff Schemes'].push(item);
+      } else if (item.category === 'Micro-Insurance / NGO') {
+        groups['Micro-Insurance & Community'].push(item);
+      } else {
+        groups['Private Health Insurers'].push(item);
+      }
+    });
+
+    return groups;
+  }, [masterInsuranceList]);
+
+  const handleAddNewProvider = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newCustomProviderName.trim();
+    if (!trimmed) return;
+
+    const saved = saveCustomInsuranceProvider(trimmed, newCustomProviderCategory);
+    if (onSaveMasterInsurance) {
+      onSaveMasterInsurance(saved);
+    }
+
+    const updated = getFullMasterInsuranceList();
+    setMasterInsuranceList(updated);
+
+    if (providerModalTarget === 'registration') {
+      setNewInsuranceCompany(saved.name);
+    } else {
+      setEditInsuranceCompany(saved.name);
+    }
+
+    setToastMessage(`Master Insurance list updated: "${saved.name}" is now available.`);
+    setNewCustomProviderName('');
+    setIsAddProviderModalOpen(false);
+  };
+
   const handleOpenEditPatient = (pat: Patient) => {
     setPatientToEdit(pat);
     setEditName(pat.name || '');
@@ -90,7 +165,7 @@ export function RecordsReceptionView({
     setEditCategory((pat.category as any) || 'General Consultation');
     setEditSubCategory((pat.consultantSubCategory as any) || 'Surgical');
     setEditPaymentMode((pat.paymentMode as any) || 'Cash');
-    setEditInsuranceCompany(pat.insuranceCompany || 'NHIF / SHA');
+    setEditInsuranceCompany(pat.insuranceCompany ? normalizeInsuranceCompany(pat.insuranceCompany) : 'NHIF / SHA');
   };
 
   const handleSaveEditPatient = () => {
@@ -105,7 +180,7 @@ export function RecordsReceptionView({
       category: editCategory,
       consultantSubCategory: editCategory === 'Consultant Clinic' ? editSubCategory : undefined,
       paymentMode: editPaymentMode,
-      insuranceCompany: editPaymentMode === 'Insurance' ? editInsuranceCompany : undefined,
+      insuranceCompany: editPaymentMode === 'Insurance' ? normalizeInsuranceCompany(editInsuranceCompany) : undefined,
     };
     onAddPatient(updatedPat);
     if (selectedCardPatient?.id === patientToEdit.id) {
@@ -402,7 +477,7 @@ export function RecordsReceptionView({
       registeredBy: userEmail,
       medicalHistory: [],
       paymentMode: newPaymentMode,
-      insuranceCompany: newPaymentMode === 'Insurance' ? newInsuranceCompany.trim() : undefined,
+      insuranceCompany: newPaymentMode === 'Insurance' ? normalizeInsuranceCompany(newInsuranceCompany) : undefined,
       isWalkIn: isWalkIn,
       walkInTag: isWalkIn ? walkInTag : undefined,
     };
@@ -621,7 +696,7 @@ export function RecordsReceptionView({
         ? 'General Consultation' 
         : `Consultant (${p.consultantSubCategory || 'N/A'})`;
       const payment = p.paymentMode === 'Insurance' 
-        ? `Insurance (${p.insuranceCompany || 'N/A'})`
+        ? `Insurance (${normalizeInsuranceCompany(p.insuranceCompany)})`
         : p.paymentMode === 'Cash' 
           ? 'Cash' 
           : 'N/A';
@@ -1092,7 +1167,11 @@ export function RecordsReceptionView({
                   onChange={(e) => {
                     const val = e.target.value as 'Cash' | 'Insurance';
                     setNewPaymentMode(val);
-                    if (val === 'Cash') setNewInsuranceCompany('');
+                    if (val === 'Cash') {
+                      setNewInsuranceCompany('');
+                    } else if (!newInsuranceCompany) {
+                      setNewInsuranceCompany('NHIF / SHA');
+                    }
                   }}
                   className="w-full bg-stone-50 border border-stone-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden"
                 >
@@ -1102,22 +1181,59 @@ export function RecordsReceptionView({
               </div>
 
               {newPaymentMode === 'Insurance' && (
-                <div id="insurance-company-container" className="animate-in fade-in slide-in-from-top-1 duration-200 mt-2 space-y-3 bg-emerald-50/20 p-3 border border-emerald-100 rounded-lg">
+                <div id="insurance-company-container" className="animate-in fade-in slide-in-from-top-1 duration-200 mt-2 space-y-3 bg-purple-50/40 p-3 border border-purple-200 rounded-lg">
                   <div>
-                    <label id="input-patient-insurance-company" className="block text-xs font-semibold text-emerald-800 mb-1">Insurance Company Name</label>
-                    <input
+                    <div className="flex items-center justify-between mb-1">
+                      <label id="input-patient-insurance-company" className="block text-xs font-bold text-purple-950">
+                        Master Insurance Scheme
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProviderModalTarget('registration');
+                          setIsAddProviderModalOpen(true);
+                        }}
+                        className="text-[10px] font-bold text-purple-700 hover:text-purple-900 bg-purple-100 hover:bg-purple-200 px-2 py-0.5 rounded transition-colors flex items-center gap-1 shadow-2xs"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Add Provider
+                      </button>
+                    </div>
+
+                    <select
                       id="reg-patient-insurance-company"
-                      type="text"
                       required
-                      placeholder="e.g. NHIF / AAR / Jubilee"
-                      value={newInsuranceCompany}
-                      onChange={(e) => setNewInsuranceCompany(e.target.value)}
-                      className="w-full bg-white border border-emerald-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-medium"
-                    />
+                      value={newInsuranceCompany || 'NHIF / SHA'}
+                      onChange={(e) => {
+                        if (e.target.value === '__add_new__') {
+                          setProviderModalTarget('registration');
+                          setIsAddProviderModalOpen(true);
+                        } else {
+                          setNewInsuranceCompany(e.target.value);
+                        }
+                      }}
+                      className="w-full bg-white border border-purple-300 rounded-lg p-2 text-xs font-semibold text-purple-950 focus:ring-1 focus:ring-purple-500 outline-hidden"
+                    >
+                      <option value="" disabled>-- Select Master Insurance Provider --</option>
+                      {(Object.entries(groupedInsurances) as [string, MasterInsurance[]][]).map(([grpName, items]) => (
+                        items.length > 0 && (
+                          <optgroup key={grpName} label={grpName}>
+                            {items.map(item => (
+                              <option key={item.id} value={item.name}>
+                                {item.name}
+                              </option>
+                            ))}
+                          </optgroup>
+                        )
+                      ))}
+                      <optgroup label="Actions">
+                        <option value="__add_new__">➕ Add New Insurance Provider to Master List...</option>
+                      </optgroup>
+                    </select>
                   </div>
                   <div>
-                    <label id="input-patient-insurance-price" className="block text-xs font-semibold text-emerald-800 mb-1">
-                      Custom Insurance Consultation Price (Ksh)
+                    <label id="input-patient-insurance-price" className="block text-xs font-semibold text-purple-900 mb-1">
+                      Insurance Consultation Rate (Ksh)
                     </label>
                     <input
                       id="reg-patient-insurance-price"
@@ -1126,10 +1242,10 @@ export function RecordsReceptionView({
                       min={0}
                       value={insuranceConsultationPrice}
                       onChange={(e) => setInsuranceConsultationPrice(e.target.value === '' ? 0 : Number(e.target.value))}
-                      className="w-full bg-white border border-emerald-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden font-mono font-bold text-emerald-900"
+                      className="w-full bg-white border border-purple-200 rounded-lg p-2 text-xs focus:ring-1 focus:ring-purple-500 outline-hidden font-mono font-bold text-purple-950"
                     />
                     <span className="text-[10px] text-stone-500 block mt-1 leading-normal">
-                      Specify cover rate for this insurance type (e.g. general vs premium card covers vary).
+                      Standard billed consultation / claim rate for this insurance scheme.
                     </span>
                   </div>
                 </div>
@@ -1304,7 +1420,7 @@ export function RecordsReceptionView({
                           </span>
                           {p.paymentMode === 'Insurance' ? (
                             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-purple-50 text-purple-700 border border-purple-100 italic">
-                              🛡️ Insurance: {p.insuranceCompany}
+                              🛡️ Insurance: {normalizeInsuranceCompany(p.insuranceCompany)}
                             </span>
                           ) : p.paymentMode === 'Cash' ? (
                             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-amber-50 text-amber-500 border border-amber-100">
@@ -1444,7 +1560,7 @@ export function RecordsReceptionView({
                         <span className="text-stone-400">Payment Coverage:</span>
                         {curSelectedPatient.paymentMode === 'Insurance' ? (
                           <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-700 px-2 py-0.5 rounded text-[10px] font-bold border border-purple-100 font-sans italic">
-                            🛡️ Insurance Cover ({curSelectedPatient.insuranceCompany})
+                            🛡️ Insurance Cover ({normalizeInsuranceCompany(curSelectedPatient.insuranceCompany)})
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold border border-amber-100 font-sans">
@@ -2390,7 +2506,7 @@ export function RecordsReceptionView({
                           invoiceAmount: record.invoiceAmount || 0,
                           doctorName: record.doctorName,
                           paymentMode: patient.paymentMode || 'Cash',
-                          insuranceCompany: patient.insuranceCompany
+                          insuranceCompany: normalizeInsuranceCompany(patient.insuranceCompany)
                         }));
                     }).sort((a, b) => b.date.localeCompare(a.date));
 
@@ -2614,7 +2730,7 @@ export function RecordsReceptionView({
                       {selectedCardPatient.gender} • {selectedCardPatient.age} {selectedCardPatient.ageUnit === 'Months' ? 'months' : 'years'} • Phone: {selectedCardPatient.phone}
                     </p>
                     <p className="text-[10px] text-emerald-300 font-semibold mt-2">
-                      Coverage: {selectedCardPatient.paymentMode || 'Cash'} {selectedCardPatient.insuranceCompany ? `(${selectedCardPatient.insuranceCompany})` : ''}
+                      Coverage: {selectedCardPatient.paymentMode || 'Cash'} {selectedCardPatient.insuranceCompany ? `(${normalizeInsuranceCompany(selectedCardPatient.insuranceCompany)})` : ''}
                     </p>
                   </div>
                   <div className="text-right">
@@ -2822,7 +2938,7 @@ export function RecordsReceptionView({
                 <div className="flex justify-between items-center text-[11px]">
                   <span className="text-stone-400 font-sans">Payment Mode:</span>
                   <span className="font-semibold text-purple-800 font-sans">
-                    {patientToDelete.paymentMode || 'Cash'} {patientToDelete.insuranceCompany ? `(${patientToDelete.insuranceCompany})` : ''}
+                    {patientToDelete.paymentMode || 'Cash'} {patientToDelete.insuranceCompany ? `(${normalizeInsuranceCompany(patientToDelete.insuranceCompany)})` : ''}
                   </span>
                 </div>
               </div>
@@ -3046,27 +3162,50 @@ export function RecordsReceptionView({
 
                 {editPaymentMode === 'Insurance' && (
                   <div className="p-3 bg-purple-50/60 rounded-lg border border-purple-200">
-                    <label className="block text-[11px] font-bold text-purple-950 mb-1">
-                      Select Insurance Scheme / Provider
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-[11px] font-bold text-purple-950">
+                        Master Insurance Scheme / Provider
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProviderModalTarget('edit');
+                          setIsAddProviderModalOpen(true);
+                        }}
+                        className="text-[10px] font-bold text-purple-700 hover:text-purple-900 bg-purple-100 hover:bg-purple-200 px-2 py-0.5 rounded transition-colors flex items-center gap-1 shadow-2xs"
+                      >
+                        <Plus className="w-2.5 h-2.5" />
+                        Add Provider
+                      </button>
+                    </div>
                     <select
                       id="select-edit-insurance-company"
                       value={editInsuranceCompany}
-                      onChange={(e) => setEditInsuranceCompany(e.target.value)}
+                      onChange={(e) => {
+                        if (e.target.value === '__add_new__') {
+                          setProviderModalTarget('edit');
+                          setIsAddProviderModalOpen(true);
+                        } else {
+                          setEditInsuranceCompany(e.target.value);
+                        }
+                      }}
                       className="w-full bg-white border border-purple-300 rounded-lg p-2 text-xs font-semibold text-purple-900 focus:ring-2 focus:ring-purple-500 outline-hidden"
                     >
-                      <option value="NHIF / SHA">NHIF / SHA (Social Health Authority)</option>
-                      <option value="Jubilee Insurance">Jubilee Insurance</option>
-                      <option value="AAR Insurance">AAR Insurance</option>
-                      <option value="Britam">Britam</option>
-                      <option value="CIC Insurance">CIC Insurance</option>
-                      <option value="APA Insurance">APA Insurance</option>
-                      <option value="First Assurance">First Assurance</option>
-                      <option value="Madison Insurance">Madison Insurance</option>
-                      <option value="UAP Old Mutual">UAP Old Mutual</option>
-                      <option value="Minet Kenya">Minet Kenya</option>
-                      <option value="Corporate / Employer Scheme">Corporate / Employer Scheme</option>
-                      <option value="Other Private Insurance">Other Private Insurance</option>
+                      <option value="" disabled>-- Select Master Insurance Scheme --</option>
+                      {(Object.entries(groupedInsurances) as [string, MasterInsurance[]][]).map(([grpName, items]) => (
+                        items.length > 0 && (
+                          <optgroup key={grpName} label={grpName}>
+                            {items.map(item => (
+                              <option key={item.id} value={item.name}>
+                                {item.name}
+                              </option>
+                            ))}
+                          </optgroup>
+                        )
+                      ))}
+                      <optgroup label="Actions">
+                        <option value="__add_new__">➕ Add New Insurance Provider to Master List...</option>
+                      </optgroup>
                     </select>
                   </div>
                 )}
@@ -3092,6 +3231,89 @@ export function RecordsReceptionView({
                 Save Changes
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Master Insurance Provider Modal */}
+      {isAddProviderModalOpen && (
+        <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden border border-purple-200 animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-purple-900 text-white px-5 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-purple-300" />
+                <div>
+                  <h3 className="text-sm font-bold">Add Insurance Provider</h3>
+                  <p className="text-[11px] text-purple-200">Expand Hospital Master Insurance Registry</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddProviderModalOpen(false)}
+                className="text-purple-300 hover:text-white transition-colors p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddNewProvider} className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-stone-700 mb-1">
+                  Provider / Scheme Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Sanlam Health, Equity Afia, Minet Corporate"
+                  value={newCustomProviderName}
+                  onChange={(e) => setNewCustomProviderName(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2.5 text-xs font-medium text-stone-900 focus:bg-white focus:ring-2 focus:ring-purple-500 outline-hidden"
+                />
+                <span className="text-[10px] text-stone-500 block mt-1">
+                  This canonical name will appear in dropdowns, executive overviews, billing reports, and PDF audits.
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-stone-700 mb-1">
+                  Scheme Category *
+                </label>
+                <select
+                  value={newCustomProviderCategory}
+                  onChange={(e) => setNewCustomProviderCategory(e.target.value as any)}
+                  className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2.5 text-xs font-semibold text-stone-900 focus:bg-white focus:ring-2 focus:ring-purple-500 outline-hidden"
+                >
+                  <option value="Private Insurance">Private Health Insurance Company</option>
+                  <option value="Corporate / Staff">Corporate / Employer Scheme / Staff</option>
+                  <option value="Government / National">Government / National Public Scheme</option>
+                  <option value="Micro-Insurance / NGO">Micro-Insurance / NGO / Community Fund</option>
+                </select>
+              </div>
+
+              <div className="bg-purple-50 p-3 rounded-lg border border-purple-100 flex items-start gap-2">
+                <ShieldCheck className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
+                <p className="text-[11px] text-purple-900 leading-relaxed">
+                  Adding this provider automatically persists it across sessions and syncs it into the Hospital Master Insurance Registry.
+                </p>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddProviderModalOpen(false)}
+                  className="px-3 py-2 text-xs font-semibold text-stone-600 hover:text-stone-800 hover:bg-stone-100 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Save to Master List
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

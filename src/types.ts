@@ -105,6 +105,9 @@ export interface LabTest {
   fee: number;
   billingStatus?: 'Unpaid' | 'Paid' | 'Completed' | 'Dispensed';
   recordId?: string;
+  requestedAt?: string;
+  completedAt?: string;
+  createdAt?: string;
 }
 
 export interface MedicationDispense {
@@ -118,6 +121,8 @@ export interface MedicationDispense {
   pricePerUnit: number;
   totalCost: number;
   isArchived?: boolean;
+  dispensedAt?: string;
+  createdAt?: string;
 }
 
 export interface PharmacyItem {
@@ -174,6 +179,9 @@ export interface Appointment {
   status: 'Scheduled' | 'Completed' | 'Cancelled';
   billingStatus: 'Unpaid' | 'Paid';
   billingAmount: number;
+  paymentMode?: 'Cash' | 'Insurance';
+  insuranceCompany?: string;
+  createdAt?: string;
 }
 
 export interface Expense {

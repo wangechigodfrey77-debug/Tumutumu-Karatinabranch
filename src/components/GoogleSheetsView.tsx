@@ -176,11 +176,11 @@ export function GoogleSheetsView({
       // A. Executive Overview sheet
       if (syncOverview) {
         setSyncMessage('Compiling financial and capacity performance charts...');
-        const apptRev = appointments.filter(a => a.billingStatus === 'Paid').reduce((sum, a) => sum + Number(a.billingAmount || 0), 0);
+        const apptRev = appointments.filter(a => a.billingStatus === 'Paid' || a.status === 'Completed' || (Number(a.billingAmount) || 0) > 0).reduce((sum, a) => sum + Number(a.billingAmount || 0), 0);
         const labRev = labTests.reduce((sum, l) => sum + Number(l.fee || 0), 0);
         const pharmaRev = dispenses.reduce((sum, d) => sum + Number(d.totalCost || 0), 0);
         const totalRev = apptRev + labRev + pharmaRev;
-        const totalExp = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+        const totalExp = expenses.reduce((sum, exp) => sum + Number(exp.amount || 0), 0);
         const netProfit = totalRev - totalExp;
 
         updateData.push({

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, TrendingUp, CalendarDays, Upload, FileSpreadsheet, FileText, Check, Loader2, Search, X, Download, Stethoscope, Lock, Shield, Clock } from 'lucide-react';
+import { Pill, RotateCcw, Plus, ShoppingBag, PackageOpen, AlertTriangle, TrendingUp, CalendarDays, Upload, FileSpreadsheet, FileText, Check, Loader2, Search, X, Download, Stethoscope, Lock, Shield, Clock, Trash2 } from 'lucide-react';
 import { MedicationDispense, PharmacyItem, Patient, MedicalRecord } from '../types';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -12,6 +12,7 @@ import { archiveDailyPharmacyData, getSystemConfigLastReset, saveSystemConfigLas
 import { rawJulyDispenses } from '../extractedJulyDispensesData';
 import { rawJuneDispenses } from '../extractedJuneDispensesData';
 import { rawExtractedDispenses } from '../extractedDispensesData';
+import { rawAugustDispenses } from '../extractedAugustDispensesData';
 
 interface PharmacyViewProps {
   stock: PharmacyItem[];
@@ -839,6 +840,49 @@ export function PharmacyView({
     }
   };
 
+  const handleUploadAugust = async () => {
+    if (onBulkDispenseMedication) {
+      setIsParsingDispenses(true);
+      try {
+        await clearMonthDispenses('2026-08');
+        await onBulkDispenseMedication(rawAugustDispenses);
+        setDispenseUploadFeedback({
+          success: true,
+          message: `Successfully uploaded ${rawAugustDispenses.length} August 2026 prescription records!`
+        });
+        setPeriodFilter('search-month');
+        setSearchMonthVal('2026-08');
+      } catch (err: any) {
+        setDispenseUploadFeedback({
+          success: false,
+          message: `Failed to upload August prescriptions: ${err?.message || err}`
+        });
+      } finally {
+        setIsParsingDispenses(false);
+      }
+    }
+  };
+
+  const handleDeleteAugust = async () => {
+    if (window.confirm("Are you sure you want to delete all August 2026 pharmacy data/dispenses from the database?")) {
+      setIsParsingDispenses(true);
+      try {
+        await clearMonthDispenses('2026-08');
+        setDispenseUploadFeedback({
+          success: true,
+          message: "Successfully deleted previous August 2026 pharmacy data/dispenses from the database."
+        });
+      } catch (err: any) {
+        setDispenseUploadFeedback({
+          success: false,
+          message: `Failed to delete August 2026 pharmacy data: ${err?.message || err}`
+        });
+      } finally {
+        setIsParsingDispenses(false);
+      }
+    }
+  };
+
   const handleUploadJune = async () => {
     if (onBulkDispenseMedication) {
       setIsParsingDispenses(true);
@@ -968,68 +1012,208 @@ export function PharmacyView({
                  }
              }
           } else {
-             // CSV parsing logic
-             const parsedRows = parseCSVData(rawText);
+             // Smart and robust CSV parsing logic
+             const parseCSVLine = (text: string) => {
+               const fields: string[] = [];
+               let current = '';
+               let inQuotes = false;
+               for (let i = 0; i < text.length; i++) {
+                 const char = text[i];
+                 if (char === '"') {
+                   inQuotes = !inQuotes;
+                 } else if (char === ',' && !inQuotes) {
+                   fields.push(current.trim());
+                   current = '';
+                 } else {
+                   current += char;
+                 }
+               }
+               fields.push(current.trim());
+               return fields;
+             };
 
-             if (parsedRows.length === 0) {
+             const lines = rawText.split(/\r?\n/);
+             if (lines.length === 0) {
                setDispenseUploadFeedback({ success: false, message: 'Vacant or incorrectly formatted CSV.' });
                setIsParsingDispenses(false);
                return;
              }
 
-             parsedRows.forEach((row, idx) => {
-               const findKey = (keywords: string[], excludeWords: string[] = []) => {
-                 return Object.keys(row).find(k => {
-                   const lk = k.toLowerCase();
-                   const hasMatch = keywords.some(kw => lk.includes(kw));
-                   const hasExclusion = excludeWords.some(ew => lk.includes(ew));
-                   return hasMatch && !hasExclusion;
-                 });
-               };
+             // Detect if there are headers
+             const firstLine = lines[0].trim();
+             const hasHeaders = firstLine.toLowerCase().includes('patient_no') || 
+                                firstLine.toLowerCase().includes('prescription_no') || 
+                                firstLine.toLowerCase().includes('date_prescribed') ||
+                                firstLine.toLowerCase().includes('medication') ||
+                                firstLine.toLowerCase().includes('qty') ||
+                                firstLine.toLowerCase().includes('quantity');
 
-               const medNameKey = findKey(['medication', 'item', 'product', 'drug']);
-               const patNameKey = findKey(['patient name', 'patient', 'name'], ['medication', 'item', 'product', 'drug']);
-               const patIdKey = findKey(['patient id', 'id', 'op number', 'ref', 'opno']);
-               const qtyKey = findKey(['qty', 'quantity', 'amount']);
-               const priceKey = findKey(['price', 'unit cost', 'cost']);
-               const dateKey = findKey(['date', 'time']);
-               const byKey = findKey(['dispensed by', 'pharmacist', 'officer']);
+             const startIdx = hasHeaders ? 1 : 0;
+             const defaultDate = file.name.match(/aug/i) ? '2026-08-31' : '2026-06-15';
 
-               const foundMedName = medNameKey ? row[medNameKey] : undefined;
-               const foundPatName = patNameKey ? row[patNameKey] : 'Unknown Patient';
-               const foundPatId = patIdKey ? row[patIdKey] : `PT-CSV-${Math.floor(1000 + Math.random() * 9000)}`;
-               const foundQty = qtyKey ? parseFloat(row[qtyKey].replace(/[^0-9.]/g, '')) : 1;
-               const foundPrice = priceKey ? parseFloat(row[priceKey].replace(/[^0-9.]/g, '')) : 0;
-               let foundDate = dateKey ? row[dateKey] : '2026-06-15';
-               const foundBy = byKey ? row[byKey] : dispensingOfficer;
-               
-               if (foundDate && !foundDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                 try {
+             for (let idx = startIdx; idx < lines.length; idx++) {
+               const line = lines[idx].trim();
+               if (!line) continue;
+
+               const fields = parseCSVLine(line);
+               if (fields.length === 10) {
+                 const patientId = fields[0].replace(/^["']|["']$/g, '').trim();
+                 const patientName = fields[1].replace(/^["']|["']$/g, '').trim();
+                 const prescriptionNo = fields[2].replace(/^["']|["']$/g, '').trim();
+                 const datePrescribed = fields[3].replace(/^["']|["']$/g, '').trim();
+                 const medicationName = fields[4].replace(/^["']|["']$/g, '').trim();
+                 const quantity = parseFloat(fields[5].replace(/[^0-9.]/g, '')) || 0;
+                 const doctor = fields[6].replace(/^["']|["']$/g, '').trim();
+                 const price = parseFloat(fields[7].replace(/[^0-9.]/g, '')) || 0;
+                 const totalCost = parseFloat(fields[8].replace(/[^0-9.]/g, '')) || 0;
+
+                 let foundDate = datePrescribed;
+                 if (foundDate && !foundDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                   try {
                      const d = new Date(foundDate);
                      if (isNaN(d.getTime())) throw new Error();
                      foundDate = d.toISOString().split('T')[0];
-                 } catch (e) {
-                     foundDate = '2026-06-15';
+                   } catch (e) {
+                     foundDate = defaultDate;
+                   }
+                 }
+
+                 parsedDispenses.push({
+                   id: `DSP-CSV-${Date.now()}-${idx}-${Math.floor(Math.random() * 1000)}`,
+                   patientId,
+                   patientName,
+                   medicationName,
+                   dispensedBy: doctor || dispensingOfficer,
+                   quantity,
+                   pricePerUnit: price,
+                   totalCost: totalCost || (price * quantity),
+                   dispenseDate: foundDate
+                 });
+                 addedCount++;
+               } else if (fields.length === 7) {
+                 // Walk-in layout
+                 const patientId = fields[0].replace(/^["']|["']$/g, '').trim();
+                 const medicationName = fields[1].replace(/^["']|["']$/g, '').trim();
+                 const quantity = parseFloat(fields[2].replace(/[^0-9.]/g, '')) || 0;
+                 const doctor = fields[3].replace(/^["']|["']$/g, '').trim();
+                 const price = parseFloat(fields[4].replace(/[^0-9.]/g, '')) || 0;
+                 const totalCost = parseFloat(fields[5].replace(/[^0-9.]/g, '')) || 0;
+
+                 parsedDispenses.push({
+                   id: `DSP-CSV-${Date.now()}-${idx}-${Math.floor(Math.random() * 1000)}`,
+                   patientId,
+                   patientName: 'Walk-In Patient',
+                   medicationName,
+                   dispensedBy: doctor || dispensingOfficer,
+                   quantity,
+                   pricePerUnit: price,
+                   totalCost: totalCost || (price * quantity),
+                   dispenseDate: defaultDate
+                 });
+                 addedCount++;
+               } else if (fields.length === 9) {
+                 // Liam Maina Macharia layout
+                 const patientId = fields[0].replace(/^["']|["']$/g, '').trim();
+                 const patientName = fields[1].replace(/^["']|["']$/g, '').trim();
+                 const prescriptionNo = fields[2].replace(/^["']|["']$/g, '').trim();
+                 const datePrescribed = fields[3].replace(/^["']|["']$/g, '').trim();
+                 let medicationName = fields[4].replace(/^["']|["']$/g, '').trim();
+                 const doctor = fields[5].replace(/^["']|["']$/g, '').trim();
+                 const price = parseFloat(fields[6].replace(/[^0-9.]/g, '')) || 0;
+                 const totalCost = parseFloat(fields[7].replace(/[^0-9.]/g, '')) || 0;
+
+                 let qty = 1;
+                 const qtyMatch = medicationName.match(/\s+(\d+(?:\.\d+)?)$/);
+                 if (qtyMatch) {
+                   qty = parseFloat(qtyMatch[1]);
+                   medicationName = medicationName.replace(/\s+(\d+(?:\.\d+)?)$/, '').trim();
+                 } else {
+                   qty = price > 0 ? totalCost / price : 1;
+                 }
+
+                 let foundDate = datePrescribed;
+                 if (foundDate && !foundDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                   try {
+                     const d = new Date(foundDate);
+                     if (isNaN(d.getTime())) throw new Error();
+                     foundDate = d.toISOString().split('T')[0];
+                   } catch (e) {
+                     foundDate = defaultDate;
+                   }
+                 }
+
+                 parsedDispenses.push({
+                   id: `DSP-CSV-${Date.now()}-${idx}-${Math.floor(Math.random() * 1000)}`,
+                   patientId,
+                   patientName,
+                   medicationName,
+                   dispensedBy: doctor || dispensingOfficer,
+                   quantity: qty,
+                   pricePerUnit: price,
+                   totalCost: totalCost || (price * qty),
+                   dispenseDate: foundDate
+                 });
+                 addedCount++;
+               } else {
+                 // Fallback key-value heuristic for arbitrary CSV structures
+                 const headers = hasHeaders ? lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, '').toLowerCase()) : [];
+                 if (headers.length > 0) {
+                   const row: Record<string, string> = {};
+                   headers.forEach((header, index) => {
+                     row[header] = fields[index] || '';
+                   });
+                   const findKey = (keywords: string[], excludeWords: string[] = []) => {
+                     return Object.keys(row).find(k => {
+                       const lk = k.toLowerCase();
+                       const hasMatch = keywords.some(kw => lk.includes(kw));
+                       const hasExclusion = excludeWords.some(ew => lk.includes(ew));
+                       return hasMatch && !hasExclusion;
+                     });
+                   };
+
+                   const medNameKey = findKey(['medication', 'item', 'product', 'drug']);
+                   const patNameKey = findKey(['patient name', 'patient', 'name'], ['medication', 'item', 'product', 'drug']);
+                   const patIdKey = findKey(['patient id', 'id', 'op number', 'ref', 'opno']);
+                   const qtyKey = findKey(['qty', 'quantity', 'amount']);
+                   const priceKey = findKey(['price', 'unit cost', 'cost']);
+                   const dateKey = findKey(['date', 'time']);
+                   const byKey = findKey(['dispensed by', 'pharmacist', 'officer']);
+
+                   const foundMedName = medNameKey ? row[medNameKey] : undefined;
+                   const foundPatName = patNameKey ? row[patNameKey] : 'Unknown Patient';
+                   const foundPatId = patIdKey ? row[patIdKey] : `PT-CSV-${Math.floor(1000 + Math.random() * 9000)}`;
+                   const foundQty = qtyKey ? parseFloat(row[qtyKey].replace(/[^0-9.]/g, '')) : 1;
+                   const foundPrice = priceKey ? parseFloat(row[priceKey].replace(/[^0-9.]/g, '')) : 0;
+                   let foundDate = dateKey ? row[dateKey] : defaultDate;
+                   const foundBy = byKey ? row[byKey] : dispensingOfficer;
+
+                   if (foundDate && !foundDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                     try {
+                       const d = new Date(foundDate);
+                       if (isNaN(d.getTime())) throw new Error();
+                       foundDate = d.toISOString().split('T')[0];
+                     } catch (e) {
+                       foundDate = defaultDate;
+                     }
+                   }
+
+                   if (foundMedName && foundMedName.trim() && !isNaN(foundQty) && foundQty > 0) {
+                     parsedDispenses.push({
+                       id: `DSP-CSV-${Date.now()}-${idx}-${Math.floor(Math.random() * 1000)}`,
+                       medicationName: foundMedName.trim(),
+                       patientName: foundPatName.trim(),
+                       patientId: foundPatId.trim(),
+                       dispenseDate: foundDate.trim(),
+                       dispensedBy: foundBy.trim(),
+                       quantity: foundQty,
+                       pricePerUnit: isNaN(foundPrice) ? 0 : foundPrice,
+                       totalCost: (isNaN(foundPrice) ? 0 : foundPrice) * foundQty,
+                     });
+                     addedCount++;
+                   }
                  }
                }
-
-               if (foundMedName && foundMedName.trim() && !isNaN(foundQty) && foundQty > 0) {
-                 const newDispense: MedicationDispense = {
-                   id: `DSP-CSV-${Date.now()}-${idx}-${Math.floor(Math.random() * 1000)}`,
-                   medicationName: foundMedName.trim(),
-                   patientName: foundPatName.trim(),
-                   patientId: foundPatId.trim(),
-                   dispenseDate: foundDate.trim(),
-                   dispensedBy: foundBy.trim(),
-                   quantity: foundQty,
-                   pricePerUnit: isNaN(foundPrice) ? 0 : foundPrice,
-                   totalCost: (isNaN(foundPrice) ? 0 : foundPrice) * foundQty,
-                 };
-
-                 parsedDispenses.push(newDispense);
-                 addedCount++;
-               }
-             });
+             }
           }
           
           if (parsedDispenses.length > 0 && onBulkDispenseMedication) {
@@ -2652,6 +2836,26 @@ export function PharmacyView({
             >
               <Upload className="w-3.5 h-3.5" />
               Upload July 2026 Prescriptions
+            </button>
+            <button
+              type="button"
+              id="btn-upload-august-prescriptions"
+              onClick={handleUploadAugust}
+              disabled={isParsingDispenses}
+              className="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-semibold rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              Upload August 2026 Prescriptions
+            </button>
+            <button
+              type="button"
+              id="btn-delete-august-prescriptions"
+              onClick={handleDeleteAugust}
+              disabled={isParsingDispenses}
+              className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-[11px] font-semibold rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Delete August 2026 Pharmacy Data
             </button>
             <button
               type="button"

@@ -2,11 +2,14 @@ import {
   collection,
   doc,
   setDoc,
+  getDoc,
   deleteDoc,
   onSnapshot,
   getDocs,
   writeBatch,
   query,
+  where,
+  limit,
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from './firebase';
 import {
@@ -38,6 +41,7 @@ import { rawAugustLabTests } from './extractedAugustLabTestsData';
 import { rawExtractedDispenses } from './extractedDispensesData';
 import { rawJuneDispenses } from './extractedJuneDispensesData';
 import { rawJulyDispenses } from './extractedJulyDispensesData';
+import { rawAugustDispenses } from './extractedAugustDispensesData';
 
 // -------------------------------------------------------------
 // SEED DATABASE ON BOOTSTRAP if empty.
@@ -45,6 +49,19 @@ import { rawJulyDispenses } from './extractedJulyDispensesData';
 // We only preserve the system catalogs (Lab price index, Pharmacy drug lists) and user Whitelists.
 // -------------------------------------------------------------
 export async function seedDatabaseIfEmpty() {
+  // Check if database has already been successfully seeded to avoid heavy duplicate queries on every reload
+  try {
+    const configDoc = await getDoc(doc(db, 'system_config', 'seeding_v2'));
+    if (configDoc.exists() && configDoc.data()?.isSeeded) {
+      console.log("Database already fully seeded with May-August 2026 records. Skipping seeding...");
+      // Ensure August 2026 Pharmacy Dispenses are always checked and aligned!
+      await seedAugust2026PharmacyDispenses();
+      return;
+    }
+  } catch (err) {
+    console.warn("Could not read seeding configuration flag, running sync/seed checks...", err);
+  }
+
   // Always write system live production mode configuration status
   try {
     await setDoc(doc(db, 'system_config', 'status'), { isProductionLive: true });
@@ -145,6 +162,17 @@ export async function seedDatabaseIfEmpty() {
 
   // 7.1. Seed actual July 2026 Pharmacy Dispense records
   await seedJuly2026PharmacyDispenses();
+
+  // 7.3. Seed actual August 2026 Pharmacy Dispense records
+  await seedAugust2026PharmacyDispenses();
+
+  // Save seeding completion status to avoid future slow queries
+  try {
+    await setDoc(doc(db, 'system_config', 'seeding_v2'), { isSeeded: true });
+    console.log("Seeding completion flag 'seeding_v2' successfully saved to Firestore.");
+  } catch (err) {
+    console.warn("Could not save seeding configuration flag:", err);
+  }
 }
 
 
@@ -881,10 +909,11 @@ export async function seedAugust2026LabTests() {
 
 export async function seedMay2026PharmacyDispenses() {
   try {
-    const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
-    if (dispSnap.size < 100) {
+    const q = query(collection(db, 'medicationDispenses'), limit(10));
+    const dispSnap = await getDocs(q);
+    if (dispSnap.size < 5) {
       console.log(`Seeding May 2026 Pharmacy Dispenses: Seeding ${rawExtractedDispenses.length} records...`);
-      const batchSize = 450;
+      const batchSize = 100;
       for (let i = 0; i < rawExtractedDispenses.length; i += batchSize) {
         const batch = writeBatch(db);
         const chunk = rawExtractedDispenses.slice(i, i + batchSize);
@@ -894,9 +923,10 @@ export async function seedMay2026PharmacyDispenses() {
         });
         await batch.commit();
         console.log(`Committed Firestore pharmacy dispense batch of size ${chunk.length}`);
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
     } else {
-      console.log(`All May 2026 Pharmacy Dispenses (${dispSnap.size}) are already fully aligned in Firestore.`);
+      console.log(`May 2026 Pharmacy Dispenses are already fully aligned in Firestore.`);
     }
   } catch (err: any) {
     if (err?.message?.toLowerCase().includes('permission') || err?.code === 'permission-denied') {
@@ -909,11 +939,16 @@ export async function seedMay2026PharmacyDispenses() {
 
 export async function seedJune2026PharmacyDispenses() {
   try {
-    const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
-    const juneDocs = dispSnap.docs.filter(d => (d.data() as MedicationDispense).dispenseDate?.startsWith('2026-06'));
-    if (juneDocs.length < 500) {
+    const q = query(
+      collection(db, 'medicationDispenses'),
+      where('dispenseDate', '>=', '2026-06'),
+      where('dispenseDate', '<=', '2026-06\uf8ff'),
+      limit(10)
+    );
+    const dispSnap = await getDocs(q);
+    if (dispSnap.size < 5) {
       console.log(`Seeding June 2026 Pharmacy Dispenses: Seeding ${rawJuneDispenses.length} records...`);
-      const batchSize = 450;
+      const batchSize = 100;
       for (let i = 0; i < rawJuneDispenses.length; i += batchSize) {
         const batch = writeBatch(db);
         const chunk = rawJuneDispenses.slice(i, i + batchSize);
@@ -923,9 +958,10 @@ export async function seedJune2026PharmacyDispenses() {
         });
         await batch.commit();
         console.log(`Committed Firestore June pharmacy dispense batch of size ${chunk.length}`);
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
     } else {
-      console.log(`June 2026 Pharmacy Dispenses are already fully aligned in Firestore (${juneDocs.length} records).`);
+      console.log(`June 2026 Pharmacy Dispenses are already fully aligned in Firestore.`);
     }
   } catch (err: any) {
     if (err?.message?.toLowerCase().includes('permission') || err?.code === 'permission-denied') {
@@ -938,16 +974,20 @@ export async function seedJune2026PharmacyDispenses() {
 
 export async function clearUploadedDispenses(): Promise<number> {
   try {
-    const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
-    const uploadedDocs = dispSnap.docs.filter(d => {
-      const data = d.data() as MedicationDispense;
-      return d.id.startsWith('DISP-UP-') || (data as any).isUploaded;
-    });
-    for (let i = 0; i < uploadedDocs.length; i += 450) {
+    const q = query(
+      collection(db, 'medicationDispenses'),
+      where('__name__', '>=', 'DISP-UP-'),
+      where('__name__', '<=', 'DISP-UP-\uf8ff')
+    );
+    const dispSnap = await getDocs(q);
+    const uploadedDocs = dispSnap.docs;
+    const batchSize = 100;
+    for (let i = 0; i < uploadedDocs.length; i += batchSize) {
       const batch = writeBatch(db);
-      const chunk = uploadedDocs.slice(i, i + 450);
+      const chunk = uploadedDocs.slice(i, i + batchSize);
       chunk.forEach(d => batch.delete(d.ref));
       await batch.commit();
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
     console.log(`Cleared ${uploadedDocs.length} uploaded records.`);
     return uploadedDocs.length;
@@ -959,16 +999,20 @@ export async function clearUploadedDispenses(): Promise<number> {
 
 export async function clearMonthDispenses(monthPrefix: string) {
   try {
-    const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
-    const monthDocs = dispSnap.docs.filter(d => {
-      const data = d.data() as MedicationDispense;
-      return data.dispenseDate?.startsWith(monthPrefix) || d.id.includes(monthPrefix.replace('2026-', ''));
-    });
-    for (let i = 0; i < monthDocs.length; i += 450) {
+    const q = query(
+      collection(db, 'medicationDispenses'),
+      where('dispenseDate', '>=', monthPrefix),
+      where('dispenseDate', '<=', monthPrefix + '\uf8ff')
+    );
+    const dispSnap = await getDocs(q);
+    const monthDocs = dispSnap.docs;
+    const batchSize = 100;
+    for (let i = 0; i < monthDocs.length; i += batchSize) {
       const batch = writeBatch(db);
-      const chunk = monthDocs.slice(i, i + 450);
+      const chunk = monthDocs.slice(i, i + batchSize);
       chunk.forEach(d => batch.delete(d.ref));
       await batch.commit();
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
     console.log(`Cleared ${monthDocs.length} records for month ${monthPrefix}`);
   } catch (err) {
@@ -978,14 +1022,19 @@ export async function clearMonthDispenses(monthPrefix: string) {
 
 export async function seedJuly2026PharmacyDispenses() {
   try {
-    const dispSnap = await getDocs(collection(db, 'medicationDispenses'));
-    const julyDocs = dispSnap.docs.filter(d => (d.data() as MedicationDispense).dispenseDate?.startsWith('2026-07'));
+    const q = query(
+      collection(db, 'medicationDispenses'),
+      where('dispenseDate', '>=', '2026-07'),
+      where('dispenseDate', '<=', '2026-07\uf8ff')
+    );
+    const dispSnap = await getDocs(q);
+    const julyDocs = dispSnap.docs;
     const currentTotal = julyDocs.reduce((acc, d) => acc + ((d.data() as MedicationDispense).totalCost || 0), 0);
 
     if (julyDocs.length !== rawJulyDispenses.length || Math.abs(currentTotal - 388660.20) > 1.0) {
       console.log(`Re-aligning July 2026 Pharmacy Dispenses: clearing old records (${julyDocs.length}) and seeding ${rawJulyDispenses.length} records (Target total: 388,660.20)...`);
       await clearMonthDispenses('2026-07');
-      const batchSize = 450;
+      const batchSize = 100;
       for (let i = 0; i < rawJulyDispenses.length; i += batchSize) {
         const batch = writeBatch(db);
         const chunk = rawJulyDispenses.slice(i, i + batchSize);
@@ -995,6 +1044,7 @@ export async function seedJuly2026PharmacyDispenses() {
         });
         await batch.commit();
         console.log(`Committed Firestore July pharmacy dispense batch of size ${chunk.length}`);
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
     } else {
       console.log(`July 2026 Pharmacy Dispenses are already fully aligned in Firestore (${julyDocs.length} records, total: ${currentTotal}).`);
@@ -1004,6 +1054,45 @@ export async function seedJuly2026PharmacyDispenses() {
       console.warn('Seeding July 2026 Pharmacy Dispenses was skipped: insufficient Firestore write permissions.');
     } else {
       console.error('Failed to seed July 2026 Pharmacy Dispenses:', err?.message || err);
+    }
+  }
+}
+
+export async function seedAugust2026PharmacyDispenses() {
+  try {
+    const q = query(
+      collection(db, 'medicationDispenses'),
+      where('dispenseDate', '>=', '2026-08'),
+      where('dispenseDate', '<=', '2026-08\uf8ff')
+    );
+    const dispSnap = await getDocs(q);
+    const augustDocs = dispSnap.docs;
+    const currentTotal = augustDocs.reduce((acc, d) => acc + ((d.data() as MedicationDispense).totalCost || 0), 0);
+    const targetTotal = rawAugustDispenses.reduce((acc, d) => acc + (d.totalCost || 0), 0);
+
+    if (augustDocs.length !== rawAugustDispenses.length || Math.abs(currentTotal - targetTotal) > 1.0) {
+      console.log(`Re-aligning August 2026 Pharmacy Dispenses: clearing old records (${augustDocs.length}) and seeding ${rawAugustDispenses.length} records (Target total: ${targetTotal.toFixed(2)})...`);
+      await clearMonthDispenses('2026-08');
+      const batchSize = 100;
+      for (let i = 0; i < rawAugustDispenses.length; i += batchSize) {
+        const batch = writeBatch(db);
+        const chunk = rawAugustDispenses.slice(i, i + batchSize);
+        chunk.forEach(disp => {
+          const docRef = doc(db, 'medicationDispenses', disp.id);
+          batch.set(docRef, disp);
+        });
+        await batch.commit();
+        console.log(`Committed Firestore August pharmacy dispense batch of size ${chunk.length}`);
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    } else {
+      console.log(`August 2026 Pharmacy Dispenses are already fully aligned in Firestore (${augustDocs.length} records, total: ${currentTotal}).`);
+    }
+  } catch (err: any) {
+    if (err?.message?.toLowerCase().includes('permission') || err?.code === 'permission-denied') {
+      console.warn('Seeding August 2026 Pharmacy Dispenses was skipped: insufficient Firestore write permissions.');
+    } else {
+      console.error('Failed to seed August 2026 Pharmacy Dispenses:', err?.message || err);
     }
   }
 }
@@ -1326,30 +1415,19 @@ export async function saveMedicationDispense(disp: MedicationDispense) {
 export async function saveBulkMedicationDispenses(dispenses: MedicationDispense[]) {
   const path = `medicationDispenses`;
   try {
-    let currentBatch = writeBatch(db);
-    let opsInCurrentBatch = 0;
-    const batches = [];
-
-    for (const disp of dispenses) {
-      const docRef = doc(db, 'medicationDispenses', disp.id);
-      currentBatch.set(docRef, cleanUndefined(disp));
-      opsInCurrentBatch++;
-
-      if (opsInCurrentBatch === 250) {
-        batches.push(currentBatch);
-        currentBatch = writeBatch(db);
-        opsInCurrentBatch = 0;
-      }
-    }
-
-    if (opsInCurrentBatch > 0) {
-      batches.push(currentBatch);
-    }
-
-    for (let i = 0; i < batches.length; i++) {
-      await batches[i].commit();
-      if (i < batches.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+    const batchSize = 100;
+    console.log(`saveBulkMedicationDispenses: committing ${dispenses.length} records in chunks of ${batchSize}...`);
+    for (let i = 0; i < dispenses.length; i += batchSize) {
+      const batch = writeBatch(db);
+      const chunk = dispenses.slice(i, i + batchSize);
+      chunk.forEach(disp => {
+        const docRef = doc(db, 'medicationDispenses', disp.id);
+        batch.set(docRef, cleanUndefined(disp));
+      });
+      await batch.commit();
+      console.log(`Successfully saved chunk ${Math.floor(i / batchSize) + 1} / ${Math.ceil(dispenses.length / batchSize)}`);
+      if (i + batchSize < dispenses.length) {
+        await new Promise(resolve => setTimeout(resolve, 150));
       }
     }
   } catch (error) {

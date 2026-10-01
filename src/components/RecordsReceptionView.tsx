@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Search, Stethoscope, FileText, Calendar, DollarSign, History, ShieldAlert, Download, Heart, Pill, Film, BarChart3, ShieldCheck, FileSpreadsheet, Trash2, Edit3, AlertTriangle, CheckCircle2, X, Plus, Shield } from 'lucide-react';
+import { UserPlus, Search, Stethoscope, FileText, Calendar, CalendarDays, DollarSign, History, ShieldAlert, Download, Heart, Pill, Film, BarChart3, ShieldCheck, FileSpreadsheet, Trash2, Edit3, AlertTriangle, CheckCircle2, X, Plus, Shield } from 'lucide-react';
 import { Patient, MedicalRecord, Appointment, UserRole, PharmacyItem, LabTest, LabCatalogItem, ImagingRequestItem } from '../types';
 import { MasterInsurance, getFullMasterInsuranceList, saveCustomInsuranceProvider, normalizeInsuranceCompany } from '../insuranceUtils';
 import { ImagingModal } from './ImagingModal';
@@ -66,8 +66,42 @@ export function RecordsReceptionView({
     );
   });
 
-  // Tabs: Register Patient, Manage Records, Appointments & Billing, View Patient Card
-  const [activeSubTab, setActiveSubTab] = useState<'register' | 'history' | 'appointments' | 'card'>('register');
+  // Tabs: Register Patient, Manage Records, Appointments & Billing, Daily View, View Patient Card
+  const [activeSubTab, setActiveSubTab] = useState<'register' | 'history' | 'appointments' | 'daily' | 'card'>('register');
+  const [selectedDailyDate, setSelectedDailyDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
+  const [dailySearchQuery, setDailySearchQuery] = useState<string>('');
+
+  const dailyPatients = React.useMemo(() => {
+    return patients.filter((p) => {
+      const regDate = p.registeredAt ? p.registeredAt.substring(0, 10) : '';
+      const matchesDate = regDate === selectedDailyDate;
+      const q = dailySearchQuery.toLowerCase().trim();
+      if (!q) return matchesDate;
+      const matchesSearch = p.name.toLowerCase().includes(q) ||
+                            p.id.toLowerCase().includes(q) ||
+                            (p.opNumber && p.opNumber.toLowerCase().includes(q)) ||
+                            (p.phone && p.phone.includes(q));
+      return matchesDate && matchesSearch;
+    }).sort((a, b) => (b.registeredAt || '').localeCompare(a.registeredAt || ''));
+  }, [patients, selectedDailyDate, dailySearchQuery]);
+
+  const dailyStats = React.useMemo(() => {
+    const list = patients.filter(p => (p.registeredAt ? p.registeredAt.substring(0, 10) : '') === selectedDailyDate);
+    const totalCount = list.length;
+    const cashCount = list.filter(p => p.paymentMode === 'Cash' || !p.paymentMode).length;
+    const insuranceCount = list.filter(p => p.paymentMode === 'Insurance').length;
+    
+    const categories: Record<string, number> = {};
+    list.forEach(p => {
+      const cat = p.category || 'General Consultation';
+      categories[cat] = (categories[cat] || 0) + 1;
+    });
+
+    const dayAppointments = appointments.filter(a => a.date === selectedDailyDate);
+    const totalRevenue = dayAppointments.reduce((sum, a) => sum + (a.billingStatus === 'Paid' ? a.billingAmount : 0), 0);
+
+    return { totalCount, cashCount, insuranceCount, categories, totalRevenue };
+  }, [patients, appointments, selectedDailyDate]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isMonthlyReportModalOpen, setIsMonthlyReportModalOpen] = useState<boolean>(false);
 
@@ -936,6 +970,16 @@ export function RecordsReceptionView({
           Appointments & Billing Desk
         </button>
         <button
+          id="subtab-daily"
+          onClick={() => setActiveSubTab('daily')}
+          className={`flex-1 py-2 text-xs font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            activeSubTab === 'daily' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-stone-500 hover:text-stone-800'
+          }`}
+        >
+          <CalendarDays className="w-3.5 h-3.5" />
+          Daily Patient View
+        </button>
+        <button
           id="subtab-monthly-report-trigger"
           onClick={() => setIsMonthlyReportModalOpen(true)}
           className="py-2 px-3 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 cursor-pointer shadow-3xs"
@@ -945,6 +989,151 @@ export function RecordsReceptionView({
           Monthly Report Desk
         </button>
       </div>
+
+      {/* DAILY PATIENT VIEW */}
+      {activeSubTab === 'daily' && (
+        <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-6 space-y-6 animate-in fade-in duration-200">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-5">
+            <div>
+              <h3 className="text-sm font-bold text-stone-900 flex items-center gap-2">
+                <CalendarDays className="w-4 h-4 text-emerald-600" />
+                Daily Patient Register & Activity View
+              </h3>
+              <p className="text-xs text-stone-500 mt-0.5">
+                Inspect all patient registrations, billing status, and clinic arrivals for any chosen calendar date.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div>
+                <label className="block text-[10px] font-bold text-stone-400 uppercase mb-1">Select Date</label>
+                <input
+                  id="daily-date-picker"
+                  type="date"
+                  value={selectedDailyDate}
+                  onChange={(e) => setSelectedDailyDate(e.target.value)}
+                  className="bg-stone-50 border border-stone-300 rounded-lg px-3 py-1.5 text-xs font-mono font-bold text-stone-800 focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedDailyDate(new Date().toISOString().split('T')[0])}
+                className="mt-4 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-stone-300 transition-all cursor-pointer"
+              >
+                Today
+              </button>
+            </div>
+          </div>
+
+          {/* Daily Quick Metrics */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="bg-emerald-50/60 border border-emerald-200 p-4 rounded-xl">
+              <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block mb-1">Patients Registered</span>
+              <span className="text-2xl font-bold text-emerald-900 font-mono">{dailyStats.totalCount}</span>
+            </div>
+            <div className="bg-blue-50/60 border border-blue-200 p-4 rounded-xl">
+              <span className="text-[10px] font-bold text-blue-700 uppercase tracking-wider block mb-1">Billing Revenue (Paid)</span>
+              <span className="text-2xl font-bold text-blue-900 font-mono">Ksh {dailyStats.totalRevenue.toLocaleString()}</span>
+            </div>
+            <div className="bg-amber-50/60 border border-amber-200 p-4 rounded-xl">
+              <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block mb-1">Cash Payments</span>
+              <span className="text-2xl font-bold text-amber-900 font-mono">{dailyStats.cashCount}</span>
+            </div>
+            <div className="bg-purple-50/60 border border-purple-200 p-4 rounded-xl">
+              <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider block mb-1">Insurance Covered</span>
+              <span className="text-2xl font-bold text-purple-900 font-mono">{dailyStats.insuranceCount}</span>
+            </div>
+          </div>
+
+          {/* Daily Search Filter & Table */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-stone-400 absolute left-3 top-3" />
+                <input
+                  type="text"
+                  placeholder={`Search patients for ${selectedDailyDate} by name, OP number, ID or phone...`}
+                  value={dailySearchQuery}
+                  onChange={(e) => setDailySearchQuery(e.target.value)}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-lg pl-9 pr-4 py-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                />
+              </div>
+              {dailySearchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setDailySearchQuery('')}
+                  className="text-xs text-stone-500 hover:text-stone-700 font-bold px-3 py-2 bg-stone-100 rounded-lg cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            <div className="overflow-x-auto border border-stone-200 rounded-xl">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-stone-50 text-stone-500 uppercase text-[10px] tracking-wider border-b border-stone-200 font-semibold">
+                    <th className="p-3">OP Number</th>
+                    <th className="p-3">Patient Name</th>
+                    <th className="p-3">Age / Sex</th>
+                    <th className="p-3">Phone</th>
+                    <th className="p-3">Clinic / Category</th>
+                    <th className="p-3">Payment Mode</th>
+                    <th className="p-3">Registered Time</th>
+                    <th className="p-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-100 text-stone-700">
+                  {dailyPatients.map((p) => {
+                    const op = p.opNumber || `OP-${p.registeredAt ? p.registeredAt.substring(0, 7) : '2026-06'}-${p.id.split('-')[1]}`;
+                    const timeOnly = p.registeredAt && p.registeredAt.includes('T') ? p.registeredAt.split('T')[1].substring(0, 5) : '08:30';
+                    return (
+                      <tr key={p.id} className="hover:bg-stone-50/80 transition-colors">
+                        <td className="p-3 font-mono font-bold text-stone-900">{op}</td>
+                        <td className="p-3 font-semibold text-stone-900">{p.name}</td>
+                        <td className="p-3">{p.age} {p.ageUnit === 'Months' ? 'Mos' : 'Yrs'} / {p.gender}</td>
+                        <td className="p-3 font-mono">{p.phone || 'N/A'}</td>
+                        <td className="p-3">
+                          <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold">
+                            {p.category} {p.consultantSubCategory ? `(${p.consultantSubCategory})` : ''}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            p.paymentMode === 'Insurance' ? 'bg-purple-100 text-purple-800' : 'bg-amber-100 text-amber-800'
+                          }`}>
+                            {p.paymentMode === 'Insurance' ? `Insurance (${normalizeInsuranceCompany(p.insuranceCompany)})` : 'Cash'}
+                          </span>
+                        </td>
+                        <td className="p-3 font-mono text-stone-500">{timeOnly}</td>
+                        <td className="p-3 text-right">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedCardPatient(p);
+                              setActiveSubTab('card');
+                            }}
+                            className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded border border-emerald-200 transition-colors cursor-pointer"
+                          >
+                            View Card
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {dailyPatients.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="p-8 text-center text-stone-400 font-medium">
+                        No patient registrations or arrivals recorded for {selectedDailyDate}.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 1. INTAKE & REGISTRATION FORM */}
       {activeSubTab === 'register' && (

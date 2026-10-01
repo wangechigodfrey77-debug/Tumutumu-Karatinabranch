@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Activity,
   Users,
@@ -393,8 +393,8 @@ export default function App() {
     setLoginError('');
   };
 
-  // Master Mutations persisting in real-time straight to Firestore
-  const handleDeletePatient = async (patientId: string) => {
+  // Master Mutations persisting in real-time straight to Firestore (memoized with useCallback)
+  const handleDeletePatient = useCallback(async (patientId: string) => {
     try {
       await deletePatient(patientId);
       await logMutation('DELETE_PATIENT', `Purged patient record: ${patientId}`);
@@ -402,9 +402,9 @@ export default function App() {
       console.error("Delete patient failed", error);
       alert("Permission denied or error purging patient.");
     }
-  };
+  }, [patients]);
 
-  const handleAddPatient = async (pat: Patient) => {
+  const handleAddPatient = useCallback(async (pat: Patient) => {
     try {
       await savePatient(pat);
       await logMutation('ADD_PATIENT', `Registered new patient: ${pat.name} (${pat.id}). Category: ${pat.category}`);
@@ -412,9 +412,9 @@ export default function App() {
       console.error("Add patient failed", error);
       alert("Permission denied or error saving patient. Registration Desk role required.");
     }
-  };
+  }, []);
 
-  const handleAddMedicalRecord = async (patientId: string, record: MedicalRecord) => {
+  const handleAddMedicalRecord = useCallback(async (patientId: string, record: MedicalRecord) => {
     try {
       const patient = patients.find((p) => p.id === patientId);
       if (patient) {
@@ -427,9 +427,9 @@ export default function App() {
       console.error("Add medical record failed", error);
       alert("Permission denied. Doctor credentials are required.");
     }
-  };
+  }, [patients]);
 
-  const handleUpdatePatientHistory = async (patientId: string, updatedHistory: MedicalRecord[]) => {
+  const handleUpdatePatientHistory = useCallback(async (patientId: string, updatedHistory: MedicalRecord[]) => {
     try {
       const patient = patients.find((p) => p.id === patientId);
       if (patient) {
@@ -440,18 +440,18 @@ export default function App() {
       console.error("Update patient history failed", error);
       alert("Error updating patient history: " + (error instanceof Error ? error.message : String(error)));
     }
-  };
+  }, [patients]);
 
-  const handleAddAppointment = async (appt: Appointment) => {
+  const handleAddAppointment = useCallback(async (appt: Appointment) => {
     try {
       await saveAppointment(appt);
     } catch (error) {
       console.error("Add appointment failed", error);
       alert("Permission denied. Front desk role authorization is required.");
     }
-  };
+  }, []);
 
-  const handleUpdateApptBilling = async (apptId: string, status: 'Paid' | 'Unpaid') => {
+  const handleUpdateApptBilling = useCallback(async (apptId: string, status: 'Paid' | 'Unpaid') => {
     try {
       const appt = appointments.find((a) => a.id === apptId);
       if (appt) {
@@ -461,9 +461,9 @@ export default function App() {
       console.error("Billing update failed", error);
       alert("Permission denied. Admin or FrontDesk credentials required.");
     }
-  };
+  }, [appointments]);
 
-  const handleAddLabTest = async (test: LabTest) => {
+  const handleAddLabTest = useCallback(async (test: LabTest) => {
     try {
       await saveLabTest(test);
       await logMutation('ADD_LAB_TEST', `Conducted lab test diagnostics panel [${test.testName}] for Patient: ${test.patientName} (${test.patientId}). Performed by: ${test.performedBy}`);
@@ -471,9 +471,9 @@ export default function App() {
       console.error("Lab test save failed", error);
       alert("Permission denied. Laboratory diagnostic technologist credentials required.");
     }
-  };
+  }, []);
 
-  const handleUpdateLabTest = async (test: LabTest) => {
+  const handleUpdateLabTest = useCallback(async (test: LabTest) => {
     try {
       await saveLabTest(test);
       await logMutation('UPDATE_LAB_TEST', `Updated lab test [${test.testName}] status/results for Patient: ${test.patientName} (${test.patientId}). Status: ${test.billingStatus}`);
@@ -481,18 +481,18 @@ export default function App() {
       console.error("Lab test update failed", error);
       alert("Permission denied or error saving lab test.");
     }
-  };
+  }, []);
 
-  const handleAddLabCatalogItem = async (item: LabCatalogItem) => {
+  const handleAddLabCatalogItem = useCallback(async (item: LabCatalogItem) => {
     try {
       await saveLabCatalogItem(item);
     } catch (error) {
       console.error("Add lab catalog panel failed", error);
       alert("Permission denied saving test panel. Laboratory technician permissions required.");
     }
-  };
+  }, []);
 
-  const handleDispenseMedicine = async (disp: MedicationDispense) => {
+  const handleDispenseMedicine = useCallback(async (disp: MedicationDispense) => {
     try {
       await saveMedicationDispense(disp);
       const item = stock.find((s) => s.name === disp.medicationName);
@@ -505,13 +505,11 @@ export default function App() {
       console.error("Dispensation failed", error);
       alert("Permission denied. Pharmacist credentials required.");
     }
-  };
+  }, [stock]);
 
-  const handleBulkDispenseMedicine = async (dispenses: MedicationDispense[]) => {
+  const handleBulkDispenseMedicine = useCallback(async (dispenses: MedicationDispense[]) => {
     try {
       await saveBulkMedicationDispenses(dispenses);
-      
-      // Bulk update stock items? (Not strictly necessary for TXT uploads since they are historical, but let's just log it)
       await logMutation('DISPENSE_MEDICINE_BULK', `Bulk dispensed ${dispenses.length} records from uploaded file.`);
       alert(`Successfully saved ${dispenses.length} dispensing records.`);
     } catch (error) {
@@ -519,9 +517,9 @@ export default function App() {
       alert("Error saving bulk dispensation records. Check your connection or batch size.");
       throw error;
     }
-  };
+  }, []);
 
-  const handleRestockItem = async (itemId: string, qty: number) => {
+  const handleRestockItem = useCallback(async (itemId: string, qty: number) => {
     try {
       let itemName = itemId;
       const item = stock.find((s) => s.id === itemId);
@@ -534,9 +532,9 @@ export default function App() {
       console.error("Restock failed", error);
       alert("Permission denied. Pharmacy store manager clearance required.");
     }
-  };
+  }, [stock]);
 
-  const handleAddNewStockItem = async (item: PharmacyItem) => {
+  const handleAddNewStockItem = useCallback(async (item: PharmacyItem) => {
     try {
       await savePharmacyItem(item);
       await logMutation('ADD_STOCK_ITEM', `Registered new pharmacy inventory product: ${item.name} (${item.id}). Category: ${item.category}`);
@@ -544,9 +542,9 @@ export default function App() {
       console.error("Add inventory item failed", error);
       alert("Permission denied. Pharmacy executive role required.");
     }
-  };
+  }, []);
 
-  const handleUpdatePatientVitals = async (patientId: string, vitals: PatientVitals) => {
+  const handleUpdatePatientVitals = useCallback(async (patientId: string, vitals: PatientVitals) => {
     try {
       const patient = patients.find((p) => p.id === patientId);
       if (patient) {
@@ -558,9 +556,9 @@ export default function App() {
       console.error("Update patient vitals failed", error);
       alert("Permission denied or error saving vital signs.");
     }
-  };
+  }, [patients]);
 
-  const handleUpdateThreshold = async (itemId: string, threshold: number) => {
+  const handleUpdateThreshold = useCallback(async (itemId: string, threshold: number) => {
     try {
       let itemName = itemId;
       const item = stock.find((s) => s.id === itemId);
@@ -573,9 +571,9 @@ export default function App() {
       console.error("Updating threshold failed", error);
       alert("Permission denied. Pharmacy store manager clearance required.");
     }
-  };
+  }, [stock]);
 
-  const handleAddWhitelist = async (user: WhitelistUser, password?: string) => {
+  const handleAddWhitelist = useCallback(async (user: WhitelistUser, password?: string) => {
     try {
       if (password) {
         try {
@@ -592,9 +590,9 @@ export default function App() {
       console.error("Add whitelist failed", error);
       alert("Permission denied. Hospital Superintendent credentials required.");
     }
-  };
+  }, []);
 
-  const handleRemoveWhitelist = async (email: string) => {
+  const handleRemoveWhitelist = useCallback(async (email: string) => {
     try {
       await removeWhitelistUser(email);
       await logMutation('REMOVE_WHITELIST', `Revoked hospital whitelist access for: ${email}`);
@@ -602,9 +600,9 @@ export default function App() {
       console.error("Remove whitelist failed", error);
       alert("Permission denied. Superintendent authorization required.");
     }
-  };
+  }, []);
 
-  const handleAddDuty = async (duty: DutyAllocation) => {
+  const handleAddDuty = useCallback(async (duty: DutyAllocation) => {
     try {
       await saveDutyAllocation(duty);
       await logMutation('ADD_DUTY', `Assigned shift schedule duty to ${duty.staffName} for Date: ${duty.date}. Department: ${duty.department}`);
@@ -612,9 +610,9 @@ export default function App() {
       console.error("Rota assign failed", error);
       alert("Permission denied. Scheduling access is locked for admins.");
     }
-  };
+  }, []);
 
-  const handleRemoveDuty = async (dutyId: string) => {
+  const handleRemoveDuty = useCallback(async (dutyId: string) => {
     try {
       const existing = duties.find((d) => d.id === dutyId);
       const shiftDetail = existing ? `${existing.staffName} (Dept: ${existing.department}, Date: ${existing.date})` : dutyId;
@@ -624,9 +622,9 @@ export default function App() {
       console.error("Duty delete failed", error);
       alert("Permission denied. Administrative roster management required.");
     }
-  };
+  }, [duties]);
 
-  const handleUpdateLeaveStatus = async (leaveId: string, status: 'Approved' | 'Rejected') => {
+  const handleUpdateLeaveStatus = useCallback(async (leaveId: string, status: 'Approved' | 'Rejected') => {
     try {
       const leave = leaves.find((l) => l.id === leaveId);
       if (leave) {
@@ -637,9 +635,9 @@ export default function App() {
       console.error("Leave approval failed", error);
       alert("Permission denied. Admin or clinical director credentials required.");
     }
-  };
+  }, [leaves]);
 
-  const handleAddExpense = async (expense: Expense) => {
+  const handleAddExpense = useCallback(async (expense: Expense) => {
     try {
       await saveExpense(expense);
       await logMutation('ADD_EXPENSE', `Authorized operational expense payout of Ksh ${expense.amount.toLocaleString()} for Category: ${expense.category}. Details: ${expense.description}`);
@@ -647,9 +645,9 @@ export default function App() {
       console.error("Expense save failed", error);
       alert("Permission denied. Admin dashboard credentials required.");
     }
-  };
+  }, []);
 
-  const handleRemoveExpense = async (expenseId: string) => {
+  const handleRemoveExpense = useCallback(async (expenseId: string) => {
     try {
       const existing = expenses.find((e) => e.id === expenseId);
       const detail = existing ? `ayout details: Ksh ${existing.amount.toLocaleString()} (Category: ${existing.category})` : expenseId;
@@ -659,25 +657,25 @@ export default function App() {
       console.error("Expense delete failed", error);
       alert("Permission denied. Admin authorization is required.");
     }
-  };
+  }, [expenses]);
 
-  const handleRequestLeave = async (req: LeaveRequest) => {
+  const handleRequestLeave = useCallback(async (req: LeaveRequest) => {
     try {
       await saveLeaveRequest(req);
     } catch (error) {
       console.error("Leave submission failed", error);
       alert("Unable to submit leave request. Verification failed.");
     }
-  };
+  }, []);
 
-  const handleSendMessage = async (msg: Message) => {
+  const handleSendMessage = useCallback(async (msg: Message) => {
     try {
       await saveMessage(msg);
     } catch (error) {
       console.error("Message send failed", error);
       alert("Failed to deliver broadcast message.");
     }
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-stone-100 text-stone-800 font-sans flex flex-col">
